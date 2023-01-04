@@ -100,7 +100,6 @@ const getListFunctionGroup = async () => {
       .input('KEYWORD', '')
       .input('ORDERBYDES', 0)
       .input('ISACTIVE', 1)
-      .input('ISSYSTEM', 2)
       .execute(PROCEDURE_NAME.SYS_FUNCTIONGROUP_GETLIST);
     // get list functiongroup
     let functionGroup = UserGroupFunctionClass.list(data.recordset);

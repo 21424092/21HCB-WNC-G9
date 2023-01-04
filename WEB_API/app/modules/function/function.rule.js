@@ -6,7 +6,6 @@ const ruleCreateOrUpdate = {
   function_group_id: Joi.number().required(),
   description: Joi.string().allow('', null),
   is_active: Joi.number().valid(0, 1).required(),
-  is_system: Joi.number().valid(0, 1).required(),
 };
 
 const validateRules = {

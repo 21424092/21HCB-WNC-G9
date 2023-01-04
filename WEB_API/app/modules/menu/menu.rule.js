@@ -2,10 +2,7 @@ const Joi = require('joi');
 
 const ruleCreateOrUpdate = {
   menu_name: Joi.string().required(),
-  // module_id: Joi.number().required(),
   is_active: Joi.number().valid(0, 1).required(),
-  is_system: Joi.number().valid(0, 1).required(),
-  is_can_open_multi_windows: Joi.number().valid(0, 1).required(),
 };
 
 const validateRules = {

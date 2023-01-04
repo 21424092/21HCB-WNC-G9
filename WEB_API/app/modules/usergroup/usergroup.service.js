@@ -29,10 +29,7 @@ const getListUserGroup = async (queryParams = {}) => {
       .input('PageIndex', currentPage)
       .input('KEYWORD', keyword)
       .input('ORDERBYDES', orderBy)
-      .input('BUSINESSID', apiHelper.getValueFromObject(queryParams, 'business_id'))
-      .input('COMPANYID', apiHelper.getValueFromObject(queryParams, 'company_id'))
       .input('ISACTIVE', apiHelper.getFilterBoolean(queryParams, 'is_active'))
-      .input('ISSYSTEM', apiHelper.getFilterBoolean(queryParams, 'is_system'))
       .execute(PROCEDURE_NAME.SYS_USERGROUP_GETLIST);
 
     const userGroups = data.recordset;
@@ -84,47 +81,13 @@ const createUserOrUpdate = async (bodyParams = {}) => {
     const resultUserGroup = await requestUserGroup
       .input('USERGROUPID', apiHelper.getValueFromObject(bodyParams, 'user_group_id'))
       .input('USERGROUPNAME', apiHelper.getValueFromObject(bodyParams, 'user_group_name'))
-      .input('BUSINESSID', apiHelper.getValueFromObject(bodyParams, 'business_id'))
       .input('DESCRIPTION', apiHelper.getValueFromObject(bodyParams, 'description'))
-      .input('ORDERINDEX', apiHelper.getValueFromObject(bodyParams, 'user_group_id'))
+      .input('ORDERINDEX', apiHelper.getValueFromObject(bodyParams, 'order_index'))
       .input('ISACTIVE', apiHelper.getValueFromObject(bodyParams, 'is_active'))
-      .input('ISSYSTEM', apiHelper.getValueFromObject(bodyParams, 'is_system'))
       .input('CREATEDUSER', apiHelper.getValueFromObject(bodyParams, 'auth_id'))
       .execute(PROCEDURE_NAME.SYS_USERGROUP_CREATEORUPDATE);
     // Get USERGROUPID
     const userGroupId = resultUserGroup.recordset[0].RESULT;
-
-    /**
-    // Delete SYS_USERGROUP_FUNCTION
-    const requestUserGroupFunctionDelete = new sql.Request(transaction);
-    const resultUserGroupFunction = await requestUserGroupFunctionDelete
-      .input('USERGROUPID', userGroupId)
-      .execute(PROCEDURE_NAME.SYS_USERGROUP_FUNCTION_DELETE);
-    // If store can not delete data
-    if (resultUserGroupFunction.recordset[0].RESULT === 0) {
-      throw new Error(RESPONSE_MSG.USER_GROUP.DELETE_SYS_USERGROUP_FUNCTION_FAILED);
-    }
-
-    // Create SYS_USERGROUP_FUNCTION
-    const dataUserGroupFunctions = apiHelper.getValueFromObject(bodyParams, 'user_group_functions', []);
-    if (dataUserGroupFunctions.length) {
-      for (let i = 0; i < dataUserGroupFunctions.length; i++) {
-        let item = dataUserGroupFunctions[i];
-
-        let requestUserGroupFunction = new sql.Request(transaction);
-        let resultUserGroupFunction = await requestUserGroupFunction // eslint-disable-line no-await-in-loop
-          .input('USERGROUPID', userGroupId)
-          .input('FUNCTIONGROUPID', item.function_group_id)
-          .input('FUNCTIONID', item.function_ids.join('|'))
-          .input('ISFUNCTIONGROUP', item.is_function_group)
-          .execute(PROCEDURE_NAME.SYS_USERGROUP_FUNCTION_CREATE);
-        // Create SYS_USERGROUP_FUNCTION failed
-        if (!resultUserGroupFunction.recordset[0].RESULT) {
-          throw new Error(RESPONSE_MSG.USER_GROUP.SAVE_SYS_USERGROUP_FUNCTION_FAILED);
-        }
-      }
-    }
-    */
 
     // Commit transaction
     await transaction.commit();

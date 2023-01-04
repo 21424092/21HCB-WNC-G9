@@ -20,8 +20,7 @@ const getListFunction = async (req) => {
       @KEYWORD=:KEYWORD,
       @ORDERBYDES=:ORDERBYDES,
       @FUNCTIONGROUPID=:FUNCTIONGROUPID,
-      @ISACTIVE=:ISACTIVE,
-      @ISSYSTEM=:ISSYSTEM`;
+      @ISACTIVE=:ISACTIVE`;
     const functions = await database.sequelize.query(query, {
       replacements: {
         'PAGESIZE': limit,
@@ -30,7 +29,6 @@ const getListFunction = async (req) => {
         'ORDERBYDES': apiHelper.getQueryParam(req, 'sortorder'),
         'FUNCTIONGROUPID': apiHelper.getQueryParam(req, 'function_group_id'),
         'ISACTIVE': apiHelper.getQueryParam(req, 'is_active'),
-        'ISSYSTEM': apiHelper.getQueryParam(req, 'is_system'),
       },
       type: database.QueryTypes.SELECT,
     });
@@ -82,7 +80,6 @@ const createOrUpdateFunction = async (req) => {
     'FUNCTIONGROUPID': req.body.function_group_id,
     'DESCRIPTION': req.body.description,
     'ISACTIVE': req.body.is_active,
-    'ISSYSTEM': req.body.is_system,
     'CREATEDUSER': apiHelper.getAuthId(req),
   };
 
@@ -93,7 +90,6 @@ const createOrUpdateFunction = async (req) => {
         @FUNCTIONGROUPID=:FUNCTIONGROUPID,
         @DESCRIPTION=:DESCRIPTION,
         @ISACTIVE=:ISACTIVE,
-        @ISSYSTEM=:ISSYSTEM,
         @CREATEDUSER=:CREATEDUSER`;
 
   // Call procedure

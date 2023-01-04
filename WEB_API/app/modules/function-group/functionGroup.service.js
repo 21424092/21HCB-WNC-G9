@@ -10,7 +10,6 @@ const getList = async (params = {}) => {
     const defaultParams = {
       keyword: null,
       is_active: API_CONST.ISACTIVE.ALL,
-      is_system: API_CONST.ISSYSTEM.ALL,
       itemsPerPage: API_CONST.PAGINATION.LIMIT,
       page: API_CONST.PAGINATION.DEFAULT,
       created_date_from:'',
@@ -22,7 +21,6 @@ const getList = async (params = {}) => {
     const dataList = await database.sequelize.query(`${PROCEDURE_NAME.SYS_FUNCTIONGROUP_GETLIST} 
     @KEYWORD = :keyword,
     @ISACTIVE = :is_active,
-    @ISSYSTEM = :is_system,
     @PAGESIZE = :itemsPerPage,
     @PAGEINDEX = :page,
     @CREATEDDATEFROM = :created_date_from,
@@ -70,7 +68,6 @@ const createOrUpdateHandler = async (id = null, params = {}) => {
     description: null,
     order_index: null,
     is_active: API_CONST.ISACTIVE.ACTIVE,
-    is_system: API_CONST.ISSYSTEM.NOT_SYSTEM,
     created_user: null,
     functions: [],
   };
@@ -85,7 +82,6 @@ const createOrUpdateHandler = async (id = null, params = {}) => {
   @DESCRIPTION = :description,
   @ORDERINDEX = :order_index,
   @ISACTIVE = :is_active,
-  @ISSYSTEM = :is_system,
   @FUNCTIONID = :functions,
   @CREATEDUSER = :created_user`;
 

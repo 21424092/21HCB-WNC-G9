@@ -5,7 +5,6 @@ const ruleCreateUpdate = {
   function_group_name: Joi.string().required(),
   order_index: Joi.number().required(),
   is_active: Joi.number().valid(API_CONST.ISACTIVE.ACTIVE, API_CONST.ISACTIVE.INACTIVE).required(),
-  is_system: Joi.number().valid(API_CONST.ISSYSTEM.SYSTEM, API_CONST.ISSYSTEM.NOT_SYSTEM).required(),
 };
 
 const validateRules = {

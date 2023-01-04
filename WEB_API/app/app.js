@@ -7,6 +7,8 @@ const routes = require('./index.routes');
 const pageNotFoundMiddleware = require('./middlewares/not-found.middleware');
 const errorHandlerMiddleware = require('./middlewares/error-handler.middleware');
 const useragent = require('express-useragent');
+const swaggerUi = require('swagger-ui-express'),
+  swaggerDocument = require('../swagger.json');
 
 const ev = require('express-validation');
 // assign options
@@ -46,7 +48,7 @@ const init = (app) => {
 
   // error handler
   app.use(errorHandlerMiddleware());
-
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   if (config.runLocal) {
     app.listen(config.port, () => {
       console.info(`API server started on port ${config.port} (${config.env})`);

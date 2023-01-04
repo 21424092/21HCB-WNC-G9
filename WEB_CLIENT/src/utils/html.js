@@ -291,7 +291,7 @@ export function groupByParams(source, key) {
  */
 export function mappingDisabled(arr, data, key) {
   const cloneData = JSON.parse(JSON.stringify(data));
-  arr.map((v) => {
+  arr.forEach((v) => {
     let currentIdx = data.findIndex((_item) => _item.value === 1 * v[key]);
     if (currentIdx >= 0) {
       cloneData[currentIdx].isDisabled = true;

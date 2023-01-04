@@ -76,8 +76,6 @@ class MenuFilter extends PureComponent {
       inputValue: '',
       inputFunction: '',
       selectedOption: {label: "Có", value: 1},
-      is_bussiness: undefined,
-      is_system: undefined,
     }, () => {
       this.onSubmit()
     })
@@ -129,29 +127,7 @@ class MenuFilter extends PureComponent {
                 />
               </FormGroup>
             </Col>
-
-            {/* <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Label for="" className="mr-sm-2">Business</Label>
-              <Select
-                className="MuiPaper-filter__custom--select"
-                id="is_bussiness"
-                name="is_bussiness"
-                onChange={item => {
-                  let event = {
-                    target: {
-                      type: "select",
-                      name: "is_bussiness",
-                      value: item.value,
-                    }
-                  };
-                  this.handleChange(event)
-                }}
-                isSearchable={true}
-                placeholder={"-- Chọn --"}
-                defaultValue={this.state.is_bussiness}
-                options={this.state.is_actives.map(({ name: label, id: value }) => ({ value, label }))}
-              />
-            </FormGroup> */}
+          
             <Col xs={12} sm={4}>
               <FormGroup className="mb-2 mb-sm-0">
                 <Label for="" className="mr-sm-2">Kích hoạt</Label>
@@ -167,29 +143,6 @@ class MenuFilter extends PureComponent {
                 />
               </FormGroup>
             </Col>
-
-            {/* <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Label for="" className="mr-sm-2">System</Label>
-              <Select
-                className="MuiPaper-filter__custom--select"
-                id="is_system"
-                name="is_system"
-                onChange={item => {
-                  let event = {
-                    target: {
-                      type: "select",
-                      name: "is_system",
-                      value: item.value,
-                    }
-                  };
-                  this.handleChange(event)
-                }}
-                isSearchable={true}
-                placeholder={"-- Chọn --"}
-                defaultValue={this.state.is_system}
-                options={this.state.is_actives.map(({ name: label, id: value }) => ({ value, label }))}
-              />
-            </FormGroup> */}
           </Row>
         </Form>
 

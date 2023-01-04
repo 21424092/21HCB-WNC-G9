@@ -1,8 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent } from "react";
 
 // Component(s)
-import Loading from '../Common/Loading';
-import FunctionGroupAdd from './FunctionGroupAdd';
+import Loading from "../Common/Loading";
+import FunctionGroupAdd from "./FunctionGroupAdd";
 
 // Model(s)
 import FunctionGroupModel from "../../models/FunctionGroupModel";
@@ -23,7 +23,7 @@ export default class FunctionGroupEdit extends PureComponent {
     // Init state
     this.state = {
       /** @var {FunctionGroupEntity} */
-      funcGroupEnt: null
+      funcGroupEnt: null,
     };
   }
 
@@ -31,29 +31,29 @@ export default class FunctionGroupEdit extends PureComponent {
     // Fetch record data
     (async () => {
       let ID = this.props.match.params.id;
-      let funcGroupEnt = await this._functionGroupModel.read(ID)
-        .catch(() => {
-          setTimeout(() => window._$g.rdr('/404'));
-        })
-      ;
+      let funcGroupEnt = await this._functionGroupModel.read(ID).catch(() => {
+        setTimeout(() => window._$g.rdr("/404"));
+      });
       funcGroupEnt && this.setState({ funcGroupEnt });
     })();
     //.end
   }
 
   render() {
-    let {
-      funcGroupEnt,
-    } = this.state;
-    let {
-      noEdit,
-    } = this.props;
+    let { funcGroupEnt } = this.state;
+    let { noEdit } = this.props;
 
     // Ready?
     if (!funcGroupEnt) {
       return <Loading />;
     }
 
-    return <FunctionGroupAdd funcGroupEnt={funcGroupEnt} noEdit={noEdit || (!userAuth._isAdministrator() && funcGroupEnt.is_system !== 0)} {...this.props} />
+    return (
+      <FunctionGroupAdd
+        funcGroupEnt={funcGroupEnt}
+        noEdit={noEdit || userAuth._isAdministrator()}
+        {...this.props}
+      />
+    );
   }
 }

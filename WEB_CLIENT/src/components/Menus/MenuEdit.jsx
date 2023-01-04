@@ -1,8 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent } from "react";
 
 // Component(s)
-import Loading from '../Common/Loading';
-import MenuAdd from './MenuAdd';
+import Loading from "../Common/Loading";
+import MenuAdd from "./MenuAdd";
 
 // Model(s)
 import MenuModel from "../../models/MenuModel";
@@ -23,7 +23,7 @@ export default class MenuEdit extends PureComponent {
     // Init state
     this.state = {
       /** @var {MenuEntity} */
-      menuEnt: null
+      menuEnt: null,
     };
   }
 
@@ -31,29 +31,31 @@ export default class MenuEdit extends PureComponent {
     // Fetch record data
     (async () => {
       let ID = this.props.match.params.id;
-      let menuEnt = await this._menuModel.read(ID)
-        .catch(() => {
-          setTimeout(() => window._$g.rdr('/404'));
-        })
-      ;
+      let menuEnt = await this._menuModel.read(ID).catch(() => {
+        setTimeout(() => window._$g.rdr("/404"));
+      });
       menuEnt && this.setState({ menuEnt });
     })();
     //.end
   }
 
   render() {
-    let {
-      menuEnt,
-    } = this.state;
-    let {
-      noEdit,
-    } = this.props;
+    let { menuEnt } = this.state;
+    let { noEdit } = this.props;
 
     // Ready?
     if (!menuEnt) {
       return <Loading />;
     }
 
-    return <MenuAdd menuEnt={menuEnt} noEdit={noEdit || (!userAuth._isAdministrator() && menuEnt.is_system !== 0)} {...this.props} />
+    return (
+      <MenuAdd
+        menuEnt={menuEnt}
+        noEdit={
+          noEdit || (userAuth._isAdministrator() && menuEnt.is_system !== 0)
+        }
+        {...this.props}
+      />
+    );
   }
 }

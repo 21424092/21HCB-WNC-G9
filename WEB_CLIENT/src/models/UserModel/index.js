@@ -166,19 +166,9 @@ export default class UserModel extends Model
     "birthday": "",
     "email": "",
     "phone_number": "",
-    "phone_number_1": "",
     "address": "",
-    "country_id": "1",
-    "province_id": "",
-    "district_id": "",
-    "city_id": "",
-    "ward_id": "",
     "picture": "",
     "default_picture_url": "",
-    "department_id": "",
-    "position_id": "",
-    "about_me": "",
-    "description": "",
     "user_groups": []
   });
 

@@ -102,7 +102,6 @@ export default class FunctionModel extends Model
     "function_group_id": "",
     "description": "",
     "is_active": 1,
-    "is_system": 0
   });
 
   /**

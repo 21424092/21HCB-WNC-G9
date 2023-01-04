@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 // Component(s)
-import Loading from '../Common/Loading';
-import UserGroupsAdd from './UserGroupsAdd';
+import Loading from "../Common/Loading";
+import UserGroupsAdd from "./UserGroupsAdd";
 
 // Model(s)
 import UserGroupModel from "../../models/UserGroupModel";
@@ -23,7 +23,7 @@ export default class UserGroupsEdit extends Component {
     // Init state
     this.state = {
       /** @var {UserGroupEntity} */
-      UserGroupEnti: null
+      UserGroupEnti: null,
     };
   }
 
@@ -31,28 +31,28 @@ export default class UserGroupsEdit extends Component {
     // Fetch record data
     (async () => {
       let ID = this.props.match.params.id;
-      let UserGroupEnti = await this._userGroupModel.read(ID)
-        .catch(() => {
-          setTimeout(() => window._$g.rdr('/404'));
-        })
-      ;
+      let UserGroupEnti = await this._userGroupModel.read(ID).catch(() => {
+        setTimeout(() => window._$g.rdr("/404"));
+      });
       UserGroupEnti && this.setState({ UserGroupEnti });
     })();
     //.end
   }
 
   render() {
-    let {
-      UserGroupEnti,
-    } = this.state;
-    let {
-      noEdit,
-    } = this.props;
+    let { UserGroupEnti } = this.state;
+    let { noEdit } = this.props;
 
     // Ready?
     if (!UserGroupEnti) {
       return <Loading />;
     }
-    return <UserGroupsAdd UserGroupEnti={UserGroupEnti} noEdit={noEdit || (!userAuth._isAdministrator() && UserGroupEnti.is_system !== 0)} {...this.props} />
+    return (
+      <UserGroupsAdd
+        UserGroupEnti={UserGroupEnti}
+        noEdit={noEdit || userAuth._isAdministrator()}
+        {...this.props}
+      />
+    );
   }
 }

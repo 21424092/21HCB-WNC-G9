@@ -15,8 +15,6 @@ import UserFilter from './UserFilter'
 import { configTableOptions, configIDRowTable } from '../../utils/index'
 // Model(s)
 import UserModel from '../../models/UserModel'
-import PositionModel from '../../models/PositionModel'
-import DepartmentModel from '../../models/DepartmentModel'
 
 // Set layout full-wh
 // layoutFullWidthHeight()
@@ -35,8 +33,6 @@ class Users extends PureComponent {
 
     // Init model(s)
     this._userModel = new UserModel()
-    this._positionModel = window._positionModel = new PositionModel()
-    this._departmentModel = window._departmentModel = new DepartmentModel()
     // Bind method(s)
   }
 
@@ -53,14 +49,6 @@ class Users extends PureComponent {
     isOpenSnackbar: false,
     snackbarMsg: '',
     snackBarClss: 'info',
-    /** @var {Array} */
-    positions: [
-      { name: "-- Chọn --", id: "" },
-    ],
-    /** @var {Array} */
-    departments: [
-      { name: "-- Chọn --", id: "" },
-    ],
     /** @var {Array} */
     roles: [
       { name: "Role 1", value: "1" },
@@ -80,13 +68,6 @@ class Users extends PureComponent {
       let isLoading = false;
       let count = data.totalItems;
       let page = 0
-      let {
-        positions = [],
-        departments = [],
-      } = this.state;
-      //
-      positions = positions.concat(bundle.positions || []);
-      departments = departments.concat(bundle.departments || []);
       //
       this.setState({
         isLoading
@@ -94,8 +75,6 @@ class Users extends PureComponent {
         this.setState({
           data: dataConfig,
           count, page,
-          positions,
-          departments,
         });
       })
     })();
@@ -110,11 +89,7 @@ class Users extends PureComponent {
     let all = [
       // @TODO:
       this._userModel.list()
-        .then(data => (bundle['data'] = data)),
-      this._positionModel.getOptions()
-        .then(data => (bundle['positions'] = data)),
-      this._departmentModel.getOptions()
-        .then(data => (bundle['departments'] = data)),
+        .then(data => (bundle['data'] = data))
     ]
     await Promise.all(all)
       .catch(err => {
@@ -187,10 +162,10 @@ class Users extends PureComponent {
     }
   }
 
-  handleSubmitFilter = (search, department_id, position_id, gender) => {
+  handleSubmitFilter = (search) => {
     let query = {...this.state.query}
     query.page = 1
-    query = Object.assign(query, {search, department_id, position_id, gender})
+    query = Object.assign(query, {search})
     this.getData(query)
     .catch(() => {
       window._$g.dialogs.alert(
@@ -350,8 +325,6 @@ class Users extends PureComponent {
             <CardBody className="px-0 py-0">
               <div className="MuiPaper-filter__custom z-index-2">
                 <UserFilter
-                  positions={this.state.positions}
-                  departments={this.state.departments}
                   handleSubmit={this.handleSubmitFilter}
                 />
               </div>

@@ -76,16 +76,6 @@ export default class FunctionGroupModel extends Model
       columntype: 'checkbox',
       filtertype: 'bool'
     },
-    {
-      text : 'System?',
-      datafield : ['is_system', {
-        type : 'int'
-      }],
-      width : 60,
-      cellsalign: 'center',
-      columntype: 'checkbox',
-      filtertype: 'bool'
-    }
   ];
 
   /**
@@ -96,7 +86,6 @@ export default class FunctionGroupModel extends Model
     "description": "",
     "order_index": "0",
     "is_active": 1,
-    "is_system": 0,
     "functions": []
   });
 

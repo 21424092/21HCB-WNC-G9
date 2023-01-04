@@ -48,12 +48,9 @@ export default class UserGroupModel extends Model
   fillable = () => ({
     "user_group_id": null,
     "user_group_name": "",
-    "business_id": null,
-    "company_id": null,
     "description": "",
     "order_index": 0,
     "is_active": true,
-    "is_system": 0,
   });
 
   /**
@@ -76,10 +73,6 @@ export default class UserGroupModel extends Model
           if ('is_active' in item) {
             item.is_active_text = window._$g._(item.is_active ? 'Đang sử dụng' : 'Tạm ngưng')
           }
-          if('is_system' in item){
-            item.is_system_text = window._$g._(item.is_system ? 'Yes' : 'No')
-          }
-          //
         });
       }
     }, opts);

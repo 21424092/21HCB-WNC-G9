@@ -66,7 +66,7 @@ const saveTmpBase64File = (pathFile, base64) => {
 };
 
 const getPathStorage = () => {
-  return `D:\\TrungNC6\\Quick-Solution-Team-main\\Program\\Admin\\Portal\\public`;
+  return 'D:\\TrungNC6\\Quick-Solution-Team-main\\Program\\Admin\\Portal\\public';
 };
 
 const getPathUpload = () => {
@@ -84,7 +84,7 @@ const getPathUpload = () => {
 const saveBase64 = async (folderPath, base64, fileName) => {
   try {
     let pathFolder = getPathUpload() + `/${folderPath}`;
-    console.log(pathFolder)
+    console.log(pathFolder);
     pathFolder = path.normalize(pathFolder);
 
     // Check folder exists

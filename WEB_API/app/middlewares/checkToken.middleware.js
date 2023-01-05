@@ -6,6 +6,7 @@ const config = require('../../config/config');
 const ErrorResponse = require('../common/responses/error.response');
 const prefix = '/api';
 const ROUTE_NOT_CHECK = [
+  `${prefix}/api-docs`,
   `${prefix}`,
   `${prefix}/auth/token`,
   `${prefix}/auth/refresh-token`,

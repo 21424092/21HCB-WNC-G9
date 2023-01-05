@@ -12,7 +12,6 @@ const envVarsSchema = Joi.object({
   RUN_LOCAL: Joi.string().optional().default('no'),
   UNIT_TESTING: Joi.string().optional().default('no'),
   HASH_SECRET_KEY: Joi.string().required(),
-  DOMAIN_CDN: Joi.string().required(),
 }).unknown().required();
 
 const { error, value: envVars } = Joi.validate(process.env, envVarsSchema);
@@ -53,18 +52,8 @@ const config = {
       idleTimeoutMillis: 30000,
     },
   },
-  adminUserName: 'administrator',
-  sendSms:{
-    url: 'http://api.abenla.com/Service.asmx?wsdl',
-    loginName:'AB11B6M',
-    pass:'1TLU5XE6N',
-  },
-  sendEmail:{
-    hostname: 'api.sendgrid.com',
-    apiKey:'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',
-  },
   sendGmail:{
-    user: 'devrubyfitness@gmail.com',
+    user: 'chitrung0895@gmail.com',
     pass:'Des123456@',
   },
 };

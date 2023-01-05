@@ -1,19 +1,19 @@
-const database = require("../../models");
-const CustomerClass = require("../customer/customer.class");
-const PROCEDURE_NAME = require("../../common/const/procedureName.const");
-const apiHelper = require("../../common/helpers/api.helper");
-const stringHelper = require("../../common/helpers/string.helper");
-const fileHelper = require("../../common/helpers/file.helper");
-const mssql = require("../../models/mssql");
-const logger = require("../../common/classes/logger.class");
-const API_CONST = require("../../common/const/api.const");
-const ServiceResponse = require("../../common/responses/service.response");
-const folderNameAvatar = "avatar";
-const config = require("../../../config/config");
-const cacheHelper = require("../../common/helpers/cache.helper");
-const CACHE_CONST = require("../../common/const/cache.const");
-const cache = require("../../common/classes/cache.class");
-const _ = require("lodash");
+const database = require('../../models');
+const CustomerClass = require('../customer/customer.class');
+const PROCEDURE_NAME = require('../../common/const/procedureName.const');
+const apiHelper = require('../../common/helpers/api.helper');
+const stringHelper = require('../../common/helpers/string.helper');
+const fileHelper = require('../../common/helpers/file.helper');
+const mssql = require('../../models/mssql');
+const logger = require('../../common/classes/logger.class');
+const API_CONST = require('../../common/const/api.const');
+const ServiceResponse = require('../../common/responses/service.response');
+const folderNameAvatar = 'avatar';
+const config = require('../../../config/config');
+const cacheHelper = require('../../common/helpers/cache.helper');
+const CACHE_CONST = require('../../common/const/cache.const');
+const cache = require('../../common/classes/cache.class');
+const _ = require('lodash');
 
 const getListCustomer = async (req) => {
   try {
@@ -31,10 +31,10 @@ const getListCustomer = async (req) => {
       replacements: {
         PageSize: limit,
         PageIndex: page,
-        KEYWORD: apiHelper.getQueryParam(req, "search"),
-        BIRTHDAY: apiHelper.getQueryParam(req, "birthday"),
-        GENDER: apiHelper.getQueryParam(req, "gender"),
-        ORDERBYDES: apiHelper.getQueryParam(req, "sortorder"),
+        KEYWORD: apiHelper.getQueryParam(req, 'search'),
+        BIRTHDAY: apiHelper.getQueryParam(req, 'birthday'),
+        GENDER: apiHelper.getQueryParam(req, 'gender'),
+        ORDERBYDES: apiHelper.getQueryParam(req, 'sortorder'),
       },
       type: database.QueryTypes.SELECT,
     });
@@ -47,7 +47,7 @@ const getListCustomer = async (req) => {
     };
   } catch (e) {
     logger.error(e, {
-      function: "customerService.getListCustomer",
+      function: 'customerService.getListCustomer',
     });
 
     return [];
@@ -61,7 +61,7 @@ const createCustomer = async (bodyParams = {}) => {
     return customerid;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.createCustomer",
+      function: 'customerService.createCustomer',
     });
 
     return null;
@@ -75,7 +75,7 @@ const updateCustomer = async (bodyParams) => {
     return customerid;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.updateCustomer",
+      function: 'customerService.updateCustomer',
     });
 
     return null;
@@ -91,14 +91,14 @@ const saveAvatar = async (base64, customerId) => {
       avatarUrl = await fileHelper.saveBase64(
         folderNameAvatar,
         base64,
-        `${customerId}.${extension}`
+        `${customerId}.${extension}`,
       );
     } else {
       avatarUrl = base64.split(config.domain_cdn)[1];
     }
   } catch (e) {
     logger.error(e, {
-      function: "customerService.saveAvatar",
+      function: 'customerService.saveAvatar',
     });
 
     return avatarUrl;
@@ -113,22 +113,22 @@ const createCustomerOrUpdate = async (bodyParams) => {
   // Upload Avatar
   const pathAvatar = await saveAvatar(
     params.default_picture_url,
-    params.customer_id
+    params.customer_id,
   );
   if (pathAvatar) {
     params.default_picture_url = pathAvatar;
   }
 
   let data = {
-    CUSTOMERNAME: params.customer_name || "",
-    FIRSTNAME: params.first_name || "",
-    LASTNAME: params.last_name || "",
+    CUSTOMERNAME: params.customer_name || '',
+    FIRSTNAME: params.first_name || '',
+    LASTNAME: params.last_name || '',
     FULLNAME: `${params.first_name} ${params.last_name}`,
-    GENDER: params.gender || "",
-    BIRTHDAY: params.birthday || "",
-    EMAIL: params.email || "",
-    PHONENUMBER: params.phone_number || "",
-    ADDRESS: params.address || "",
+    GENDER: params.gender || '',
+    BIRTHDAY: params.birthday || '',
+    EMAIL: params.email || '',
+    PHONENUMBER: params.phone_number || '',
+    ADDRESS: params.address || '',
     CREATEDUSER: params.auth_id,
     DEFAULTPICTUREURL: params.default_picture_url,
   };
@@ -146,12 +146,12 @@ const createCustomerOrUpdate = async (bodyParams) => {
         @CREATEDUSER=:CREATEDUSER,
         @DEFAULTPICTUREURL=:DEFAULTPICTUREURL`;
   if (params.customer_id) {
-    data["CUSTOMERID"] = params.customer_id;
-    query += ",@CUSTOMERID=:CUSTOMERID";
+    data['CUSTOMERID'] = params.customer_id;
+    query += ',@CUSTOMERID=:CUSTOMERID';
   }
   if (params.password) {
-    data["PASSWORD"] = stringHelper.hashPassword(params.password);
-    query += ",@PASSWORD=:PASSWORD";
+    data['PASSWORD'] = stringHelper.hashPassword(params.password);
+    query += ',@PASSWORD=:PASSWORD';
   }
 
   let transaction;
@@ -171,7 +171,7 @@ const createCustomerOrUpdate = async (bodyParams) => {
       return null;
     }
     params.customer_id = result[0][0].RESULT;
-    if (params.customer_id === "-1") {
+    if (params.customer_id === '-1') {
       if (transaction) {
         await transaction.rollback();
       }
@@ -182,7 +182,7 @@ const createCustomerOrUpdate = async (bodyParams) => {
     await transaction.commit();
     return params.customer_id;
   } catch (err) {
-    console.log("err.message", err.message);
+    console.log('err.message', err.message);
     // Rollback transaction only if the transaction object is defined
     if (transaction) {
       await transaction.rollback();
@@ -200,7 +200,7 @@ const detailCustomer = async (customerId) => {
           CUSTOMERID: customerId,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     if (customer.length) {
@@ -211,7 +211,7 @@ const detailCustomer = async (customerId) => {
     return null;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.detailCustomer",
+      function: 'customerService.detailCustomer',
     });
 
     return null;
@@ -227,7 +227,7 @@ const findByCustomerName = async (customerName) => {
           CustomerName: customerName,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     if (customer.length) {
@@ -236,7 +236,7 @@ const findByCustomerName = async (customerName) => {
 
     return null;
   } catch (error) {
-    console.error("customerService.findByCustomerName", error);
+    console.error('customerService.findByCustomerName', error);
     return null;
   }
 };
@@ -274,12 +274,12 @@ const deleteCustomer = async (customerId, req) => {
           UPDATEDUSER: apiHelper.getAuthId(req),
         },
         type: database.QueryTypes.UPDATE,
-      }
+      },
     );
     removeCacheOptions();
     return true;
   } catch (error) {
-    console.error("customerService.deleteCustomer", error);
+    console.error('customerService.deleteCustomer', error);
     return false;
   }
 };
@@ -295,12 +295,12 @@ const changePasswordCustomer = async (customerId, password, authId) => {
           UPDATEDUSER: authId,
         },
         type: database.QueryTypes.UPDATE,
-      }
+      },
     );
 
     return true;
   } catch (error) {
-    console.error("customerService.changePasswordCustomer", error);
+    console.error('customerService.changePasswordCustomer', error);
     return false;
   }
 };
@@ -313,12 +313,12 @@ const checkPassword = async (customerId) => {
           CUSTOMERID: customerId,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
     return data[0].PASSWORD;
   } catch (error) {
-    console.error("customerService.checkPassword", error);
-    return "";
+    console.error('customerService.checkPassword', error);
+    return '';
   }
 };
 
@@ -328,28 +328,28 @@ const logCustomerLogin = async (data = {}) => {
     await pool
       .request()
       .input(
-        "CUSTOMERPROFILEID",
-        apiHelper.getValueFromObject(data, "customer_id")
+        'CUSTOMERPROFILEID',
+        apiHelper.getValueFromObject(data, 'customer_id'),
       )
       .input(
-        "CUSTOMERNAME",
-        apiHelper.getValueFromObject(data, "customer_name")
+        'CUSTOMERNAME',
+        apiHelper.getValueFromObject(data, 'customer_name'),
       )
       .input(
-        "CUSTOMERAGENT",
-        apiHelper.getValueFromObject(data, "customer_agent")
+        'CUSTOMERAGENT',
+        apiHelper.getValueFromObject(data, 'customer_agent'),
       )
-      .input("ISACTIVE", API_CONST.ISACTIVE.ACTIVE)
+      .input('ISACTIVE', API_CONST.ISACTIVE.ACTIVE)
       .input(
-        "CREATEDUSER",
-        apiHelper.getValueFromObject(data, "customer_id")
+        'CREATEDUSER',
+        apiHelper.getValueFromObject(data, 'customer_id'),
       )
       .execute(PROCEDURE_NAME.CUS_CUSTOMER_LOGIN_LOG_CREATE);
 
     return new ServiceResponse(true);
   } catch (e) {
     logger.error(e, {
-      function: "customerService.logCustomerLogin",
+      function: 'customerService.logCustomerLogin',
     });
 
     return new ServiceResponse(true);
@@ -369,7 +369,7 @@ const findByEmail = async (email) => {
           EMAIL: email,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     if (customer.length) {
@@ -378,18 +378,18 @@ const findByEmail = async (email) => {
 
     return null;
   } catch (error) {
-    console.error("customerService.findByEmail", error);
+    console.error('customerService.findByEmail', error);
     return null;
   }
 };
 const getOptionsAll = async (queryParams = {}) => {
   try {
-    const ids = apiHelper.getValueFromObject(queryParams, "ids", []);
-    const isActive = apiHelper.getFilterBoolean(queryParams, "is_active");
-    const parentId = apiHelper.getValueFromObject(queryParams, "parent_id");
+    const ids = apiHelper.getValueFromObject(queryParams, 'ids', []);
+    const isActive = apiHelper.getFilterBoolean(queryParams, 'is_active');
+    const parentId = apiHelper.getValueFromObject(queryParams, 'parent_id');
     const function_alias = apiHelper.getValueFromObject(
       queryParams,
-      "function_alias"
+      'function_alias',
     );
     const data = await cache.wrap(CACHE_CONST.CUS_CUSTOMER_OPTIONS, () => {
       return getOptions();
@@ -429,11 +429,11 @@ const getOptionsAll = async (queryParams = {}) => {
       return null;
     });
 
-    return new ServiceResponse(true, "", CustomerClass.options(dataFilter));
+    return new ServiceResponse(true, '', CustomerClass.options(dataFilter));
   } catch (e) {
-    logger.error(e, { function: "customerService.getOptionsAll" });
+    logger.error(e, { function: 'customerService.getOptionsAll' });
 
-    return new ServiceResponse(true, "", []);
+    return new ServiceResponse(true, '', []);
   }
 };
 const getOptions = async (req) => {
@@ -450,7 +450,7 @@ const getOptions = async (req) => {
     return customers;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.getOptions",
+      function: 'customerService.getOptions',
     });
 
     return [];
@@ -470,7 +470,7 @@ const getByFunctionAlias = async (FunctionAlias) => {
     return customers;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.getOptions",
+      function: 'customerService.getOptions',
     });
 
     return [];

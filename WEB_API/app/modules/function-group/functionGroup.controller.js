@@ -1,11 +1,11 @@
-const httpStatus = require("http-status");
-const functionGroupService = require("./functionGroup.service");
-const SingleResponse = require("../../common/responses/single.response");
-const ListResponse = require("../../common/responses/list.response");
-const ErrorResponse = require("../../common/responses/error.response");
-const RESPONSE_MSG = require("../../common/const/responseMsg.const");
-const apiHelper = require("../../common/helpers/api.helper");
-const optionService = require("../../common/services/options.service");
+const httpStatus = require('http-status');
+const functionGroupService = require('./functionGroup.service');
+const SingleResponse = require('../../common/responses/single.response');
+const ListResponse = require('../../common/responses/list.response');
+const ErrorResponse = require('../../common/responses/error.response');
+const RESPONSE_MSG = require('../../common/const/responseMsg.const');
+const apiHelper = require('../../common/helpers/api.helper');
+const optionService = require('../../common/services/options.service');
 
 /**
  * Get list Function Group
@@ -19,15 +19,15 @@ const getListFunctionGroup = async (req, res, next) => {
   try {
     const { list, total } = await functionGroupService.getList(req.query);
     return res.json(
-      new ListResponse(list, total, req.query.page, req.query.itemsPerPage)
+      new ListResponse(list, total, req.query.page, req.query.itemsPerPage),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -44,21 +44,21 @@ const createFunctionGroup = async (req, res, next) => {
   try {
     req.body.created_user = apiHelper.getAuthId(req);
     const checkName = await functionGroupService.checkName(
-      req.body.function_group_name
+      req.body.function_group_name,
     );
     if (!checkName) {
       return next(
         new ErrorResponse(
           null,
           null,
-          RESPONSE_MSG.FUNCTIONGROUP.CHECK_NAME_FAILED
-        )
+          RESPONSE_MSG.FUNCTIONGROUP.CHECK_NAME_FAILED,
+        ),
       );
     }
     const result = await functionGroupService.create(req.body);
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.CRUD.CREATE_FAILED)
+        new ErrorResponse(null, null, RESPONSE_MSG.CRUD.CREATE_FAILED),
       );
     }
     return res.json(new SingleResponse(null, RESPONSE_MSG.CRUD.CREATE_SUCCESS));
@@ -67,8 +67,8 @@ const createFunctionGroup = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -88,27 +88,27 @@ const updateFunctionGroup = async (req, res, next) => {
     const functionGroup = await functionGroupService.detail(req.params.id);
     if (!functionGroup) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
     const checkName = await functionGroupService.checkName(
       req.body.function_group_name,
-      req.params.id
+      req.params.id,
     );
     if (!checkName) {
       return next(
         new ErrorResponse(
           null,
           null,
-          RESPONSE_MSG.FUNCTIONGROUP.CHECK_NAME_FAILED
-        )
+          RESPONSE_MSG.FUNCTIONGROUP.CHECK_NAME_FAILED,
+        ),
       );
     }
     // Update Function Group
     const result = await functionGroupService.update(req.params.id, req.body);
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.CRUD.UPDATE_FAILED)
+        new ErrorResponse(null, null, RESPONSE_MSG.CRUD.UPDATE_FAILED),
       );
     }
     return res.json(new SingleResponse(null, RESPONSE_MSG.CRUD.UPDATE_SUCCESS));
@@ -117,8 +117,8 @@ const updateFunctionGroup = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -129,7 +129,7 @@ const deleteFunctionGroup = async (req, res, next) => {
     const functionGroup = await functionGroupService.detail(req.params.id);
     if (!functionGroup) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
     // Delete Function Group
@@ -139,13 +139,13 @@ const deleteFunctionGroup = async (req, res, next) => {
     //
     return res.json(new SingleResponse(null, RESPONSE_MSG.CRUD.DELETE_SUCCESS));
   } catch (error) {
-    console.log("deleteFunctionGroup", error);
+    console.log('deleteFunctionGroup', error);
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -156,7 +156,7 @@ const detailFunctionGroup = async (req, res, next) => {
     const functionGroup = await functionGroupService.detail(req.params.id);
     if (!functionGroup) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
     return res.json(new SingleResponse(functionGroup));
@@ -165,8 +165,8 @@ const detailFunctionGroup = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -178,17 +178,17 @@ const updateStatus = async (req, res, next) => {
     const functionGroup = await functionGroupService.detail(req.params.id);
     if (!functionGroup) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
     // Update Status
     const result = await functionGroupService.updateStatus(
       req.params.id,
-      req.body
+      req.body,
     );
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.CRUD.UPDATE_FAILED)
+        new ErrorResponse(null, null, RESPONSE_MSG.CRUD.UPDATE_FAILED),
       );
     }
     return res.json(new SingleResponse(null, RESPONSE_MSG.CRUD.UPDATE_SUCCESS));
@@ -197,15 +197,15 @@ const updateStatus = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
 
 const getOptions = async (req, res, next) => {
   try {
-    const serviceRes = await optionService("SYS_FUNCTIONGROUP", req.query);
+    const serviceRes = await optionService('SYS_FUNCTIONGROUP', req.query);
 
     return res.json(new SingleResponse(serviceRes.getData()));
   } catch (error) {

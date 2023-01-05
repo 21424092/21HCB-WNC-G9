@@ -1,7 +1,7 @@
-const database = require("../../models");
-const MenuClass = require("../menu/menu.class");
-const PROCEDURE_NAME = require("../../common/const/procedureName.const");
-const apiHelper = require("../../common/helpers/api.helper");
+const database = require('../../models');
+const MenuClass = require('../menu/menu.class');
+const PROCEDURE_NAME = require('../../common/const/procedureName.const');
+const apiHelper = require('../../common/helpers/api.helper');
 
 const getListMenu = async (req) => {
   try {
@@ -19,10 +19,10 @@ const getListMenu = async (req) => {
       replacements: {
         PAGESIZE: limit,
         PAGEINDEX: page,
-        KEYWORD: apiHelper.getQueryParam(req, "search"),
-        ORDERBYDES: apiHelper.getQueryParam(req, "sortorder"),
-        FUNCTIONID: apiHelper.getQueryParam(req, "function_Id"),
-        ISACTIVE: apiHelper.getQueryParam(req, "is_active"),
+        KEYWORD: apiHelper.getQueryParam(req, 'search'),
+        ORDERBYDES: apiHelper.getQueryParam(req, 'sortorder'),
+        FUNCTIONID: apiHelper.getQueryParam(req, 'function_Id'),
+        ISACTIVE: apiHelper.getQueryParam(req, 'is_active'),
       },
       type: database.QueryTypes.SELECT,
     });
@@ -34,7 +34,7 @@ const getListMenu = async (req) => {
       total: apiHelper.getTotalData(menus),
     };
   } catch (error) {
-    console.error("menuService.getListMenu", error);
+    console.error('menuService.getListMenu', error);
     return [];
   }
 };
@@ -47,7 +47,7 @@ const getListMenuByUser = async (req) => {
       @IsAdministrator=:IsAdministrator`;
     const menus = await database.sequelize.query(query, {
       replacements: {
-        USERGROUPID: user_groups ? user_groups.join("|") : "",
+        USERGROUPID: user_groups ? user_groups.join('|') : '',
         IsAdministrator: isAdministrator,
       },
       type: database.QueryTypes.SELECT,
@@ -56,7 +56,7 @@ const getListMenuByUser = async (req) => {
       data: MenuClass.list(menus),
     };
   } catch (error) {
-    console.error("menuService.getListMenuByUser", error);
+    console.error('menuService.getListMenuByUser', error);
     return [];
   }
 };
@@ -69,7 +69,7 @@ const createMenu = async (req) => {
 
     return true;
   } catch (error) {
-    console.error("menuService.createMenu", error);
+    console.error('menuService.createMenu', error);
     return false;
   }
 };
@@ -82,7 +82,7 @@ const updateMenu = async (req) => {
 
     return true;
   } catch (error) {
-    console.error("menuService.updateMenu", error);
+    console.error('menuService.updateMenu', error);
     return false;
   }
 };
@@ -131,7 +131,7 @@ const detailMenu = async (menuId) => {
           MENUID: menuId,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     if (func.length) {
@@ -140,7 +140,7 @@ const detailMenu = async (menuId) => {
 
     return null;
   } catch (error) {
-    console.error("menuService.detailMenu", error);
+    console.error('menuService.detailMenu', error);
     return null;
   }
 };
@@ -155,12 +155,12 @@ const deleteMenu = async (menuId, req) => {
           UPDATEDUSER: apiHelper.getAuthId(req),
         },
         type: database.QueryTypes.UPDATE,
-      }
+      },
     );
 
     return true;
   } catch (error) {
-    console.error("menuService.deleteMenu", error);
+    console.error('menuService.deleteMenu', error);
     return true;
   }
 };
@@ -182,7 +182,7 @@ const changeStatusMenu = async (menuId, req) => {
 
     return true;
   } catch (error) {
-    console.error("menuService.changeStatusMenu", error);
+    console.error('menuService.changeStatusMenu', error);
     return true;
   }
 };

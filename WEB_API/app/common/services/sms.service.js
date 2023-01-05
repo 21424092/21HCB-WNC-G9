@@ -159,13 +159,13 @@ const callSoap = async (url, wsdlOptions, requestArgs,functionName) => {
   try {
     return new Promise((resolve, reject) => {
       const soap = require('soap');
-      soap.createClient(url, wsdlOptions, (err, client) => {
+      soap.createClient(url, wsdlOptions, function (err, client){
         if (err) {
           return resolve(null);
         }
         else {
           const method = client[functionName];
-          method(requestArgs,(err, result, envelope, soapHeader) => {
+          method(requestArgs, function (err, result, envelope, soapHeader) {
             //response envelope string XMl
             //console.log(soapHeader);
             if (err) {

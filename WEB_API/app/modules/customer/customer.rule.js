@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
 const ruleCreateOrUpdate = {
   first_name: Joi.string().required(),
@@ -12,12 +12,12 @@ const ruleCreateOrUpdate = {
 
 const ruleResetPassword = {
   password: Joi.string().required(),
-  password_confirm: Joi.string().required().valid(Joi.ref("password")),
+  password_confirm: Joi.string().required().valid(Joi.ref('password')),
 };
 const ruleChangePasswordCustomer = {
   old_password: Joi.string().required(),
   new_password: Joi.string().required(),
-  re_password: Joi.string().required().valid(Joi.ref("new_password")),
+  re_password: Joi.string().required().valid(Joi.ref('new_password')),
 };
 
 const validateRules = {

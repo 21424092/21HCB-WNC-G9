@@ -20,7 +20,7 @@ const createTransaction = async (req, res, next) => {
     const result = await bankingService.createTransaction(model);
     if (result) {
       return res.json(
-        new SingleResponse(result, RESPONSE_MSG.AUTH.LOGIN.SUCCESS)
+        new SingleResponse(result, RESPONSE_MSG.REQUEST_SUCCESS)
       );
     } else {
       return next(

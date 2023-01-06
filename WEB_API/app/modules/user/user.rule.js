@@ -8,7 +8,6 @@ const ruleCreateOrUpdate = {
   email: Joi.string().email().required(),
   phone_number: Joi.string(),
   address: Joi.string(),
-  description: Joi.string().allow('', null),
   default_picture_url: Joi.string().allow('', null),
 };
 

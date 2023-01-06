@@ -313,6 +313,7 @@ const changePasswordUser = async (userId, password, authId) => {
     return false;
   }
 };
+
 const checkPassword = async (userId) => {
   try {
     const data = await database.sequelize.query(
@@ -330,6 +331,7 @@ const checkPassword = async (userId) => {
     return "";
   }
 };
+
 const generateUsername = async () => {
   try {
     const user = await database.sequelize.query(
@@ -390,6 +392,7 @@ const logBankLogin = async (data = {}) => {
     return new ServiceResponse(true);
   }
 };
+
 const detailBankConnect = async (bankid) => {
   try {
     let bank = await database.sequelize.query(
@@ -443,6 +446,7 @@ const findByEmail = async (email) => {
     return null;
   }
 };
+
 const getOptionsAll = async (queryParams = {}) => {
   try {
     const ids = apiHelper.getValueFromObject(queryParams, "ids", []);
@@ -494,6 +498,7 @@ const getOptionsAll = async (queryParams = {}) => {
     return new ServiceResponse(true, "", []);
   }
 };
+
 const getOptions = async (req) => {
   try {
     const query = `${PROCEDURE_NAME.SYS_USER_GETOPTIONS} 
@@ -514,6 +519,7 @@ const getOptions = async (req) => {
     return [];
   }
 };
+
 const getByFunctionAlias = async (FunctionAlias) => {
   try {
     const query = `${PROCEDURE_NAME.SYS_USER_GETBYFUNCTIONALIAS} 
@@ -534,6 +540,7 @@ const getByFunctionAlias = async (FunctionAlias) => {
     return [];
   }
 };
+
 module.exports = {
   getListUser,
   createUser,

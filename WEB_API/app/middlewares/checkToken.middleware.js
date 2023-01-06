@@ -74,15 +74,15 @@ module.exports = async (req, res, next) => {
   //   "!encodedToken(secret_url, secret_time, secret_token)",
   //   !encodedToken(secret_url, secret_time, secret_token)
   // );
-  if (!encodedToken(secret_url, secret_time, secret_token)) {
-    return next(
-      new ErrorResponse(
-        httpStatus.BAD_REQUEST,
-        null,
-        RESPONSE_MSG.AUTH.LOGIN.TIME_OUT
-      )
-    );
-  }
+  // if (!encodedToken(secret_url, secret_time, secret_token)) {
+  //   return next(
+  //     new ErrorResponse(
+  //       httpStatus.BAD_REQUEST,
+  //       null,
+  //       RESPONSE_MSG.AUTH.LOGIN.TIME_OUT
+  //     )
+  //   );
+  // }
   // Get authorization header
   const authorization = req.headers["authorization"];
   if (authorization && /^Bearer /.test(authorization)) {

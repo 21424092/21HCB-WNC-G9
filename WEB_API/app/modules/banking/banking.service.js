@@ -52,7 +52,7 @@ console.log(data);
     }
     // commit
     await transaction.commit();
-    return result;
+    return result[0][0];
   } catch (err) {
     console.log("err.message", err.message);
     // Rollback transaction only if the transaction object is defined

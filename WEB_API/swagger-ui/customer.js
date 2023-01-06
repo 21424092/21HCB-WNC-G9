@@ -2,7 +2,7 @@
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     Customer:
  *       type: object
  *       required:
  *         - first_name
@@ -10,107 +10,82 @@
  *         - gender
  *         - email
  *       properties:
- *         user_id:
+ *         customer_id:
  *           type: string
- *           description: id of the user
- *         full_name:
+ *           description: id of the customer
+ *         customer_name:
  *           type: string
- *           description: The full name of your user
- *         email:
- *           type: string
- *           description: The user email
- *         phone_number:
- *           type: string
- *           description: The phone number of your user
- *         address:
- *           type: string
- *           description: The address of your user
- *         gender:
- *           type: number
- *           description: The gender of your user (0 or 1)
- *         default_picture_url:
- *           type: string
- *           description: The picture url of your user
- *         user_name:
- *           type: string
- *           description: The address of your user
- *         password:
- *           type: string
- *           description: The password of your user
+ *           description: The name of your customer
  *         first_name:
  *           type: string
- *           description: The first_name of your user
+ *           description: The first_name
  *         last_name:
  *           type: string
- *           description: The last_name of your user
+ *           description: The last_name
+ *         full_name:
+ *           type: string
+ *           description: The full_name
+ *         email:
+ *           type: string
+ *           description: The email
+ *         phone_number:
+ *           type: string
+ *           description: The phone_number
+ *         address:
+ *           type: string
+ *           description: The address of your customer
+ *         gender:
+ *           type: number
+ *           description: The gender of your customer (0 or 1)
  *         birthday:
  *           type: string
- *           description: The birthday of your user
- *         user_groups:
+ *           description: The birthday
+ *         default_picture_url:
  *           type: string
- *           description: The user_groups of your user
+ *           description: The default_picture_url
  *       example:
  *         first_name: Lê
  *         last_name: Tuấn Kiệt
  *         gender: 1
  *         email: 20424101@gmail.com
  * tags:
- *   name: Users
- *   description: The users managing API
- * /user:
+ *   name: Customers
+ *   description: The Customers managing API
+ * /customer:
  *   get:
- *     summary: Lists all the users
- *     tags: [Users]
+ *     summary: Lists customer
+ *     tags: [Customers]
  *     responses:
  *       200:
- *         description: The list of the users
+ *         description: The list of the customer
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Customer'
  *   post:
- *     summary: Create a new user
- *     tags: [Users]
+ *     summary: Create a new customer
+ *     tags: [Customers]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/Customer'
  *     responses:
  *       200:
  *         description: The created user.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/Customer'
  *       500:
  *         description: Some server error
- * /user/create:
- *   post:
- *     summary: Generate username
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
- *     responses:
- *       200:
- *         description: Generate username success
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
  * /get-options:
  *   get:
- *     summary: Get options the users
- *     tags: [Users]
+ *     summary: List options function
+ *     tags: [Customers]
  *     responses:
  *       200:
  *         description: Success
@@ -119,18 +94,18 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
- * /{userId}/change-password:
+ *                 $ref: '#/components/schemas/Customer'
+ * /{customerId}/change-password:
  *   put:
- *    summary: Reset password a user -- admin
- *    tags: [Users]
+ *    summary: Reset password a customer -- admin
+ *    tags: [Customers]
  *    parameters:
  *       - in: path
- *         name: userId
+ *         name: customerId
  *         schema:
  *           type: string
  *         required: true
- *         description: The user id
+ *         description: The customer id
  *    responses:
  *       200:
  *         description: Success
@@ -139,18 +114,18 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
- * /{userId}/change-password-user:
+ *                 $ref: '#/components/schemas/Customer'
+ * /{customerId}/change-password-customer:
  *   put:
- *    summary: Reset password a user
- *    tags: [Users]
+ *    summary: Change password a customer
+ *    tags: [Customers]
  *    parameters:
  *       - in: path
- *         name: userId
+ *         name: customerId
  *         schema:
  *           type: string
  *         required: true
- *         description: The user id
+ *         description: The customer id
  *    responses:
  *       200:
  *         description: Success
@@ -159,18 +134,18 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
- * /{userId}:
+ *                 $ref: '#/components/schemas/Customer'
+ * /{customerId}:
  *   put:
- *    summary: Update a user
- *    tags: [Users]
+ *    summary: Update a customer
+ *    tags: [Customers]
  *    parameters:
  *       - in: path
- *         name: userId
+ *         name: customerId
  *         schema:
  *           type: string
  *         required: true
- *         description: The user id
+ *         description: The customer id
  *    responses:
  *       200:
  *         description: Success
@@ -179,17 +154,17 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Customer'
  *   delete:
- *    summary: Delete a user
- *    tags: [Users]
+ *    summary: Delete a customer
+ *    tags: [Customers]
  *    parameters:
  *       - in: path
- *         name: userId
+ *         name: customerId
  *         schema:
  *           type: string
  *         required: true
- *         description: The user id
+ *         description: The customer id
  *    responses:
  *       200:
  *         description: Success
@@ -198,17 +173,17 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Customer'
  *   get:
- *    summary: Detail a user
- *    tags: [Users]
+ *    summary: Detail a customer
+ *    tags: [Customers]
  *    parameters:
  *       - in: path
- *         name: userId
+ *         name: customerId
  *         schema:
  *           type: string
  *         required: true
- *         description: The user id
+ *         description: The customer id
  *    responses:
  *       200:
  *         description: Success
@@ -217,5 +192,5 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Customer'
  */

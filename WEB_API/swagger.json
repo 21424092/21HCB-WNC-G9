@@ -1,29 +1,27 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "version": "1.0.0", 
-        "title": "My User Project CRUD",
-        "description": "My User Project Application API",
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        }
+    "definition": {
+        "openapi": "3.0.1",
+        "info": {
+            "title": "WNC - G9 - BANK",
+            "version": "1.0.0",
+            "description": "Đồ án môn học công nghệ mới - Public API",
+            "license": {
+                "name": "MIT",
+                "url": "https: //spdx.org/licenses/MIT.html"
+            },
+            "contact": {
+                "name": "NHÓM 9",
+                "url": "https://two1hcb-wnc-g9-api.onrender.com/",
+                "email": "chitrung0895@gmail.com"
+            }
+        },
+        "servers": [
+            {
+                "url": "http: //localhost:3000"
+            }
+        ]
     },
-    "host": "localhost:8000",
-    "basePath": "/",
-    "tags": [
-        {
-            "name": "Users",
-            "description": "API for users in the system"
-        }
-    ],
-    "schemes": [
-        "http"
-    ],
-    "consumes": [
-        "application/json"
-    ],
-    "produces": [
-        "application/json"
+    "apis": [
+        "./swagger-ui/*.js"
     ]
 }

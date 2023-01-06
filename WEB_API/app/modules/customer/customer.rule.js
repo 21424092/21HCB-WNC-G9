@@ -21,20 +21,23 @@ const ruleChangePasswordCustomer = {
 };
 
 const validateRules = {
-  createCustomer: {
-    body: Object.assign({}, ruleCreateOrUpdate, ruleResetPassword, {
-      customer_name: Joi.required(),
-    }),
-  },
-  updateCustomer: {
-    body: ruleCreateOrUpdate,
-  },
-  resetPassword: {
-    body: ruleResetPassword,
-  },
-  changePasswordCustomer: {
-    body: ruleChangePasswordCustomer,
-  },
+  // createCustomer: {
+  //   body: Object.assign({}, ruleCreateOrUpdate, ruleResetPassword, {
+  //     customer_name: Joi.required(),
+  //   }),
+  // },
+  // updateCustomer: {
+  //   body: ruleCreateOrUpdate,
+  // },
+  // resetPassword: {
+  //   body: ruleResetPassword,
+  // },
+  // changePasswordCustomer: {
+  //   body: ruleChangePasswordCustomer,
+  // },
+  // changePasswordCustomer: {
+  //   body: ruleChangePasswordCustomer,
+  // }
 };
 
 module.exports = validateRules;

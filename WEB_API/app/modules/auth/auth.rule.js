@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const PLATFORM = require('../../common/const/platform.const');
 
 const validateRules = {
   createToken: {

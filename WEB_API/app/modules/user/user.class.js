@@ -17,6 +17,7 @@ const template = {
   user_groups: '{{#? USERGROUPS.split("|")}}',
   updated_user: '{{#? UPDATEDUSER}}',
   created_user: '{{#? CREATEDUSER}}',
+  type: 'admin_linking',
 };
 
 let transform = new Transform(template);
@@ -29,6 +30,7 @@ const basicInfo = (user) => {
     'full_name',
     'email',
     'phone_number',
+    'type',
   ]);
 };
 
@@ -75,10 +77,26 @@ const options = (userGroups = []) => {
   let transform = new Transform(templateOptions);
   return transform.transform(userGroups, ['id', 'name']);
 };
+
+// options
+const templateBank = {
+  id: '{{#? BANKLINKINGID}}',
+  name: '{{#? BANKLINKINGNAME}}',
+  secret: '{{#? BANKLINKINGSECRET}}',
+  status: '{{#? BANKLINKINGSTATUS}}',
+  type: 'bank_linking',
+};
+
+const bankInfo = (data) => {
+  let transform = new Transform(templateBank);
+  return transform.transform(data, ['id', 'name', 'secret', 'status', 'type']);
+};
+
 module.exports = {
   basicInfo,
   detail,
   list,
   generateUsername,
   options,
+  bankInfo,
 };

@@ -13,12 +13,15 @@ const REFRESH_TOKEN_EXPIRE_AFTER = 86400; // expires in 24 hours
 
 const getUserByUsername = async (user_name) => {
   try {
-    const users = await database.sequelize.query(`${PROCEDURE_NAME.SYS_USER_FINDBYUSERNAME} @USERNAME=:USERNAME`, {
-      replacements: {
-        'USERNAME': user_name,
+    const users = await database.sequelize.query(
+      `${PROCEDURE_NAME.SYS_USER_FINDBYUSERNAME} @USERNAME=:USERNAME`,
+      {
+        replacements: {
+          USERNAME: user_name,
+        },
+        type: database.QueryTypes.SELECT,
       },
-      type: database.QueryTypes.SELECT,
-    });
+    );
     return users && UserClass.basicInfo(users[0]);
   } catch (error) {
     console.error('authService.getUserByUsername', error);
@@ -35,10 +38,10 @@ const generateToken = async (user) => {
     };
     // Get information of user
     const userDetail = await userService.detailUser(user.user_id);
-    if(userDetail) {
+    if (userDetail) {
       data.user_groups = userDetail.user_groups;
     }
-    if(user.user_name === config.adminUserName) {
+    if (user.user_name === config.adminUserName) {
       data.isAdministrator = 1;
     }
 
@@ -55,9 +58,17 @@ const generateToken = async (user) => {
       tokenKey: config.token.key,
       tokenType: config.token.type,
       accessToken: token,
-      tokenExpireAt: moment().add(TOKEN_EXPIRE_AFTER, 's').seconds(0).utc().valueOf(),
+      tokenExpireAt: moment()
+        .add(TOKEN_EXPIRE_AFTER, 's')
+        .seconds(0)
+        .utc()
+        .valueOf(),
       refreshToken: refreshToken,
-      refreshTokenExpireAt: moment().add(REFRESH_TOKEN_EXPIRE_AFTER, 's').seconds(0).utc().valueOf(),
+      refreshTokenExpireAt: moment()
+        .add(REFRESH_TOKEN_EXPIRE_AFTER, 's')
+        .seconds(0)
+        .utc()
+        .valueOf(),
     };
   } catch (error) {
     console.error('authService.generateToken', error);
@@ -68,25 +79,95 @@ const generateToken = async (user) => {
 const refreshToken = async (refreshToken) => {
   try {
     // Verify token
-    return jwt.verify(refreshToken, config.hashSecretKey, async (err, decoded) => {
-      if(err) {
-        throw err;
-      }
-      // Get user
-      const user = await getUserByUsername(decoded.user_name);
-      if(!user) {
-        throw RESPONSE_MSG.NOT_FOUND;
-      }
-      return await generateToken(user);
-    });
+    return jwt.verify(
+      refreshToken,
+      config.hashSecretKey,
+      async (err, decoded) => {
+        if (err) {
+          throw err;
+        }
+        // Get user
+        const user = await getUserByUsername(decoded.user_name);
+        if (!user) {
+          throw RESPONSE_MSG.NOT_FOUND;
+        }
+        return await generateToken(user);
+      },
+    );
   } catch (error) {
     console.error('authService.refreshToken', error);
     return null;
   }
 };
 
+const generateBankToken = async (model) => {
+  try {
+    const data = {
+      clientid: model.clientid,
+      clientsecret: model.clientsecret,
+    };
+    // Get information of user
+    const bankDetail = await userService.detailBankConnect(data.clientid);
+    const token = jwt.sign(bankDetail, config.hashSecretKey, {
+      expiresIn: TOKEN_EXPIRE_AFTER,
+    });
+    const refreshToken = jwt.sign(bankDetail, config.hashSecretKey, {
+      expiresIn: REFRESH_TOKEN_EXPIRE_AFTER,
+    });
+    // Store token id to DB
+    //
+    return {
+      tokenKey: config.token.key,
+      tokenType: config.token.type,
+      accessToken: token,
+      tokenExpireAt: moment()
+        .add(TOKEN_EXPIRE_AFTER, 's')
+        .seconds(0)
+        .utc()
+        .valueOf(),
+      refreshToken: refreshToken,
+      refreshTokenExpireAt: moment()
+        .add(REFRESH_TOKEN_EXPIRE_AFTER, 's')
+        .seconds(0)
+        .utc()
+        .valueOf(),
+    };
+  } catch (error) {
+    console.error('authService.generateToken', error);
+    return null;
+  }
+};
+
+const refreshBankToken = async (refreshToken) => {
+  try {
+    // Verify token
+    return jwt.verify(
+      refreshToken,
+      config.hashSecretKey,
+      async (err, decoded) => {
+        if (err) {
+          throw err;
+        }
+        // Get user
+        const bankDetail = await userService.detailBankConnect(decoded.id);
+        if (!bankDetail) {
+          throw RESPONSE_MSG.NOT_FOUND;
+        }
+        return await generateBankToken({
+          clientid: bankDetail.id,
+          clientsecret: bankDetail.secret,
+        });
+      },
+    );
+  } catch (error) {
+    console.error('authService.refreshToken', error);
+    return null;
+  }
+};
 module.exports = {
   getUserByUsername,
   generateToken,
   refreshToken,
+  generateBankToken,
+  refreshBankToken,
 };

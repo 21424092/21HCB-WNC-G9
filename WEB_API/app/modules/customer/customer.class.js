@@ -67,9 +67,22 @@ const options = (customerGroups = []) => {
   let transform = new Transform(templateOptions);
   return transform.transform(customerGroups, ['id', 'name']);
 };
+
+
+// options
+const templateAccountNumber = {
+  accountNumber: '{{#? PAYMENTNUMBER}}',
+  accountName: '{{#? PAYMENTNAME  }}',
+};
+
+const accountNumber = (data) => {
+  let transform = new Transform(templateAccountNumber);
+  return transform.transform(data, ['accountNumber', 'accountName']);
+};
 module.exports = {
   basicInfo,
   detail,
   list,
   options,
+  accountNumber,
 };

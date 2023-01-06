@@ -355,10 +355,10 @@ const logUserLogin = async (data = {}) => {
     const pool = await mssql.pool;
     await pool
       .request()
-      .input("USERPROFILEID", apiHelper.getValueFromObject(data, "user_id"))
-      .input("USERNAME", apiHelper.getValueFromObject(data, "user_name"))
-      .input("ISACTIVE", API_CONST.ISACTIVE.ACTIVE)
-      .input("CREATEDUSER", apiHelper.getValueFromObject(data, "user_id"))
+      .input('USERPROFILEID', apiHelper.getValueFromObject(data, 'user_id'))
+      .input('USERNAME', apiHelper.getValueFromObject(data, 'user_name'))
+      .input('ISACTIVE', API_CONST.ISACTIVE.ACTIVE)
+      .input('CREATEDUSER', apiHelper.getValueFromObject(data, 'user_id'))
       .execute(PROCEDURE_NAME.SYS_USER_LOGIN_LOG_CREATE);
 
     return new ServiceResponse(true);
@@ -376,17 +376,17 @@ const chec = async (data = {}) => {
     const pool = await mssql.pool;
     await pool
       .request()
-      .input("USERPROFILEID", apiHelper.getValueFromObject(data, "user_id"))
-      .input("USERNAME", apiHelper.getValueFromObject(data, "user_name"))
-      .input("SIGNATURE", apiHelper.getValueFromObject(data, "signature"))
-      .input("ISACTIVE", API_CONST.ISACTIVE.ACTIVE)
-      .input("CREATEDUSER", apiHelper.getValueFromObject(data, "user_id"))
+      .input('USERPROFILEID', apiHelper.getValueFromObject(data, 'user_id'))
+      .input('USERNAME', apiHelper.getValueFromObject(data, 'user_name'))
+      .input('SIGNATURE', apiHelper.getValueFromObject(data, 'signature'))
+      .input('ISACTIVE', API_CONST.ISACTIVE.ACTIVE)
+      .input('CREATEDUSER', apiHelper.getValueFromObject(data, 'user_id'))
       .execute(PROCEDURE_NAME.SYS_USER_LOGIN_LOG_CREATE);
 
     return new ServiceResponse(true);
   } catch (e) {
     logger.error(e, {
-      function: "userService.logUserLogin",
+      function: 'userService.logUserLogin',
     });
 
     return new ServiceResponse(true);

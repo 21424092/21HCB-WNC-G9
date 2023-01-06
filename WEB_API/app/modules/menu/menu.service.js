@@ -45,7 +45,7 @@ const getListMenuByUser = async (req) => {
       @USERGROUPID=:USERGROUPID`;
     const menus = await database.sequelize.query(query, {
       replacements: {
-        USERGROUPID: user_groups ? user_groups.join('|') : ''
+        USERGROUPID: user_groups ? user_groups.join('|') : '',
       },
       type: database.QueryTypes.SELECT,
     });

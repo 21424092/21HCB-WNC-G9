@@ -79,8 +79,8 @@ const accessToken = async (req, res, next) => {
         new ErrorResponse(
           httpStatus.BAD_REQUEST,
           {},
-          RESPONSE_MSG.AUTH.LOGIN.FAILED
-        )
+          RESPONSE_MSG.AUTH.LOGIN.FAILED,
+        ),
       );
     }
 
@@ -98,16 +98,16 @@ const accessToken = async (req, res, next) => {
     // create a token
     const tokenData = await authService.generateToken(user);
     return res.json(
-      new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS)
+      new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS),
     );
   } catch (error) {
-    console.log("createToken", error);
+    console.log('createToken', error);
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };

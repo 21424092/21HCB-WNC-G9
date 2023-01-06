@@ -2,106 +2,90 @@
  * @swagger
  * components:
  *   schemas:
- *     Menu:
+ *     UserGroup:
  *       type: object
  *       required:
- *         - menu_name
+ *         - user_group_name
+ *         - order_index
  *         - is_active
  *       properties:
- *         menu_id:
+ *         user_group_id:
  *           type: string
- *           description: id of the menu
- *         function_id:
+ *           description: The user_group_id
+ *         user_group_name:
  *           type: string
- *           description: The function id
- *         function_name:
- *           type: string
- *           description: The function name
- *         menu_name:
- *           type: string
- *           description: The menu name
- *         link_menu:
- *           type: string
- *           description: The link of menu
+ *           description: The user_group_name
  *         description:
  *           type: string
- *           description: The description of menu
- *         icon_path:
- *           type: string
- *           description: The icon path
- *         parent_id:
- *           type: string
- *           description: The parent id
+ *           description: The description
  *         order_index:
  *           type: number
- *           description: The order index
+ *           description: The order_index
  *         is_active:
  *           type: number
- *           description: The state active of menu
- *         is_customer:
- *           type: string
- *           description: The is_customer
+ *           description: The is_active (0 or 1)
  *       example:
- *         menu_name: Test
+ *         user_group_name: gName01
+ *         order_index: 1
  *         is_active: 1
  * tags:
- *   name: Menu
- *   description: The menu managing API
- * /menu:
+ *   name: UserGroups
+ *   description: The Use Groups managing API
+ * /usergroup:
  *   get:
- *     summary: Lists menu
- *     tags: [Menu]
+ *     summary: Lists user group
+ *     tags: [UserGroups]
  *     responses:
  *       200:
- *         description: The list of the menu
+ *         description: The list of the use group
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Menu'
+ *                 $ref: '#/components/schemas/UserGroup'
  *   post:
- *     summary: Create new a menu
- *     tags: [Menu]
+ *     summary: Create new a user group
+ *     tags: [UserGroups]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Menu'
+ *             $ref: '#/components/schemas/UserGroup'
  *     responses:
  *       200:
- *         description: The created user.
+ *         description: The created user group.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/UserGroup'
  *       500:
  *         description: Some server error
- * /menu/get-by-user:
+ * /usergroup/get-options:
  *   get:
- *     summary: List menu by user
- *     tags: [Menu]
+ *     summary: List options
+ *     tags: [UserGroups]
  *     responses:
  *       200:
- *         description: List menu by user success
+ *         description: List options success
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
- * /menu/{menuId}(\\d+):
+ *                 $ref: '#/components/schemas/UserGroup'
+ * /usergroup/{userGroupId}(\\d+):
  *   put:
- *    summary: Update a menu
- *    tags: [Menu]
+ *    summary: Update a user group
+ *    tags: [UserGroups]
  *    parameters:
  *       - in: path
- *         name: menuId
+ *         name: userGroupId
  *         schema:
  *           type: string
  *         required: true
- *         description: The menu id
+ *         description: The user group id
  *    responses:
  *       200:
  *         description: Success
@@ -110,17 +94,17 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Menu'
+ *                 $ref: '#/components/schemas/UserGroup'
  *   get:
- *    summary: Detail a menu
- *    tags: [Menu]
+ *    summary: Detail a user group
+ *    tags: [UserGroups]
  *    parameters:
  *       - in: path
- *         name: menuId
+ *         name: userGroupId
  *         schema:
  *           type: string
  *         required: true
- *         description: The menu id
+ *         description: The user group id
  *    responses:
  *       200:
  *         description: Success
@@ -129,17 +113,17 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Menu'
+ *                 $ref: '#/components/schemas/UserGroup'
  *   delete:
- *    summary: Delete a menu
- *    tags: [Menu]
+ *    summary: Delete a user group
+ *    tags: [UserGroups]
  *    parameters:
  *       - in: path
- *         name: menuId
+ *         name: userGroupId
  *         schema:
  *           type: string
  *         required: true
- *         description: The menu id
+ *         description: The user group id
  *    responses:
  *       200:
  *         description: Success
@@ -148,19 +132,19 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Menu'
+ *                 $ref: '#/components/schemas/UserGroup'
  * 
- * /menu/{menuId}(\\d+)/change-status:
+ * /usergroup/{userGroupId}/change-status:
  *   put:
- *    summary: Change status a menu
- *    tags: [Menu]
+ *    summary: Change status a user group
+ *    tags: [UserGroups]
  *    parameters:
  *       - in: path
- *         name: userId
+ *         name: userGroupId
  *         schema:
  *           type: string
  *         required: true
- *         description: The menu id
+ *         description: The user group id
  *    responses:
  *       200:
  *         description: Success
@@ -169,5 +153,5 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/UserGroup'
  */

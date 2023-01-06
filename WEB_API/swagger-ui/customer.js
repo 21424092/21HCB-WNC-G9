@@ -82,7 +82,7 @@
  *               $ref: '#/components/schemas/Customer'
  *       500:
  *         description: Some server error
- * /get-options:
+ * /customer/get-options:
  *   get:
  *     summary: List options function
  *     tags: [Customers]
@@ -95,7 +95,7 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Customer'
- * /{customerId}/change-password:
+ * /customer/{customerId}/change-password:
  *   put:
  *    summary: Reset password a customer -- admin
  *    tags: [Customers]
@@ -115,7 +115,7 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Customer'
- * /{customerId}/change-password-customer:
+ * /customer/{customerId}/change-password-customer:
  *   put:
  *    summary: Change password a customer
  *    tags: [Customers]
@@ -135,7 +135,7 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Customer'
- * /{customerId}:
+ * /customer/{customerId}:
  *   put:
  *    summary: Update a customer
  *    tags: [Customers]

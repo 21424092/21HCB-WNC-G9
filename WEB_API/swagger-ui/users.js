@@ -107,7 +107,7 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
- * /get-options:
+ * /user/get-options:
  *   get:
  *     summary: Get options the users
  *     tags: [Users]
@@ -120,7 +120,7 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
- * /{userId}/change-password:
+ * /user/{userId}/change-password:
  *   put:
  *    summary: Reset password a user -- admin
  *    tags: [Users]
@@ -140,7 +140,7 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
- * /{userId}/change-password-user:
+ * /user/{userId}/change-password-user:
  *   put:
  *    summary: Reset password a user
  *    tags: [Users]
@@ -160,7 +160,7 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
- * /{userId}:
+ * /user/{userId}:
  *   put:
  *    summary: Update a user
  *    tags: [Users]

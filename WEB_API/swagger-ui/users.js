@@ -49,12 +49,11 @@
  *         user_groups:
  *           type: string
  *           description: The user_groups of your user
- *         updated_user:
- *           type: string
- *           description: The updated_user of your user
- *         created_user:
- *           type: string
- *           description: The created_user of your user
+ *       example:
+ *         first_name: Lê
+ *         last_name: Tuấn Kiệt
+ *         gender: 1
+ *         email: 20424101@gmail.com
  * tags:
  *   name: Users
  *   description: The users managing API
@@ -91,65 +90,132 @@
  *         description: Some server error
  * /user/create:
  *   post:
- *     summary: Create the user account
+ *     summary: Generate username
  *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The book id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
- *         description: The book response by id
- *         contens:
+ *         description: Generate username success
+ *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Book'
- *       404:
- *         description: The book was not found
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ * /get-options:
+ *   get:
+ *     summary: Get options the users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ * /{userId}/change-password:
  *   put:
- *    summary: Update the book by the id
- *    tags: [Books]
+ *    summary: Reset password a user -- admin
+ *    tags: [Users]
  *    parameters:
- *      - in: path
- *        name: id
- *        schema:
- *          type: string
- *        required: true
- *        description: The book id
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            $ref: '#/components/schemas/Book'
- *    responses:
- *      200:
- *        description: The book was updated
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/Book'
- *      404:
- *        description: The book was not found
- *      500:
- *        description: Some error happened
- *   delete:
- *     summary: Remove the book by id
- *     tags: [Books]
- *     parameters:
  *       - in: path
- *         name: id
+ *         name: userId
  *         schema:
  *           type: string
  *         required: true
- *         description: The book id
- *
- *     responses:
+ *         description: The user id
+ *    responses:
  *       200:
- *         description: The book was deleted
- *       404:
- *         description: The book was not found
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ * /{userId}/change-password-user:
+ *   put:
+ *    summary: Reset password a user
+ *    tags: [Users]
+ *    parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
+ *    responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ * /{userId}:
+ *   put:
+ *    summary: Update a user
+ *    tags: [Users]
+ *    parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
+ *    responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *   delete:
+ *    summary: Delete a user
+ *    tags: [Users]
+ *    parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
+ *    responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *   get:
+ *    summary: Detail a user
+ *    tags: [Users]
+ *    parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
+ *    responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  */

@@ -17,6 +17,8 @@
     "chart.js": "^2.8.0",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
     "flag-icon-css": "^3.3.0",
     "font-awesome": "^4.7.0",
     "formik": "^1.5.8",

@@ -18,14 +18,15 @@ const createToken = async (req, res, next) => {
     }
 
     // Log when user login system
-    userService.logUserLogin({
-      'user_id': user.user_id,
-      'user_name': user.user_name,
-      'user_agent': JSON.stringify(req.useragent),
-    }).then(() => {
-      return null;
-    }).catch(() => {});
-
+    userService
+      .logUserLogin({
+        user_id: user.user_id,
+        user_name: user.user_name,
+      })
+      .then(() => {
+        return null;
+      })
+      .catch(() => {});
     // create a token
     const tokenData = await authService.generateToken(user);
     return res.json(new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS));
@@ -34,6 +35,8 @@ const createToken = async (req, res, next) => {
     return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
   }
 };
+
+
 
 const refreshToken = async (req, res, next) => {
   try {
@@ -62,6 +65,50 @@ const logout = async (req, res, next) => {
     return res.json(new MessageResponse(RESPONSE_MSG.AUTH.LOGOUT.SUCCESS));
   } catch (error) {
     return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+  }
+};
+
+const accessToken = async (req, res, next) => {
+  try {
+    const { signature } = req.body;
+    const clientid = req.params.clientid;
+    const lcUsername = stringHelper.toLowerCaseString(clientid);
+    const user = await authService.getUserByUsername(lcUsername);
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return next(
+        new ErrorResponse(
+          httpStatus.BAD_REQUEST,
+          {},
+          RESPONSE_MSG.AUTH.LOGIN.FAILED
+        )
+      );
+    }
+
+    // Log when user login system
+    userService
+      .logUserLogin({
+        user_id: user.user_id,
+        user_name: user.user_name,
+        signature: signature,
+      })
+      .then(() => {
+        return null;
+      })
+      .catch(() => {});
+    // create a token
+    const tokenData = await authService.generateToken(user);
+    return res.json(
+      new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS)
+    );
+  } catch (error) {
+    console.log("createToken", error);
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 

@@ -32,7 +32,6 @@ const generateToken = async (user) => {
       token_id: uuid(),
       user_id: user.user_id,
       user_name: user.user_name,
-      isAdministrator: 0,
     };
     // Get information of user
     const userDetail = await userService.detailUser(user.user_id);

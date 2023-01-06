@@ -41,14 +41,11 @@ const getListMenu = async (req) => {
 const getListMenuByUser = async (req) => {
   try {
     const user_groups = req.auth.user_groups;
-    const isAdministrator = req.auth.isAdministrator;
     const query = `${PROCEDURE_NAME.SYS_MENU_GETBYUSERGROUP} 
-      @USERGROUPID=:USERGROUPID,
-      @IsAdministrator=:IsAdministrator`;
+      @USERGROUPID=:USERGROUPID`;
     const menus = await database.sequelize.query(query, {
       replacements: {
-        USERGROUPID: user_groups ? user_groups.join('|') : '',
-        IsAdministrator: isAdministrator,
+        USERGROUPID: user_groups ? user_groups.join('|') : ''
       },
       type: database.QueryTypes.SELECT,
     });

@@ -20,6 +20,8 @@ import RedirectHelper from '../components/ReactRouter/RedirectHelper';
 // Containers
 // const DefaultLayout = React.lazy(() => import("../containers/DefaultLayout/DefaultLayout"));
 const Login = React.lazy(() => import("../containers/Login"));
+const CustomerLogin = React.lazy(() => import("../containers/CustomerLogin"));
+const AdminLogin = React.lazy(() => import("../containers/AdminLogin"));
 const Logout = React.lazy(() => import("../containers/Logout"));
 const Register = React.lazy(() => import("../containers/Register"));
 const Page404 = React.lazy(() => import("../containers/Page404"));
@@ -34,17 +36,31 @@ export default class App extends PureComponent {
       <Router>
         <React.Suspense fallback={loading()}>
           {/* Helper for fast redirect */}
-          <RedirectHelper ref={ref => (ref && (window._$g.rdr = (ref && ref.go)))} />
+          <RedirectHelper
+            ref={(ref) => ref && (window._$g.rdr = ref && ref.go)}
+          />
           {/* Helper for window dialogs */}
-          <Dialog ref={ref => (ref && (window._$g.dialogs = ref))} />
+          <Dialog ref={(ref) => ref && (window._$g.dialogs = ref)} />
           {/* Helper for window toastr */}
-          <Toastr ref={ref => (ref && (window._$g.toastr = ref))} />
+          <Toastr ref={(ref) => ref && (window._$g.toastr = ref)} />
           <Switch>
             <Route
               exact
               path="/login"
               name={window._$g._("Login Page")}
               component={Login}
+            />
+            <Route
+              exact
+              path="/customer-login"
+              name={window._$g._("Login Page")}
+              component={CustomerLogin}
+            />
+            <Route
+              exact
+              path="/admin-login"
+              name={window._$g._("Login Page")}
+              component={AdminLogin}
             />
             <Route
               exact

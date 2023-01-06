@@ -8,6 +8,7 @@ import {
   userAuthSet,
 } from "../../actions/user";
 
+
 /**
  * @class CustomerModel
  */
@@ -288,12 +289,10 @@ export default class CustomerModel extends Model {
    * @return Promise
    */
   login(user_name, password, remember) {
-    let platform = "portal";
     return this._api
       .post(_static.API_USER_AUTH, {
         user_name: user_name,
         password,
-        platform,
         remember,
       })
       .then(
@@ -555,11 +554,11 @@ _static._apiStatic
     let { args: { config } } = event;
     // Inject 'header'
     let { headers = {} } = config;
+    console.log(config);
+    
     // +++ auth token data
     let { name: hAuthName, value: hAuthValue } = _static.buildAuthHeader();
-    if (hAuthName && hAuthValue) {
-      headers[hAuthName] = hAuthValue;
-    }
+   
     Object.assign(config, { headers });
     //.end*/
     // console.log('beforeRequest: ', config);

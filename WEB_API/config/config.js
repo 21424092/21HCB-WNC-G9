@@ -6,13 +6,18 @@ require('custom-env').env(process.env.NODE_ENV);
 // define validation for all the env vars
 const envVarsSchema = Joi.object({
   NODE_ENV: Joi.string()
-    .allow(['development', 'staging', 'production'])
-    .default('development'),
+    .allow(["development", "staging", "production"])
+    .default("development"),
   APP_URL: Joi.string().required(),
-  RUN_LOCAL: Joi.string().optional().default('no'),
-  UNIT_TESTING: Joi.string().optional().default('no'),
+  RUN_LOCAL: Joi.string().optional().default("no"),
+  UNIT_TESTING: Joi.string().optional().default("no"),
+  PRIVATEKEY_RSA: Joi.string().required(),
   HASH_SECRET_KEY: Joi.string().required(),
-}).unknown().required();
+  PUBLICKEY_RSA: Joi.string().required(),
+  PRIVATEKEY_RSA: Joi.string().required(),
+})
+  .unknown()
+  .required();
 
 const { error, value: envVars } = Joi.validate(process.env, envVarsSchema);
 if (error) {
@@ -20,25 +25,26 @@ if (error) {
 }
 
 const config = {
-  appName: 'Ruby API',
+  appName: "Ruby Bank API",
   env: envVars.NODE_ENV,
   port: 3000,
-  runLocal: envVars.RUN_LOCAL === 'yes',
-  testing: envVars.UNIT_TESTING === 'yes',
+  runLocal: envVars.RUN_LOCAL === "yes",
+  testing: envVars.UNIT_TESTING === "yes",
   appWelcome: envVars.APP_WELCOME,
   appUrl: envVars.APP_URL,
   hashSecretKey: envVars.HASH_SECRET_KEY,
+  privateKey: envVars.PRIVATEKEY_RSA,
+  publicKey: envVars.PUBLICKEY_RSA,
   token: {
-    key: 'Authorization',
-    type: 'Bearer',
+    key: "Authorization",
+    type: "Bearer",
   },
-  domain_cdn: envVars.DOMAIN_CDN,
   database: {
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     host: process.env.DB_HOST,
-    dialect: 'mssql',
+    dialect: "mssql",
   },
   sql: {
     database: process.env.DB_NAME,
@@ -52,9 +58,9 @@ const config = {
       idleTimeoutMillis: 30000,
     },
   },
-  sendGmail:{
-    user: 'chitrung0895@gmail.com',
-    pass:'Des123456@',
+  sendGmail: {
+    user: "chitrung0895@gmail.com",
+    pass: "Des123456@",
   },
 };
 

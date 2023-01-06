@@ -4,7 +4,7 @@
         "info": {
             "title": "WNC - G9 - BANK",
             "version": "1.0.0",
-            "description": "Đồ án môn học công nghệ mới - Public API",
+            "description": "Đồ án môn học các công nghệ lập trình hiện đại - Public API",
             "license": {
                 "name": "MIT",
                 "url": "https: //spdx.org/licenses/MIT.html"
@@ -17,7 +17,7 @@
         },
         "servers": [
             {
-                "url": "http: //localhost:3000"
+                "url": "http://localhost:3000/api"
             }
         ]
     },

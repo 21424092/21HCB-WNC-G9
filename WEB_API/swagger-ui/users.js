@@ -2,73 +2,97 @@
  * @swagger
  * components:
  *   schemas:
- *     Book:
+ *     User:
  *       type: object
  *       required:
- *         - title
- *         - author
- *         - finished
+ *         - first_name
+ *         - last_name
+ *         - gender
+ *         - email
  *       properties:
- *         id:
+ *         user_id:
  *           type: string
- *           description: The auto-generated id of the book
- *         title:
+ *           description: id of the user
+ *         full_name:
  *           type: string
- *           description: The title of your book
- *         author:
+ *           description: The full name of your user
+ *         email:
  *           type: string
- *           description: The book author
- *         finished:
+ *           description: The user email
+ *         phone_number:
+ *           type: string
+ *           description: The phone number of your user
+ *         address:
+ *           type: string
+ *           description: The address of your user
+ *         gender:
  *           type: boolean
- *           description: Whether you have finished reading the book
- *         createdAt:
+ *           description: The gender of your user
+ *         default_picture_url:
  *           type: string
- *           format: date
- *           description: The date the book was added
- *       example:
- *         id: d5fE_asz
- *         title: The New Turing Omnibus
- *         author: Alexander K. Dewdney
- *         finished: false
- *         createdAt: 2020-03-10T04:05:06.157Z
+ *           description: The picture url of your user
+ *         user_name:
+ *           type: string
+ *           description: The address of your user
+ *         password:
+ *           type: string
+ *           description: The password of your user
+ *         first_name:
+ *           type: string
+ *           description: The first_name of your user
+ *         last_name:
+ *           type: string
+ *           description: The last_name of your user
+ *         birthday:
+ *           type: string
+ *           description: The birthday of your user
+ *         user_groups:
+ *           type: string
+ *           description: The user_groups of your user
+ *         updated_user:
+ *           type: string
+ *           description: The updated_user of your user
+ *         created_user:
+ *           type: string
+ *           description: The created_user of your user
  * tags:
- *   name: Books
- *   description: The books managing API
- * /books:
+ *   name: Users
+ *   description: The users managing API
+ * /user:
  *   get:
- *     summary: Lists all the books
- *     tags: [Books]
+ *     summary: Lists all the users
+ *     tags: [Users]
  *     responses:
  *       200:
- *         description: The list of the books
+ *         description: The list of the users
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Book'
+ *                 $ref: '#/components/schemas/User'
  *   post:
- *     summary: Create a new book
- *     tags: [Books]
+ *     summary: Create a new user
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Book'
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
- *         description: The created book.
+ *         description: The created user.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Book'
+ *               $ref: '#/components/schemas/User'
  *       500:
  *         description: Some server error
- * /books/{id}:
- *   get:
- *     summary: Get the book by id
- *     tags: [Books]
+ * /user/create:
+ *   post:
+ *     summary: Create the user account
+ *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id

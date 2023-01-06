@@ -46,7 +46,7 @@ export default class App extends PureComponent {
           <Switch>
             <Route
               exact
-              path="/login"
+              path="/choose-phase"
               name={window._$g._("Login Page")}
               component={Login}
             />

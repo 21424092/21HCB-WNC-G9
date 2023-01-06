@@ -90,7 +90,7 @@ export default class VerifyAccess extends PureComponent {
     return true === verify ? (
       <DefaultLayout {...props} />
     ) : false === verify ? (
-      <Redirect to="/login" />
+      <Redirect to="/choose-phase" />
     ) : (
       <Redirect to={`/500/${verify}`} />
     );

@@ -55,15 +55,6 @@ export default class UserEntity extends Entity
   }
 
   /**
-   * 
-   * @returns {String}
-   */
-  defaultPictureUrl()
-  {
-    return _static.defaultPictureUrlStatic(this.default_picture_url);
-  }
-
-  /**
    * @TODO:
    * @returns {Boolean}
    */

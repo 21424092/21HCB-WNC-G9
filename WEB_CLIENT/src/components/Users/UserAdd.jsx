@@ -27,7 +27,6 @@ import Loading from "../Common/Loading";
 import DatePicker from "../Common/DatePicker";
 
 // Util(s)
-import { readFileAsBase64 } from "../../utils/html";
 // Model(s)
 import UserModel from "../../models/UserModel";
 import UserGroupModel from "../../models/UserGroupModel";
@@ -48,7 +47,6 @@ export default class UserAdd extends PureComponent {
 
     // Bind method(s)
     this.initUserData = this.initUserData.bind(this);
-    this.handleUserImageChange = this.handleUserImageChange.bind(this);
     this.handleAddUserGroup = this.handleAddUserGroup.bind(this);
     this.handleRemoveUserGroup = this.handleRemoveUserGroup.bind(this);
     this.handleFormikBeforeRender = this.handleFormikBeforeRender.bind(this);
@@ -65,8 +63,6 @@ export default class UserAdd extends PureComponent {
       _id: 0,
       /** @var {Array} */
       alerts: [],
-      /** @var {String|null} */
-      usrImgBase64: (userEnt && userEnt.defaultPictureUrl()) || null,
       /** @var {Boolean} */
       ready: false,
       /** @var {Object|null} */
@@ -192,40 +188,6 @@ export default class UserAdd extends PureComponent {
     return bundle;
   }
 
-  makeAvatarStr(values = {}) {
-    return [values.user_name];
-  }
-
-  handleUserImageChange(event) {
-    let { target } = event;
-    if (target.files[0]) {
-      readFileAsBase64(target, {
-        // option: validate input
-        validate: (file) => {
-          // Check file's type
-          if ("type" in file) {
-            if (file.type.indexOf("image/") !== 0) {
-              return "Chỉ được phép sử dụng tập tin ảnh.";
-            }
-          }
-          // Check file's size in bytes
-          if ("size" in file) {
-            let maxSize = 4; /*4mb*/
-            if (file.size / 1024 / 1024 > maxSize) {
-              return `Dung lượng tập tin tối đa là: ${maxSize}mb.`;
-            }
-          }
-        },
-      })
-        .then((usrImgBase64) => {
-          this.setState({ usrImgBase64 });
-        })
-        .catch((err) => {
-          window._$g.dialogs.alert(window._$g._(err.message));
-        });
-    }
-  }
-
   handleAddUserGroup({ item /*, action*/, form: { values, handleChange } }) {
     if (item && item.value) {
       let { userGroups = [] } = this.state;
@@ -259,18 +221,8 @@ export default class UserAdd extends PureComponent {
     if (values === initialValues) {
       return;
     }
-    // Reformat data
-    let province_id = values.country_id ? values.province_id : "";
-    let district_id = province_id ? values.district_id : "";
-    let ward_id = district_id ? values.ward_id : "";
     // +++
-    Object.assign(values, {
-      // +++ address
-      province_id,
-      district_id,
-      ward_id,
-    });
-    // console.log('formikBfRender: ', values);
+    Object.assign(values, {});
   }
 
   /** @var {String} */
@@ -285,7 +237,6 @@ export default class UserAdd extends PureComponent {
 
   handleFormikSubmit(values, formProps) {
     let { userEnt } = this.props;
-    let { usrImgBase64 } = this.state;
     let { setSubmitting } = formProps;
     let willRedirect = false;
     let alerts = [];
@@ -295,7 +246,6 @@ export default class UserAdd extends PureComponent {
     let bdArr = (birthday && moment(birthday).format("DD/MM/YYYY")) || [];
     // +++
     let formData = Object.assign({}, values, {
-      default_picture_url: usrImgBase64,
       birthday: bdArr.length ? bdArr : "",
       phone_number: "" + values.phone_number,
       password_confirm: values.password,
@@ -410,37 +360,7 @@ export default class UserAdd extends PureComponent {
                         onReset={handleReset}
                       >
                         <Row>
-                          <Col xs={12} sm={3}>
-                            <FormGroup row>
-                              <Col sm={12}>
-                                <div className="hidden ps-relative">
-                                  <Media
-                                    object
-                                    src={
-                                      usrImgBase64 || UserModel.defaultImgBase64
-                                    }
-                                    alt="User image"
-                                    className="user-imgage radius-50-percent"
-                                  />
-                                  <Input
-                                    type="file"
-                                    id="user_image_file"
-                                    className="input-overlay"
-                                    onChange={this.handleUserImageChange}
-                                    disabled={noEdit}
-                                  />
-                                </div>
-                                <b className="center block">
-                                  {this.makeAvatarStr(values).map((text, idx) =>
-                                    text ? (
-                                      <p key={`avatar-text-${idx}`}>{text}</p>
-                                    ) : null
-                                  )}
-                                </b>
-                              </Col>
-                            </FormGroup>
-                          </Col>
-                          <Col xs={12} sm={9}>
+                          <Col xs={12} sm={12}>
                             <Row>
                               <Col xs={12} sm={6}>
                                 <FormGroup row>
@@ -1009,18 +929,18 @@ export default class UserAdd extends PureComponent {
                                 ) : (
                                   [
                                     userEnt && userEnt.user_id && (
-                                        <Button
-                                          color="warning text-white"
-                                          className="mr-2 btn-block-sm"
-                                          onClick={() =>
-                                            window._$g.rdr(
-                                              `/users/change-password/${userEnt.user_id}`
-                                            )
-                                          }
-                                        >
-                                          <i className="fa fa-lock mr-1"></i>
-                                          Thay đổi mật khẩu
-                                        </Button>
+                                      <Button
+                                        color="warning text-white"
+                                        className="mr-2 btn-block-sm"
+                                        onClick={() =>
+                                          window._$g.rdr(
+                                            `/users/change-password/${userEnt.user_id}`
+                                          )
+                                        }
+                                      >
+                                        <i className="fa fa-lock mr-1"></i>
+                                        Thay đổi mật khẩu
+                                      </Button>
                                     ),
                                     <Button
                                       key="buttonSave"

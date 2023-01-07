@@ -51,107 +51,6 @@ export default class UserModel extends Model {
    */
   primaryKey = "user_id";
 
-  /**
-   * Column datafield prefix
-   * @var {String}
-   */
-  static columnPrefix = "";
-
-  /**
-   * jqx's grid columns & datafields!
-   * @var {Array}
-   */
-  static _jqxGridColumns = [
-    { datafield: "user_id" },
-    {
-      text: "Tên đăng nhập",
-      datafield: "user_name",
-      pinned: true,
-      width: 120,
-    },
-    {
-      text: "Họ",
-      datafield: "first_name",
-      pinned: true,
-      width: 120,
-    },
-    {
-      text: "Tên",
-      datafield: "last_name",
-      pinned: true,
-      width: 120,
-    },
-    { datafield: "department_id" },
-    {
-      text: "Phòng ban",
-      datafield: "department",
-      sortable: false,
-      width: 120,
-    },
-    { datafield: "position_id" },
-    {
-      text: "Chức vụ",
-      datafield: "position_text",
-      width: 80,
-    },
-    { datafield: "gender" },
-    {
-      text: "Giới tính",
-      datafield: "gender_text",
-      width: 80,
-    },
-    {
-      text: "Email",
-      datafield: "email",
-      width: 160,
-      sortable: false,
-    },
-    {
-      text: "Ngày sinh",
-      datafield: "birthday",
-      sortable: false,
-      width: 100,
-      cellsalign: "center",
-      /* columngroup: ['identity', {
-        text : 'CMND',
-        align : 'center'
-      }] */
-    },
-    {
-      text: "Địa chỉ",
-      datafield: "address",
-      width: 160,
-      sortable: false,
-    },
-    {
-      text: "Điện thoại",
-      datafield: "phone_number",
-      width: 120,
-      sortable: false,
-    },
-    {
-      text: "Điện thoại 2",
-      datafield: "phone_number_1",
-      width: 120,
-      sortable: false,
-    } /*,
-    {
-      text : 'Phân quyền',
-      datafield : 'groups',
-      width : 120,
-      sortable : false,
-    }*/,
-    {
-      text: "Giới thiệu sơ lược",
-      datafield: "about_me",
-      sortable: false,
-      filterable: false,
-      minwidth: 160,
-    },
-  ];
-
-  /** @var {String} */
-  static defaultImgBase64 = UserEntity.defaultImgBase64;
 
   /**
    * @return {Object}
@@ -167,8 +66,6 @@ export default class UserModel extends Model {
     email: "",
     phone_number: "",
     address: "",
-    picture: "",
-    default_picture_url: "",
     user_groups: [],
   });
 

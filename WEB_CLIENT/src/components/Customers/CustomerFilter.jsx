@@ -36,6 +36,10 @@ class CustomerFilter extends PureComponent {
     }
   };
 
+  handleClickAdd = () => {
+    window._$g.rdr("/customers/add");
+  };
+
   render() {
     return (
       <Row className="w-100 d-flex flex-row justify-content-end align-items-center mb-2 mt-2 mr-2">
@@ -73,12 +77,13 @@ class CustomerFilter extends PureComponent {
           </FormGroup>
           <FormGroup className="mb-2 ml-2 mb-sm-0">
             <Button
-              className="mr-1 col-12 MuiPaper-filter__custom--button"
-              onClick={this.onClear}
+              className="col-12 MuiPaper-filter__custom--button"
+              onClick={() => this.handleClickAdd()}
+              color="success"
               size="sm"
             >
-              <i className="fa fa-refresh" />
-              <span className="ml-1">Làm mới</span>
+              <i className="fa fa-plus" />
+              <span className="ml-1">Thêm mới</span>
             </Button>
           </FormGroup>
         </Col>

@@ -1,13 +1,12 @@
 //
-import Model from '../Model';
+import Model from "../Model";
 //
-import CustomerEntity from '../CustomerEntity';
+import CustomerEntity from "../CustomerEntity";
 
 import {
   // userAdd,
   userAuthSet,
 } from "../../actions/user";
-
 
 /**
  * @class CustomerModel
@@ -52,106 +51,10 @@ export default class CustomerModel extends Model {
   static columnPrefix = "";
 
   /**
-   * jqx's grid columns & datafields!
-   * @var {Array}
-   */
-  static _jqxGridColumns = [
-    { datafield: "customer_id" },
-    {
-      text: "Tên đăng nhập",
-      datafield: "customer_name",
-      pinned: true,
-      width: 120,
-    },
-    {
-      text: "Họ",
-      datafield: "first_name",
-      pinned: true,
-      width: 120,
-    },
-    {
-      text: "Tên",
-      datafield: "last_name",
-      pinned: true,
-      width: 120,
-    },
-    { datafield: "department_id" },
-    {
-      text: "Phòng ban",
-      datafield: "department",
-      sortable: false,
-      width: 120,
-    },
-    { datafield: "position_id" },
-    {
-      text: "Chức vụ",
-      datafield: "position_text",
-      width: 80,
-    },
-    { datafield: "gender" },
-    {
-      text: "Giới tính",
-      datafield: "gender_text",
-      width: 80,
-    },
-    {
-      text: "Email",
-      datafield: "email",
-      width: 160,
-      sortable: false,
-    },
-    {
-      text: "Ngày sinh",
-      datafield: "birthday",
-      sortable: false,
-      width: 100,
-      cellsalign: "center",
-      /* columngroup: ['identity', {
-        text : 'CMND',
-        align : 'center'
-      }] */
-    },
-    {
-      text: "Địa chỉ",
-      datafield: "address",
-      width: 160,
-      sortable: false,
-    },
-    {
-      text: "Điện thoại",
-      datafield: "phone_number",
-      width: 120,
-      sortable: false,
-    },
-    {
-      text: "Điện thoại 2",
-      datafield: "phone_number_1",
-      width: 120,
-      sortable: false,
-    } /*,
-    {
-      text : 'Phân quyền',
-      datafield : 'groups',
-      width : 120,
-      sortable : false,
-    }*/,
-    {
-      text: "Giới thiệu sơ lược",
-      datafield: "about_me",
-      sortable: false,
-      filterable: false,
-      minwidth: 160,
-    },
-  ];
-
-  /** @var {String} */
-  static defaultImgBase64 = CustomerEntity.defaultImgBase64;
-
-  /**
    * @return {Object}
    */
   fillable = () => ({
-    customer_name: "",
+    user_name: "",
     password: "",
     password_confirm: "",
     first_name: "",
@@ -161,48 +64,7 @@ export default class CustomerModel extends Model {
     email: "",
     phone_number: "",
     address: "",
-    picture: "",
-    default_picture_url: "",
   });
-
-  /**
-   * Return jqx's grid columns
-   * @param {Object} opts Options
-   * @return {Array}
-   */
-  static jqxGridProps(opts) {
-    let _self = new _static();
-
-    // Get, format options
-    opts = Object.assign(
-      {
-        prefix: _static.columnPrefix,
-        // events
-        // +++ format (mapping) API data before render
-        postBeforeProcessing: (data) => {
-          (data.items || []).forEach((item) => {
-            // Case: gender
-            if ("gender" in item) {
-              item.gender_text = window._$g._(item.gender ? "Nam" : "Nữ");
-            }
-            //
-          });
-        },
-      },
-      opts
-    );
-
-    //
-    let props = Model.jqxGridProps(_static._jqxGridColumns, opts);
-    // +++
-    Object.assign(props.source, {
-      url: _static.apiClass.buildApiUri(_static.API_USER_LIST),
-      id: _self.primaryKey,
-    });
-
-    // Return;
-    return props;
-  }
 
   /**
    * @return {Object}
@@ -445,10 +307,10 @@ export default class CustomerModel extends Model {
     return this.list(apiOpts).then(({ items }) => {
       return opts["raw"]
         ? items
-        : items.map(({ full_name: name, customer_id: id, customer_name }) => ({
+        : items.map(({ full_name: name, customer_id: id, user_name }) => ({
             name,
             id,
-            customer_name,
+            user_name,
           }));
     });
   }
@@ -459,22 +321,6 @@ export default class CustomerModel extends Model {
   create(_data = {}) {
     // Validate data?!
     let data = Object.assign({}, this.fillable(), _data);
-    // console.log('Customer#create: ', data);
-    /* if (!data.fullname) {
-      throw new Error('Data `fullname` is required!');
-    } */
-    // Init
-    // +++
-    /* if (!data.created_at) {
-      data.created_at = new Date();
-    } */
-
-    //
-    // let ent = new CustomerEntity(data);
-    // this._store.dispatch(customerAdd(ent));
-
-    //
-    debugger
     return this._api.post(_static.API_CUS_CREATE, data);
   }
 
@@ -494,18 +340,7 @@ export default class CustomerModel extends Model {
    * @return {Promise}
    */
   update(id, _data = {}) {
-    // Validate data?!
     let data = Object.assign({}, _data);
-    /* if (!data.fullname) {
-      throw new Error('Data `fullname` is required!');
-    } */
-    // Init
-    // +++
-    /* if (!data.updated_at) {
-      data.updated_at = new Date();
-    } */
-
-    //
     return this._api.put(_static.API_CUS_UPDATE.replace(":id", id), data);
   }
 
@@ -513,9 +348,7 @@ export default class CustomerModel extends Model {
    * @return {Promise}
    */
   delete(id, _data = {}) {
-    // Validate data?!
     let data = Object.assign({}, _data);
-    //
     return this._api.delete(_static.API_CUS_DELETE.replace(":id", id), data);
   }
 
@@ -523,7 +356,6 @@ export default class CustomerModel extends Model {
    * @return {Promise}
    */
   changePassword(id, _data = {}) {
-    // Validate data?!
     let data = Object.assign({}, _data);
     //
     return this._api.put(
@@ -546,40 +378,42 @@ export default class CustomerModel extends Model {
   }
 }
 // Make alias
-const _static = window._globModelCustomer = CustomerModel;
+const _static = (window._globModelCustomer = CustomerModel);
 
 // Add events
 _static._apiStatic
-  .addEventListener('beforeRequest', (event) => {
-    let { args: { config } } = event;
+  .addEventListener("beforeRequest", (event) => {
+    let {
+      args: { config },
+    } = event;
     // Inject 'header'
     let { headers = {} } = config;
-    console.log(config);
-    
+
     // +++ auth token data
     let { name: hAuthName, value: hAuthValue } = _static.buildAuthHeader();
-   
+
     Object.assign(config, { headers });
     //.end*/
     // console.log('beforeRequest: ', config);
   })
-  .addEventListener('request', (event) => {
-    let { args: { /* config, */ incomming } } = event;
+  .addEventListener("request", (event) => {
+    let {
+      args: { /* config, */ incomming },
+    } = event;
     //
-    incomming.then(apiData => {
+    incomming.then((apiData) => {
       // console.log('request: ', apiData);
       delete apiData._;
       // chain call
       return apiData;
-    })
+    });
   })
-  .addEventListener('beforeRefreshToken', (event) => {
+  .addEventListener("beforeRefreshToken", (event) => {
     let { args: authData } = event;
     let customerAuth = _static.getCustomerAuthStatic();
     Object.assign(authData, customerAuth);
   })
-  .addEventListener('afterRefreshToken', (event) => {
+  .addEventListener("afterRefreshToken", (event) => {
     let { args: authData } = event;
     _static.storeCustomerAuthStatic(authData);
-  })
-;
+  });

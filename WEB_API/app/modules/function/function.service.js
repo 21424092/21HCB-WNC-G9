@@ -210,7 +210,7 @@ const removeCacheOptions = () => {
 
 const getListFunctionsByUserGroup = async (userGroups = []) => {
   try {
-    if (!userGroups.length) {
+    if (!userGroups?.length) {
       return new ServiceResponse(true, '', {});
     }
 

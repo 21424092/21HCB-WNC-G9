@@ -14,7 +14,7 @@ import { configTableOptions, configIDRowTable } from "../../utils/index";
 import FunctionModel from "../../models/FunctionModel";
 import FunctionGroupModel from "../../models/FunctionGroupModel";
 // Component(s)
-import { CheckAccess } from "../../navigation/VerifyAccess";
+
 import FunctionFilter from "./FunctionFilter";
 
 /** @var {Object} */
@@ -295,28 +295,26 @@ class Functions extends PureComponent {
           customBodyRender: (value, tableMeta, updateValue) => {
             return (
               <div className="text-center">
-                <CheckAccess permission="SYS_FUNCTION_EDIT">
-                  <FormControlLabel
-                    label={value ? "Có" : "Không"}
-                    value={value ? "Có" : "Không"}
-                    control={
-                      <Switch
-                        color="primary"
-                        checked={value === 1}
-                        value={value}
-                      />
-                    }
-                    onChange={(event) => {
-                      let checked = 1 * event.target.value === 1 ? 0 : 1;
-                      this.handleChangeStatus(
-                        checked,
-                        this.state.data[tableMeta["rowIndex"]].function_id,
-                        tableMeta["rowIndex"]
-                      );
-                    }}
-                    disabled={userAuth._isAdministrator()}
-                  />
-                </CheckAccess>
+                <FormControlLabel
+                  label={value ? "Có" : "Không"}
+                  value={value ? "Có" : "Không"}
+                  control={
+                    <Switch
+                      color="primary"
+                      checked={value === 1}
+                      value={value}
+                    />
+                  }
+                  onChange={(event) => {
+                    let checked = 1 * event.target.value === 1 ? 0 : 1;
+                    this.handleChangeStatus(
+                      checked,
+                      this.state.data[tableMeta["rowIndex"]].function_id,
+                      tableMeta["rowIndex"]
+                    );
+                  }}
+                  disabled={userAuth._isAdministrator()}
+                />
               </div>
             );
           },
@@ -345,40 +343,36 @@ class Functions extends PureComponent {
                 >
                   <i className="fa fa-info" />
                 </Button>
-                <CheckAccess permission="SYS_FUNCTION_EDIT">
-                  <Button
-                    color="success"
-                    title="Chỉnh sửa"
-                    className="mr-1"
-                    onClick={(evt) =>
-                      this.handleActionItemClick(
-                        "edit",
-                        this.state.data[tableMeta["rowIndex"]].function_id,
-                        tableMeta["rowIndex"]
-                      )
-                    }
-                    disabled={userAuth._isAdministrator()}
-                  >
-                    <i className="fa fa-edit" />
-                  </Button>
-                </CheckAccess>
-                <CheckAccess permission="SYS_FUNCTION_DEL">
-                  <Button
-                    color="danger"
-                    title="Xóa"
-                    className=""
-                    onClick={(evt) =>
-                      this.handleActionItemClick(
-                        "delete",
-                        this.state.data[tableMeta["rowIndex"]].function_id,
-                        tableMeta["rowIndex"]
-                      )
-                    }
-                    disabled={userAuth._isAdministrator()}
-                  >
-                    <i className="fa fa-trash" />
-                  </Button>
-                </CheckAccess>
+                <Button
+                  color="success"
+                  title="Chỉnh sửa"
+                  className="mr-1"
+                  onClick={(evt) =>
+                    this.handleActionItemClick(
+                      "edit",
+                      this.state.data[tableMeta["rowIndex"]].function_id,
+                      tableMeta["rowIndex"]
+                    )
+                  }
+                  disabled={userAuth._isAdministrator()}
+                >
+                  <i className="fa fa-edit" />
+                </Button>
+                <Button
+                  color="danger"
+                  title="Xóa"
+                  className=""
+                  onClick={(evt) =>
+                    this.handleActionItemClick(
+                      "delete",
+                      this.state.data[tableMeta["rowIndex"]].function_id,
+                      tableMeta["rowIndex"]
+                    )
+                  }
+                  disabled={userAuth._isAdministrator()}
+                >
+                  <i className="fa fa-trash" />
+                </Button>
               </div>
             );
           },
@@ -421,17 +415,15 @@ class Functions extends PureComponent {
             </CardBody>
           )}
         </Card>
-        <CheckAccess permission="SYS_FUNCTION_ADD">
-          <Button
-            className="col-12 max-w-110 mb-3 mobile-reset-width"
-            onClick={() => this.handleClickAdd()}
-            color="success"
-            size="sm"
-          >
-            <i className="fa fa-plus" />
-            <span className="ml-1">Thêm mới</span>
-          </Button>
-        </CheckAccess>
+        <Button
+          className="col-12 max-w-110 mb-3 mobile-reset-width"
+          onClick={() => this.handleClickAdd()}
+          color="success"
+          size="sm"
+        >
+          <i className="fa fa-plus" />
+          <span className="ml-1">Thêm mới</span>
+        </Button>
         <Card className="animated fadeIn">
           <CardBody className="px-0 py-0">
             <div className="MuiPaper-root__custom">

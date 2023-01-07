@@ -52,9 +52,9 @@ const createCustomer = async (req, res, next) => {
     const customerName = params.user_name;
     params.customer_id = null;
     // Check user_name valid
-    if (isNaN(customerName)) {
-      return next(new ValidationResponse('user_name', 'invalid'));
-    }
+    // if (isNaN(customerName)) {
+    //   return next(new ValidationResponse('user_name', 'invalid'));
+    // }
 
     // Check customer name exists
     const customerExist = await customerService.findByCustomerName(

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import {
   Container,
   Button,
@@ -13,11 +13,7 @@ import bg from "../assets/img/bg.jpeg";
 /**
  * @class Login
  */
-export default class Login extends Component {
-  constructor(props) {
-    super(props);
-  }
-
+export default class Login extends PureComponent {
   render() {
     return (
       <div

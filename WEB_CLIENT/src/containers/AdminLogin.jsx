@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Redirect } from "react-router-dom";
@@ -29,12 +29,11 @@ import bg from "../assets/img/bg.jpeg";
 /**
  * @class Login
  */
-export default class AdminLogin extends PureComponent {
+export default class AdminLogin extends Component {
   /**
    * @var {UserModel}
    */
   _userModel;
-
   formikValidationSchema = Yup.object().shape({
     user_name: Yup.string().required("ID nhân viên là bắt buộc."),
     password: Yup.string().required("Mật khẩu là bắt buộc."),
@@ -42,7 +41,6 @@ export default class AdminLogin extends PureComponent {
 
   constructor(props) {
     super(props);
-
     // Init model(s)
     this._userModel = new UserModel();
 
@@ -51,12 +49,20 @@ export default class AdminLogin extends PureComponent {
       // @var {UserEntity}|null
       userAuth: this._userModel.getUserAuth(),
       alerts: [],
+      gg_token: "",
+      refreshReCaptcha: false,
     };
 
     // Bind methods
     this.handleFormikSubmit = this.handleFormikSubmit.bind(this);
   }
-
+  shouldComponentUpdate(prevProps, prevState) {
+    if (prevState.refreshReCaptcha !== this.state.refreshReCaptcha) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   /**
    *
    * @return {Object}
@@ -75,6 +81,7 @@ export default class AdminLogin extends PureComponent {
    * @returns false
    */
   handleFormikSubmit(values, formProps) {
+    let { gg_token, refreshReCaptcha } = this.state;
     let { setSubmitting } = formProps;
     let alerts = [];
     let userAuth = null;
@@ -85,9 +92,9 @@ export default class AdminLogin extends PureComponent {
         window.scrollTo(0, 0);
       }
     );
-    //
+
     this._userModel
-      .login(values.user_name, values.password, values.remember)
+      .login(values.user_name, values.password, gg_token)
       .then((data) => (userAuth = data))
       .catch((err) => {
         alerts.push({ color: "danger", msg: err.message });
@@ -96,14 +103,19 @@ export default class AdminLogin extends PureComponent {
         // Submit form is done!
         setSubmitting(false);
         //
-        this.setState(() => ({ userAuth, alerts }));
+        this.setState(() => ({
+          userAuth,
+          alerts,
+          refreshReCaptcha: !refreshReCaptcha,
+        }));
       });
 
     return false;
   }
 
   render() {
-    let { userAuth, alerts } = this.state;
+    let { userAuth, alerts, refreshReCaptcha } = this.state;
+    console.log(refreshReCaptcha);
     /** @var {Object} */
     let initialValues = this.getInitialValues();
     // console.log('initialValues: ', initialValues);
@@ -112,7 +124,6 @@ export default class AdminLogin extends PureComponent {
     if (userAuth) {
       return <Redirect to="/" push />;
     }
-
     return (
       <div
         className="app flex-row align-items-center"
@@ -121,8 +132,9 @@ export default class AdminLogin extends PureComponent {
           backgroundSize: "cover",
         }}
       >
-        {" "}
-        <GoogleReCaptchaProvider reCaptchaKey="6LdFTbwjAAAAALIw4avuH_bwp5H7cuiKRQ-vGc2m">
+        <GoogleReCaptchaProvider
+          reCaptchaKey={process.env.REACT_APP_RECAPTCHA_KEY}
+        >
           <Container>
             <Row className="justify-content-center">
               <Col md="5">
@@ -150,11 +162,8 @@ export default class AdminLogin extends PureComponent {
                         onSubmit={this.handleFormikSubmit}
                       >
                         {(formikProps) => {
-                          let {
-                            handleSubmit,
-                            handleReset,
-                            isSubmitting,
-                          } = (this.formikProps = formikProps);
+                          let { handleSubmit, handleReset, isSubmitting } =
+                            (this.formikProps = formikProps);
                           return (
                             <Form onSubmit={handleSubmit} onReset={handleReset}>
                               <fieldset disabled={isSubmitting}>
@@ -227,8 +236,11 @@ export default class AdminLogin extends PureComponent {
                                 <InputGroup className="mb-4">
                                   <Col xs="12">
                                     <GoogleReCaptcha
+                                      refreshReCaptcha={refreshReCaptcha}
                                       onVerify={(token) => {
-                                    console.log(token)
+                                        this.setState({
+                                          gg_token: token,
+                                        });
                                       }}
                                     />
                                   </Col>
@@ -248,11 +260,6 @@ export default class AdminLogin extends PureComponent {
                                       </div>
                                     ) : null}
                                   </Col>
-                                  {/*<Col xs="12" className="text-right">
-                                <Button color="link" className="px-0">
-                                  {window._$g._("Forgot password?")}
-                                </Button>
-                              </Col>*/}
                                 </Row>
                               </fieldset>
                             </Form>

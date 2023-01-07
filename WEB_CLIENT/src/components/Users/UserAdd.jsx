@@ -22,7 +22,7 @@ import Select from "react-select";
 import moment from "moment";
 
 // Component(s)
-import { CheckAccess } from "../../navigation/VerifyAccess";
+
 import Loading from "../Common/Loading";
 import DatePicker from "../Common/DatePicker";
 
@@ -994,27 +994,21 @@ export default class UserAdd extends PureComponent {
                             <Row>
                               <Col sm={12} className="text-right">
                                 {noEdit ? (
-                                  <CheckAccess permission="SYS_USER_EDIT">
-                                    <Button
-                                      color="primary"
-                                      className="mr-2 btn-block-sm"
-                                      onClick={() =>
-                                        window._$g.rdr(
-                                          `/users/edit/${userEnt.user_id}`
-                                        )
-                                      }
-                                    >
-                                      <i className="fa fa-edit mr-1" />
-                                      Chỉnh sửa
-                                    </Button>
-                                  </CheckAccess>
+                                  <Button
+                                    color="primary"
+                                    className="mr-2 btn-block-sm"
+                                    onClick={() =>
+                                      window._$g.rdr(
+                                        `/users/edit/${userEnt.user_id}`
+                                      )
+                                    }
+                                  >
+                                    <i className="fa fa-edit mr-1" />
+                                    Chỉnh sửa
+                                  </Button>
                                 ) : (
                                   [
                                     userEnt && userEnt.user_id && (
-                                      <CheckAccess
-                                        key="buttonUserPassword"
-                                        permission="SYS_USER_PASSWORD"
-                                      >
                                         <Button
                                           color="warning text-white"
                                           className="mr-2 btn-block-sm"
@@ -1027,7 +1021,6 @@ export default class UserAdd extends PureComponent {
                                           <i className="fa fa-lock mr-1"></i>
                                           Thay đổi mật khẩu
                                         </Button>
-                                      </CheckAccess>
                                     ),
                                     <Button
                                       key="buttonSave"

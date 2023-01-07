@@ -5,6 +5,7 @@ const validateRules = {
     body: {
       user_name: Joi.string().required(),
       password: Joi.string().required(),
+      gg_token:  Joi.string().required(),
     },
   },
   refreshToken: {

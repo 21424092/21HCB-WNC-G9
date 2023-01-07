@@ -295,13 +295,12 @@ export default class UserModel extends Model {
    * @param {Boolean} remember
    * @return Promise
    */
-  login(user_name, password, remember) {
-    console.log(this._api);
+  login(user_name, password, gg_token) {
     return this._api
       .post(_static.API_USER_AUTH, {
         user_name: user_name,
         password,
-        remember,
+        gg_token: gg_token,
       })
       .then(
         (loginData) =>
@@ -565,7 +564,7 @@ _static._apiStatic
       args: { config },
     } = event;
     // Inject 'header'
-    let { headers = {}, baseURL, url } = config;
+    let { headers = {}, url } = config;
     // +++ auth token data
     let { name: hAuthName, value: hAuthValue } = _static.buildAuthHeader();
     if (hAuthName && hAuthValue) {

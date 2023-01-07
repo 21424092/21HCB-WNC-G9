@@ -13,19 +13,16 @@ import {
   FormGroup,
   Label,
   Input,
-  Media,
   InputGroup,
   InputGroupAddon,
 } from "reactstrap";
 import moment from "moment";
 
 // Component(s)
-import { CheckAccess } from "../../navigation/VerifyAccess";
+
 import Loading from "../Common/Loading";
 import DatePicker from "../Common/DatePicker";
 
-// Util(s)
-import { readFileAsBase64 } from "../../utils/html";
 // Model(s)
 import CustomerModel from "../../models/CustomerModel";
 
@@ -43,7 +40,6 @@ export default class CustomerAdd extends PureComponent {
     this._customerModel = new CustomerModel();
 
     // Bind method(s)
-    this.handleCustomerImageChange = this.handleCustomerImageChange.bind(this);
     this.handleFormikBeforeRender = this.handleFormikBeforeRender.bind(this);
     this.handleFormikSubmit = this.handleFormikSubmit.bind(this);
     this.handleFormikReset = this.handleFormikReset.bind(this);
@@ -58,8 +54,6 @@ export default class CustomerAdd extends PureComponent {
       _id: 0,
       /** @var {Array} */
       alerts: [],
-      /** @var {String|null} */
-      usrImgBase64: (customerEnt && customerEnt.defaultPictureUrl()) || null,
       /** @var {Boolean} */
       ready: false,
       /** @var {Object|null} */
@@ -73,7 +67,7 @@ export default class CustomerAdd extends PureComponent {
 
     // Init validator
     this.formikValidationSchema = Yup.object().shape({
-      customer_name: Yup.string().trim().required("Tên đăng nhập là bắt buộc."),
+      user_name: Yup.string().trim().required("Tên đăng nhập là bắt buộc."),
       password: customerEnt
         ? undefined
         : Yup.string()
@@ -113,7 +107,11 @@ export default class CustomerAdd extends PureComponent {
   getInitialValues() {
     let { customerEnt } = this.props;
     let { customerData = {} } = this.state;
-    let values = Object.assign({}, this._customerModel.fillable(), customerData);
+    let values = Object.assign(
+      {},
+      this._customerModel.fillable(),
+      customerData
+    );
     if (customerEnt) {
       Object.assign(values, customerEnt);
     }
@@ -122,8 +120,6 @@ export default class CustomerAdd extends PureComponent {
       if (null === values[key]) {
         values[key] = "";
       }
-      // values[key] += '';
-      // birthday
       if (key === "birthday") {
         let bdArr = values[key].match(/(\d{2})[/-](\d{2})[/-](\d{4})/);
         bdArr && (values[key] = `${bdArr[3]}-${bdArr[2]}-${bdArr[1]}`);
@@ -144,8 +140,7 @@ export default class CustomerAdd extends PureComponent {
   async _getBundleData() {
     // let { customerEnt } = this.props;
     let bundle = {};
-    let all = [
-    ];
+    let all = [];
     await Promise.all(all).catch((err) =>
       window._$g.dialogs.alert(
         window._$g._(`Khởi tạo dữ liệu không thành công (${err.message}).`),
@@ -166,57 +161,13 @@ export default class CustomerAdd extends PureComponent {
     return bundle;
   }
 
-  makeAvatarStr(values = {}) {
-    return [values.customer_name];
-  }
-
-  handleCustomerImageChange(event) {
-    let { target } = event;
-    if (target.files[0]) {
-      readFileAsBase64(target, {
-        // option: validate input
-        validate: (file) => {
-          // Check file's type
-          if ("type" in file) {
-            if (file.type.indexOf("image/") !== 0) {
-              return "Chỉ được phép sử dụng tập tin ảnh.";
-            }
-          }
-          // Check file's size in bytes
-          if ("size" in file) {
-            let maxSize = 4; /*4mb*/
-            if (file.size / 1024 / 1024 > maxSize) {
-              return `Dung lượng tập tin tối đa là: ${maxSize}mb.`;
-            }
-          }
-        },
-      })
-        .then((usrImgBase64) => {
-          this.setState({ usrImgBase64 });
-        })
-        .catch((err) => {
-          window._$g.dialogs.alert(window._$g._(err.message));
-        });
-    }
-  }
-
-
   handleFormikBeforeRender({ initialValues }) {
     let { values } = this.formikProps;
     if (values === initialValues) {
       return;
     }
-    // Reformat data
-    let province_id = values.country_id ? values.province_id : "";
-    let district_id = province_id ? values.district_id : "";
-    let ward_id = district_id ? values.ward_id : "";
     // +++
-    Object.assign(values, {
-      // +++ address
-      province_id,
-      district_id,
-      ward_id,
-    });
+    Object.assign(values, {});
     // console.log('formikBfRender: ', values);
   }
 
@@ -232,7 +183,6 @@ export default class CustomerAdd extends PureComponent {
 
   handleFormikSubmit(values, formProps) {
     let { customerEnt } = this.props;
-    let { usrImgBase64 } = this.state;
     let { setSubmitting } = formProps;
     let willRedirect = false;
     let alerts = [];
@@ -242,12 +192,12 @@ export default class CustomerAdd extends PureComponent {
     let bdArr = (birthday && moment(birthday).format("DD/MM/YYYY")) || [];
     // +++
     let formData = Object.assign({}, values, {
-      default_picture_url: usrImgBase64,
       birthday: bdArr.length ? bdArr : "",
       phone_number: "" + values.phone_number,
       password_confirm: values.password,
     });
-    let customerId = (customerEnt && customerEnt.id()) || formData[this._customerModel];
+    let customerId =
+      (customerEnt && customerEnt.id()) || formData[this._customerModel];
     let apiCall = customerId
       ? this._customerModel.update(customerId, formData)
       : this._customerModel.create(formData);
@@ -287,12 +237,10 @@ export default class CustomerAdd extends PureComponent {
   }
 
   handleFormikReset() {
-    // let { customerEnt } = this.props;
     this.setState((state) => ({
       _id: 1 + state._id,
       ready: false,
       alerts: [],
-      usrImgBase64: null,
     }));
     // Get bundle data --> ready data
     (async () => {
@@ -303,12 +251,10 @@ export default class CustomerAdd extends PureComponent {
   }
 
   render() {
-    let { _id, ready, alerts, usrImgBase64, genders } = this.state;
+    let { _id, ready, alerts, genders } = this.state;
     let { customerEnt, noEdit } = this.props;
     /** @var {Object} */
     let initialValues = this.getInitialValues();
-    // console.log('initialValues: ', initialValues);
-
     // Ready?
     if (!ready) {
       return <Loading />;
@@ -321,7 +267,11 @@ export default class CustomerAdd extends PureComponent {
             <Card>
               <CardHeader>
                 <b>
-                  {customerEnt ? (noEdit ? "Chi tiết" : "Chỉnh sửa") : "Thêm mới"}{" "}
+                  {customerEnt
+                    ? noEdit
+                      ? "Chi tiết"
+                      : "Chỉnh sửa"
+                    : "Thêm mới"}{" "}
                   khách hàng {customerEnt ? customerEnt.full_name : ""}
                 </b>
               </CardHeader>
@@ -335,7 +285,9 @@ export default class CustomerAdd extends PureComponent {
                       isOpen={true}
                       toggle={() => this.setState({ alerts: [] })}
                     >
-                      <span dangerouslySetInnerHTML={{ __html: msg.toString() }} />
+                      <span
+                        dangerouslySetInnerHTML={{ __html: msg.toString() }}
+                      />
                     </Alert>
                   );
                 })}
@@ -357,42 +309,11 @@ export default class CustomerAdd extends PureComponent {
                         onReset={handleReset}
                       >
                         <Row>
-                          <Col xs={12} sm={3}>
-                            <FormGroup row>
-                              <Col sm={12}>
-                                <div className="hidden ps-relative">
-                                  <Media
-                                    object
-                                    src={
-                                      usrImgBase64 ||
-                                      CustomerModel.defaultImgBase64
-                                    }
-                                    alt="Customer image"
-                                    className="user-imgage radius-50-percent"
-                                  />
-                                  <Input
-                                    type="file"
-                                    id="customer_image_file"
-                                    className="input-overlay"
-                                    onChange={this.handleCustomerImageChange}
-                                    disabled={noEdit}
-                                  />
-                                </div>
-                                <b className="center block">
-                                  {this.makeAvatarStr(values).map((text, idx) =>
-                                    text ? (
-                                      <p key={`avatar-text-${idx}`}>{text}</p>
-                                    ) : null
-                                  )}
-                                </b>
-                              </Col>
-                            </FormGroup>
-                          </Col>
-                          <Col xs={12} sm={9}>
+                          <Col xs={12} sm={12}>
                             <Row>
                               <Col xs={12} sm={6}>
                                 <FormGroup row>
-                                  <Label for="customer_name" sm={4}>
+                                  <Label for="user_name" sm={4}>
                                     Tên đăng nhập
                                     <span className="font-weight-bold red-text">
                                       *
@@ -400,21 +321,21 @@ export default class CustomerAdd extends PureComponent {
                                   </Label>
                                   <Col sm={8}>
                                     <Field
-                                      name="customer_name"
+                                      name="user_name"
                                       render={({ field /* _form */ }) => (
                                         <Input
                                           {...field}
                                           onBlur={null}
                                           type="text"
-                                          name="customer_name"
-                                          id="customer_name"
-                                          placeholder="employee.0001"
+                                          name="user_name"
+                                          id="user_name"
+                                          placeholder="cus.0001"
                                           disabled={noEdit}
                                         />
                                       )}
                                     />
                                     <ErrorMessage
-                                      name="customer_name"
+                                      name="user_name"
                                       component={({ children }) => (
                                         <Alert
                                           color="danger"
@@ -798,48 +719,36 @@ export default class CustomerAdd extends PureComponent {
                                 </FormGroup>
                               </Col>
                             </Row>
-                            <Row className="mb15">
-                              <Col xs={12}>
-                                <b className="underline">Thông tin tài khoản</b>
-                              </Col>
-                            </Row>
                             <Row>
                               <Col sm={12} className="text-right">
                                 {noEdit ? (
-                                  <CheckAccess permission="CUS_CUSTOMER_EDIT">
-                                    <Button
-                                      color="primary"
-                                      className="mr-2 btn-block-sm"
-                                      onClick={() =>
-                                        window._$g.rdr(
-                                          `/customers/edit/${customerEnt.customer_id}`
-                                        )
-                                      }
-                                    >
-                                      <i className="fa fa-edit mr-1" />
-                                      Chỉnh sửa
-                                    </Button>
-                                  </CheckAccess>
+                                  <Button
+                                    color="primary"
+                                    className="mr-2 btn-block-sm"
+                                    onClick={() =>
+                                      window._$g.rdr(
+                                        `/customers/edit/${customerEnt.customer_id}`
+                                      )
+                                    }
+                                  >
+                                    <i className="fa fa-edit mr-1" />
+                                    Chỉnh sửa
+                                  </Button>
                                 ) : (
                                   [
                                     customerEnt && customerEnt.customer_id && (
-                                      <CheckAccess
-                                        key="buttonCustomerPassword"
-                                        permission="CUS_CUSTOMER_PASSWORD"
+                                      <Button
+                                        color="warning text-white"
+                                        className="mr-2 btn-block-sm"
+                                        onClick={() =>
+                                          window._$g.rdr(
+                                            `/customers/change-password/${customerEnt.customer_id}`
+                                          )
+                                        }
                                       >
-                                        <Button
-                                          color="warning text-white"
-                                          className="mr-2 btn-block-sm"
-                                          onClick={() =>
-                                            window._$g.rdr(
-                                              `/customers/change-password/${customerEnt.customer_id}`
-                                            )
-                                          }
-                                        >
-                                          <i className="fa fa-lock mr-1"></i>
-                                          Thay đổi mật khẩu
-                                        </Button>
-                                      </CheckAccess>
+                                        <i className="fa fa-lock mr-1"></i>
+                                        Thay đổi mật khẩu
+                                      </Button>
                                     ),
                                     <Button
                                       key="buttonSave"
@@ -868,7 +777,6 @@ export default class CustomerAdd extends PureComponent {
                                   ]
                                 )}
                                 <Button
-                                  disabled={isSubmitting}
                                   onClick={() => window._$g.rdr("/customers")}
                                   className="btn-block-sm mt-md-0 mt-sm-2"
                                 >

@@ -18,7 +18,7 @@ import {
 import Select from "react-select";
 
 // Component(s)
-import { CheckAccess } from "../../navigation/VerifyAccess";
+
 import Loading from "../Common/Loading";
 
 // Model(s)
@@ -606,24 +606,22 @@ export default class MenuAdd extends PureComponent {
                           <Row>
                             <Col sm={12} className="text-right">
                               {noEdit ? (
-                                <CheckAccess permission="SYS_MENU_EDIT">
-                                  <Button
-                                    color="primary"
-                                    className="mr-2 btn-block-sm"
-                                    onClick={() =>
-                                      window._$g.rdr(
-                                        `/menus/edit/${menuEnt.menu_id}`
-                                      )
-                                    }
-                                    disabled={
-                                      userAuth._isAdministrator() &&
-                                      menuEnt.is_system !== 0
-                                    }
-                                  >
-                                    <i className="fa fa-edit mr-1" />
-                                    Chỉnh sửa
-                                  </Button>
-                                </CheckAccess>
+                                <Button
+                                  color="primary"
+                                  className="mr-2 btn-block-sm"
+                                  onClick={() =>
+                                    window._$g.rdr(
+                                      `/menus/edit/${menuEnt.menu_id}`
+                                    )
+                                  }
+                                  disabled={
+                                    userAuth._isAdministrator() &&
+                                    menuEnt.is_system !== 0
+                                  }
+                                >
+                                  <i className="fa fa-edit mr-1" />
+                                  Chỉnh sửa
+                                </Button>
                               ) : (
                                 [
                                   <Button

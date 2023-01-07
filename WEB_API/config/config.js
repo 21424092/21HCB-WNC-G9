@@ -31,6 +31,7 @@ const config = {
   hashSecretKey: envVars.HASH_SECRET_KEY,
   privateKey: envVars.PRIVATEKEY_RSA,
   publicKey: envVars.PUBLICKEY_RSA,
+  recaptchaKey: envVars.RECAPTCHA_KEY,
   token: {
     key: 'Authorization',
     type: 'Bearer',

@@ -18,7 +18,7 @@ import {
 } from "reactstrap";
 
 // Component(s)
-import { CheckAccess } from "../../navigation/VerifyAccess";
+
 import Loading from "../Common/Loading";
 
 // Util(s)
@@ -526,21 +526,19 @@ export default class FunctionGroupAdd extends PureComponent {
                             <Row>
                               <Col sm={12} className="text-right">
                                 {noEdit ? (
-                                  <CheckAccess permission="SYS_FUNCTIONGROUP_EDIT">
-                                    <Button
-                                      color="primary"
-                                      className="mr-2 btn-block-sm"
-                                      onClick={() =>
-                                        window._$g.rdr(
-                                          `/function-groups/edit/${funcGroupEnt.function_group_id}`
-                                        )
-                                      }
-                                      disabled={userAuth._isAdministrator()}
-                                    >
-                                      <i className="fa fa-edit mr-1" />
-                                      Chỉnh sửa
-                                    </Button>
-                                  </CheckAccess>
+                                  <Button
+                                    color="primary"
+                                    className="mr-2 btn-block-sm"
+                                    onClick={() =>
+                                      window._$g.rdr(
+                                        `/function-groups/edit/${funcGroupEnt.function_group_id}`
+                                      )
+                                    }
+                                    disabled={userAuth._isAdministrator()}
+                                  >
+                                    <i className="fa fa-edit mr-1" />
+                                    Chỉnh sửa
+                                  </Button>
                                 ) : (
                                   [
                                     <Button

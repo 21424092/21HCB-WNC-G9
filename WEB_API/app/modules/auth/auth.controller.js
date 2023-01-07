@@ -6,7 +6,7 @@ const MessageResponse = require('../../common/responses/message.response');
 const stringHelper = require('../../common/helpers/string.helper');
 const RESPONSE_MSG = require('../../common/const/responseMsg.const');
 const userService = require('../user/user.service');
-const authService = require("./auth.service");
+const authService = require('./auth.service');
 
 const createToken = async (req, res, next) => {
   try {

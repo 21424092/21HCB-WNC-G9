@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
 const ruleTranfer = {
   from_account_number: Joi.string().required(),

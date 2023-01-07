@@ -7,7 +7,7 @@ const routes = express.Router();
 
 const prefix = '/banking';
 routes
-  .route("/tranfer")
+  .route('/tranfer')
   .post(validate(rules.tranfer), bankingController.createTransaction);
 module.exports = {
   prefix,

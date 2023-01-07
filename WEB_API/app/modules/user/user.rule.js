@@ -7,11 +7,7 @@ const ruleCreateOrUpdate = {
   birthday: Joi.string().regex(/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/),
   email: Joi.string().email().required(),
   phone_number: Joi.string(),
-  address: Joi.string(),
-<<<<<<< HEAD
-=======
-  default_picture_url: Joi.string().allow('', null),
->>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
+  address: Joi.string()
 };
 
 const ruleResetPassword = {

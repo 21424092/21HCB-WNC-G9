@@ -1,13 +1,12 @@
-<<<<<<< HEAD
-const httpStatus = require('http-status');
-const customerService = require('./customer.service');
-const SingleResponse = require('../../common/responses/single.response');
-const ListResponse = require('../../common/responses/list.response');
-const ErrorResponse = require('../../common/responses/error.response');
-const RESPONSE_MSG = require('../../common/const/responseMsg.const');
-const ValidationResponse = require('../../common/responses/validation.response');
-const apiHelper = require('../../common/helpers/api.helper');
-const stringHelper = require('../../common/helpers/string.helper');
+const httpStatus = require("http-status");
+const customerService = require("./customer.service");
+const SingleResponse = require("../../common/responses/single.response");
+const ListResponse = require("../../common/responses/list.response");
+const ErrorResponse = require("../../common/responses/error.response");
+const RESPONSE_MSG = require("../../common/const/responseMsg.const");
+const ValidationResponse = require("../../common/responses/validation.response");
+const apiHelper = require("../../common/helpers/api.helper");
+const stringHelper = require("../../common/helpers/string.helper");
 /**
  * Get list customer
  *
@@ -22,19 +21,19 @@ const getListCustomer = async (req, res, next) => {
 
     return res.json(
       new ListResponse(
-        customers['data'],
-        customers['total'],
-        customers['page'],
-        customers['limit'],
-      ),
+        customers["data"],
+        customers["total"],
+        customers["page"],
+        customers["limit"]
+      )
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED,
-      ),
+        RESPONSE_MSG.REQUEST_FAILED
+      )
     );
   }
 };
@@ -54,12 +53,12 @@ const createCustomer = async (req, res, next) => {
     params.customer_id = null;
     // Check user_name valid
     if (isNaN(customerName)) {
-      return next(new ValidationResponse('user_name', 'invalid'));
+      return next(new ValidationResponse("user_name", "invalid"));
     }
 
     // Check customer name exists
     const customerExist = await customerService.findByCustomerName(
-      req.body.user_name,
+      req.body.user_name
     );
     if (customerExist) {
       const customer = await customerService.generateCustomerName();
@@ -69,27 +68,27 @@ const createCustomer = async (req, res, next) => {
     // Check email exists
     const emailExist = await customerService.findByEmail(req.body.email);
     if (emailExist) {
-      return next(new ValidationResponse('email', 'already  exists'));
+      return next(new ValidationResponse("email", "already  exists"));
     }
 
     const result = await customerService.createCustomer(params);
 
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.USER.CREATE_FAILED),
+        new ErrorResponse(null, null, RESPONSE_MSG.USER.CREATE_FAILED)
       );
     }
 
     return res.json(
-      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS),
+      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS)
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED,
-      ),
+        RESPONSE_MSG.REQUEST_FAILED
+      )
     );
   }
 };
@@ -107,26 +106,9 @@ const updateCustomer = async (req, res, next) => {
     let params = req.body;
     // Check customer exists
     const customer = await customerService.detailCustomer(
-      req.params.customerId,
+      req.params.customerId
     );
     if (!customer) {
-=======
-const httpStatus = require("http-status");
-const customerService = require("./customer.service");
-const SingleResponse = require("../../common/responses/single.response");
-const ListResponse = require("../../common/responses/list.response");
-const ErrorResponse = require("../../common/responses/error.response");
-const RESPONSE_MSG = require("../../common/const/responseMsg.const");
-const ValidationResponse = require("../../common/responses/validation.response");
-const apiHelper = require("../../common/helpers/api.helper");
-const stringHelper = require("../../common/helpers/string.helper");
-
-const getAccountByNumber = async (req, res, next) => {
-  try {
-    const accountNumber = apiHelper.getQueryParam(req, "accountnumber");
-    console.log("accountNumber", accountNumber);
-    if (!accountNumber) {
->>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
       return next(
         new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
       );
@@ -139,20 +121,20 @@ const getAccountByNumber = async (req, res, next) => {
 
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.USER.UPDATE_FAILED),
+        new ErrorResponse(null, null, RESPONSE_MSG.USER.UPDATE_FAILED)
       );
     }
 
     return res.json(
-      new SingleResponse(result, RESPONSE_MSG.USER.UPDATE_SUCCESS),
+      new SingleResponse(result, RESPONSE_MSG.USER.UPDATE_SUCCESS)
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED,
-      ),
+        RESPONSE_MSG.REQUEST_FAILED
+      )
     );
   }
 };
@@ -165,7 +147,7 @@ const deleteCustomer = async (req, res, next) => {
     const customer = await customerService.detailCustomer(customerId);
     if (!customer) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
       );
     }
 
@@ -178,8 +160,8 @@ const deleteCustomer = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED,
-      ),
+        RESPONSE_MSG.REQUEST_FAILED
+      )
     );
   }
 };
@@ -208,7 +190,6 @@ const detailCustomer = async (req, res, next) => {
   }
 };
 
-<<<<<<< HEAD
 const resetPassword = async (req, res, next) => {
   try {
     const customerId = req.params.customerId;
@@ -217,52 +198,28 @@ const resetPassword = async (req, res, next) => {
     const customer = await customerService.detailCustomer(customerId);
     if (!customer) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
       );
     }
     await customerService.changePasswordCustomer(
       customerId,
       req.body.password,
-      apiHelper.getAuthId(req),
+      apiHelper.getAuthId(req)
     );
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER.UPDATE_PASSWORD_SUCCESS),
+      new SingleResponse(null, RESPONSE_MSG.USER.UPDATE_PASSWORD_SUCCESS)
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED,
-      ),
+        RESPONSE_MSG.REQUEST_FAILED
+      )
     );
   }
 };
-=======
-// /**
-//  * Create new a customer
-//  *
-//  * @param req
-//  * @param res
-//  * @param next
-//  * @returns {Promise<*>}
-//  */
-// const createCustomer = async (req, res, next) => {
-//   try {
-//     let params = req.body;
-//     params.customer_id = null;
-//     // // Check customer_name valid
-//     // if (isNaN(customerName)) {
-//     //   return next(new ValidationResponse("customer_name", "invalid"));
-//     // }
-//     // const customerPaymentExist = await customerService.findByCustomerName(
-//     //     req.body.customer_name
-//     //   );
-//     // if () {
-//     //   return next(new ValidationResponse("customer_name", "đã tồn tại tài khoản thanh toán"));
-//     // }
->>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
 
 const generateCustomerName = async (req, res, next) => {
   try {
@@ -270,15 +227,15 @@ const generateCustomerName = async (req, res, next) => {
     const customer = await customerService.generateCustomerName();
 
     return res.json(
-      new SingleResponse(customer, RESPONSE_MSG.USER.GENERATE_USERNAME_SUCCESS),
+      new SingleResponse(customer, RESPONSE_MSG.USER.GENERATE_USERNAME_SUCCESS)
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED,
-      ),
+        RESPONSE_MSG.REQUEST_FAILED
+      )
     );
   }
 };
@@ -287,12 +244,11 @@ const changePasswordCustomer = async (req, res, next) => {
   try {
     const customerId = req.params.customerId;
 
-<<<<<<< HEAD
     // Check customer exists
     const customer = await customerService.detailCustomer(customerId);
     if (!customer) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
       );
     }
     const hashpassword = await customerService.checkPassword(customerId);
@@ -301,27 +257,27 @@ const changePasswordCustomer = async (req, res, next) => {
         new ErrorResponse(
           httpStatus.BAD_REQUEST,
           null,
-          RESPONSE_MSG.USER.OLD_PASSWORD_WRONG,
-        ),
+          RESPONSE_MSG.USER.OLD_PASSWORD_WRONG
+        )
       );
     }
     // Update password of customer
     await customerService.changePasswordCustomer(
       customerId,
       req.body.new_password,
-      apiHelper.getAuthId(req),
+      apiHelper.getAuthId(req)
     );
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER.UPDATE_PASSWORD_SUCCESS),
+      new SingleResponse(null, RESPONSE_MSG.USER.UPDATE_PASSWORD_SUCCESS)
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED,
-      ),
+        RESPONSE_MSG.REQUEST_FAILED
+      )
     );
   }
 };
@@ -331,30 +287,10 @@ const changePasswordCustomer = async (req, res, next) => {
 //     return res.json(new SingleResponse(serviceRes.getData()));
 //   } catch (error) {
 //     return next(error);
-=======
-//     if (!result) {
-//       return next(
-//         new ErrorResponse(null, null, RESPONSE_MSG.CUSTOMER.CREATE_FAILED)
-//       );
-//     }
-
-//     return res.json(
-//       new SingleResponse(result, RESPONSE_MSG.CUSTOMER.CREATE_SUCCESS)
-//     );
-//   } catch (error) {
-//     return next(
-//       new ErrorResponse(
-//         httpStatus.NOT_IMPLEMENTED,
-//         error,
-//         RESPONSE_MSG.REQUEST_FAILED
-//       )
-//     );
->>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
 //   }
 // };
 
 module.exports = {
-<<<<<<< HEAD
   getListCustomer,
   createCustomer,
   updateCustomer,
@@ -364,7 +300,4 @@ module.exports = {
   changePasswordCustomer,
   generateCustomerName,
   // getOptions,
-=======
-  getAccountByNumber,
->>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
 };

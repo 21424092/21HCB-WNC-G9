@@ -1,17 +1,17 @@
-const database = require('../../models');
-const UserClass = require('../user/user.class');
-const PROCEDURE_NAME = require('../../common/const/procedureName.const');
-const apiHelper = require('../../common/helpers/api.helper');
-const stringHelper = require('../../common/helpers/string.helper');
-const mssql = require('../../models/mssql');
-const logger = require('../../common/classes/logger.class');
-const API_CONST = require('../../common/const/api.const');
-const ServiceResponse = require('../../common/responses/service.response');
-const config = require('../../../config/config');
-const cacheHelper = require('../../common/helpers/cache.helper');
-const CACHE_CONST = require('../../common/const/cache.const');
-const cache = require('../../common/classes/cache.class');
-const _ = require('lodash');
+const database = require("../../models");
+const UserClass = require("../user/user.class");
+const PROCEDURE_NAME = require("../../common/const/procedureName.const");
+const apiHelper = require("../../common/helpers/api.helper");
+const stringHelper = require("../../common/helpers/string.helper");
+const mssql = require("../../models/mssql");
+const logger = require("../../common/classes/logger.class");
+const API_CONST = require("../../common/const/api.const");
+const ServiceResponse = require("../../common/responses/service.response");
+const config = require("../../../config/config");
+const cacheHelper = require("../../common/helpers/cache.helper");
+const CACHE_CONST = require("../../common/const/cache.const");
+const cache = require("../../common/classes/cache.class");
+const _ = require("lodash");
 
 const getListUser = async (req) => {
   try {
@@ -26,7 +26,7 @@ const getListUser = async (req) => {
       replacements: {
         PageSize: limit,
         PageIndex: page,
-        KEYWORD: apiHelper.getQueryParam(req, 'search'),
+        KEYWORD: apiHelper.getQueryParam(req, "search"),
       },
       type: database.QueryTypes.SELECT,
     });
@@ -39,7 +39,7 @@ const getListUser = async (req) => {
     };
   } catch (e) {
     logger.error(e, {
-      function: 'userService.getListUser',
+      function: "userService.getListUser",
     });
 
     return [];
@@ -53,7 +53,7 @@ const createUser = async (bodyParams = {}) => {
     return userid;
   } catch (e) {
     logger.error(e, {
-      function: 'userService.createUser',
+      function: "userService.createUser",
     });
 
     return null;
@@ -67,7 +67,7 @@ const updateUser = async (bodyParams) => {
     return userid;
   } catch (e) {
     logger.error(e, {
-      function: 'userService.updateUser',
+      function: "userService.updateUser",
     });
 
     return null;
@@ -79,15 +79,15 @@ const createUserOrUpdate = async (bodyParams) => {
 
 
   let data = {
-    USERNAME: params.user_name || '',
-    FIRSTNAME: params.first_name || '',
-    LASTNAME: params.last_name || '',
+    USERNAME: params.user_name || "",
+    FIRSTNAME: params.first_name || "",
+    LASTNAME: params.last_name || "",
     FULLNAME: `${params.first_name} ${params.last_name}`,
-    GENDER: params.gender || '',
-    BIRTHDAY: params.birthday || '',
-    EMAIL: params.email || '',
-    PHONENUMBER: params.phone_number || '',
-    ADDRESS: params.address || '',
+    GENDER: params.gender || "",
+    BIRTHDAY: params.birthday || "",
+    EMAIL: params.email || "",
+    PHONENUMBER: params.phone_number || "",
+    ADDRESS: params.address || "",
     CREATEDUSER: params.auth_id,
   };
 
@@ -103,18 +103,18 @@ const createUserOrUpdate = async (bodyParams) => {
         @ADDRESS=:ADDRESS,
         @CREATEDUSER=:CREATEDUSER`;
   if (params.user_id) {
-    data['USERID'] = params.user_id;
-    query += ',@USERID=:USERID';
+    data["USERID"] = params.user_id;
+    query += ",@USERID=:USERID";
   }
   if (params.password) {
-    data['PASSWORD'] = stringHelper.hashPassword(params.password);
-    query += ',@PASSWORD=:PASSWORD';
+    data["PASSWORD"] = stringHelper.hashPassword(params.password);
+    query += ",@PASSWORD=:PASSWORD";
   }
 
   //
-  let userGroups = '';
+  let userGroups = "";
   if (Array.isArray(params.user_groups)) {
-    userGroups = params.user_groups.join('|');
+    userGroups = params.user_groups.join("|");
   }
 
   let transaction;
@@ -134,7 +134,7 @@ const createUserOrUpdate = async (bodyParams) => {
       return null;
     }
     params.user_id = result[0][0].RESULT;
-    if (params.user_id === '-1') {
+    if (params.user_id === "-1") {
       if (transaction) {
         await transaction.rollback();
       }
@@ -148,7 +148,7 @@ const createUserOrUpdate = async (bodyParams) => {
         },
         type: database.QueryTypes.DELETE,
         transaction: transaction,
-      },
+      }
     );
 
     await database.sequelize.query(
@@ -160,14 +160,14 @@ const createUserOrUpdate = async (bodyParams) => {
         },
         type: database.QueryTypes.INSERT,
         transaction: transaction,
-      },
+      }
     );
 
     // commit
     await transaction.commit();
     return params.user_id;
   } catch (err) {
-    console.log('err.message', err.message);
+    console.log("err.message", err.message);
     // Rollback transaction only if the transaction object is defined
     if (transaction) {
       await transaction.rollback();
@@ -185,7 +185,7 @@ const detailUser = async (userId) => {
           USERID: userId,
         },
         type: database.QueryTypes.SELECT,
-      },
+      }
     );
 
     if (user.length) {
@@ -198,7 +198,7 @@ const detailUser = async (userId) => {
     return null;
   } catch (e) {
     logger.error(e, {
-      function: 'userService.detailUser',
+      function: "userService.detailUser",
     });
 
     return null;
@@ -214,7 +214,7 @@ const findByUserName = async (userName) => {
           UserName: userName,
         },
         type: database.QueryTypes.SELECT,
-      },
+      }
     );
 
     if (user.length) {
@@ -223,7 +223,7 @@ const findByUserName = async (userName) => {
 
     return null;
   } catch (error) {
-    console.error('userService.findByUserName', error);
+    console.error("userService.findByUserName", error);
     return null;
   }
 };
@@ -238,12 +238,12 @@ const deleteUser = async (userId, req) => {
           UPDATEDUSER: apiHelper.getAuthId(req),
         },
         type: database.QueryTypes.UPDATE,
-      },
+      }
     );
     removeCacheOptions();
     return true;
   } catch (error) {
-    console.error('userService.deleteUser', error);
+    console.error("userService.deleteUser", error);
     return false;
   }
 };
@@ -259,12 +259,12 @@ const changePasswordUser = async (userId, password, authId) => {
           UPDATEDUSER: authId,
         },
         type: database.QueryTypes.UPDATE,
-      },
+      }
     );
 
     return true;
   } catch (error) {
-    console.error('userService.changePasswordUser', error);
+    console.error("userService.changePasswordUser", error);
     return false;
   }
 };
@@ -278,12 +278,12 @@ const checkPassword = async (userId) => {
           USERID: userId,
         },
         type: database.QueryTypes.SELECT,
-      },
+      }
     );
     return data[0].PASSWORD;
   } catch (error) {
-    console.error('userService.checkPassword', error);
-    return '';
+    console.error("userService.checkPassword", error);
+    return "";
   }
 };
 
@@ -294,7 +294,7 @@ const generateUsername = async () => {
       {
         replacements: {},
         type: database.QueryTypes.SELECT,
-      },
+      }
     );
 
     let data = UserClass.generateUsername(user[0]);
@@ -302,7 +302,7 @@ const generateUsername = async () => {
 
     return data;
   } catch (error) {
-    console.error('userService.generateUsername', error);
+    console.error("userService.generateUsername", error);
     return true;
   }
 };
@@ -312,33 +312,11 @@ const logUserLogin = async (data = {}) => {
     const pool = await mssql.pool;
     await pool
       .request()
-      .input('USERPROFILEID', apiHelper.getValueFromObject(data, 'user_id'))
-      .input('USERNAME', apiHelper.getValueFromObject(data, 'user_name'))
-      .input('ISACTIVE', API_CONST.ISACTIVE.ACTIVE)
-      .input('CREATEDUSER', apiHelper.getValueFromObject(data, 'user_id'))
-      .execute(PROCEDURE_NAME.SYS_USER_LOGIN_LOG_CREATE);
-
-    return new ServiceResponse(true);
-  } catch (e) {
-    logger.error(e, {
-      function: 'userService.logUserLogin',
-    });
-
-    return new ServiceResponse(true);
-  }
-};
-
-<<<<<<< HEAD
-=======
-const logBankLogin = async (data = {}) => {
-  try {
-    const pool = await mssql.pool;
-    await pool
-      .request()
-      .input("CLIENTID", apiHelper.getValueFromObject(data, "clientid"))
-      .input("CLIENTSECRET", apiHelper.getValueFromObject(data, "clientsecret"))
+      .input("USERPROFILEID", apiHelper.getValueFromObject(data, "user_id"))
+      .input("USERNAME", apiHelper.getValueFromObject(data, "user_name"))
       .input("ISACTIVE", API_CONST.ISACTIVE.ACTIVE)
-      .execute(PROCEDURE_NAME.SYS_BANK_LOGIN_LOG_CREATE);
+      .input("CREATEDUSER", apiHelper.getValueFromObject(data, "user_id"))
+      .execute(PROCEDURE_NAME.SYS_USER_LOGIN_LOG_CREATE);
 
     return new ServiceResponse(true);
   } catch (e) {
@@ -350,33 +328,6 @@ const logBankLogin = async (data = {}) => {
   }
 };
 
-const detailBankConnect = async (bankid) => {
-  try {
-    let bank = await database.sequelize.query(
-      `${PROCEDURE_NAME.BANK_GETBYID} @BANKID=:BANKID`,
-      {
-        replacements: {
-          BANKID: bankid,
-        },
-        type: database.QueryTypes.SELECT,
-      }
-    );
-
-    if (bank.length) {
-      bank = UserClass.bankInfo(bank[0]);
-      return bank;
-    }
-
-    return null;
-  } catch (e) {
-    logger.error(e, {
-      function: "userService.detailBank",
-    });
-
-    return null;
-  }
-};
->>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
 
 const removeCacheOptions = () => {
   return cacheHelper.removeByKey(CACHE_CONST.SYS_USER_OPTIONS);
@@ -391,7 +342,7 @@ const findByEmail = async (email) => {
           EMAIL: email,
         },
         type: database.QueryTypes.SELECT,
-      },
+      }
     );
 
     if (user.length) {
@@ -400,19 +351,19 @@ const findByEmail = async (email) => {
 
     return null;
   } catch (error) {
-    console.error('userService.findByEmail', error);
+    console.error("userService.findByEmail", error);
     return null;
   }
 };
 
 const getOptionsAll = async (queryParams = {}) => {
   try {
-    const ids = apiHelper.getValueFromObject(queryParams, 'ids', []);
-    const isActive = apiHelper.getFilterBoolean(queryParams, 'is_active');
-    const parentId = apiHelper.getValueFromObject(queryParams, 'parent_id');
+    const ids = apiHelper.getValueFromObject(queryParams, "ids", []);
+    const isActive = apiHelper.getFilterBoolean(queryParams, "is_active");
+    const parentId = apiHelper.getValueFromObject(queryParams, "parent_id");
     const function_alias = apiHelper.getValueFromObject(
       queryParams,
-      'function_alias',
+      "function_alias"
     );
     const data = await cache.wrap(CACHE_CONST.SYS_USER_OPTIONS, () => {
       return getOptions();
@@ -449,11 +400,11 @@ const getOptionsAll = async (queryParams = {}) => {
       return null;
     });
 
-    return new ServiceResponse(true, '', UserClass.options(dataFilter));
+    return new ServiceResponse(true, "", UserClass.options(dataFilter));
   } catch (e) {
-    logger.error(e, { function: 'userService.getOptionsAll' });
+    logger.error(e, { function: "userService.getOptionsAll" });
 
-    return new ServiceResponse(true, '', []);
+    return new ServiceResponse(true, "", []);
   }
 };
 
@@ -471,7 +422,7 @@ const getOptions = async (req) => {
     return users;
   } catch (e) {
     logger.error(e, {
-      function: 'userService.getOptions',
+      function: "userService.getOptions",
     });
 
     return [];
@@ -492,7 +443,7 @@ const getByFunctionAlias = async (FunctionAlias) => {
     return users;
   } catch (e) {
     logger.error(e, {
-      function: 'userService.getOptions',
+      function: "userService.getOptions",
     });
 
     return [];

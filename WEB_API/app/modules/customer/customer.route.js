@@ -7,6 +7,7 @@ const routes = express.Router();
 
 const prefix = '/customer';
 
+<<<<<<< HEAD
 // List customer
 routes.route('').get(customerController.getListCustomer);
 
@@ -20,6 +21,8 @@ routes.route('/create').post(customerController.generateCustomerName);
 // routes.route("/get-options").get(customerController.getOptions);
 
 // Reset password a customer -- admin
+=======
+>>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
 routes
   .route('/:customerId/change-password')
   .put(validate(rules.resetPassword), customerController.resetPassword);

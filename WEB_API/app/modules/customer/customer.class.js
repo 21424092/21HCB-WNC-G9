@@ -1,5 +1,6 @@
-const Transform = require('../../common/helpers/transform.helper');
+const Transform = require("../../common/helpers/transform.helper");
 
+<<<<<<< HEAD
 const template = {
   customer_id: '{{#? CUSTOMERID}}',
   full_name: '{{#? FULLNAME}}',
@@ -80,4 +81,18 @@ module.exports = {
   list,
   generateCustomerName,
   options,
+=======
+const templateAccountNumber = {
+  accountNumber: "{{#? PAYMENTNUMBER}}",
+  accountName: "{{#? PAYMENTNAME  }}",
+};
+
+const accountNumber = (data) => {
+  let transform = new Transform(templateAccountNumber);
+  return transform.transform(data, ["accountNumber", "accountName"]);
+};
+
+module.exports = {
+  accountNumber,
+>>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
 };

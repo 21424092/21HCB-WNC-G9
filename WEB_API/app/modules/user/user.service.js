@@ -328,6 +328,55 @@ const logUserLogin = async (data = {}) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+const logBankLogin = async (data = {}) => {
+  try {
+    const pool = await mssql.pool;
+    await pool
+      .request()
+      .input("CLIENTID", apiHelper.getValueFromObject(data, "clientid"))
+      .input("CLIENTSECRET", apiHelper.getValueFromObject(data, "clientsecret"))
+      .input("ISACTIVE", API_CONST.ISACTIVE.ACTIVE)
+      .execute(PROCEDURE_NAME.SYS_BANK_LOGIN_LOG_CREATE);
+
+    return new ServiceResponse(true);
+  } catch (e) {
+    logger.error(e, {
+      function: "userService.logUserLogin",
+    });
+
+    return new ServiceResponse(true);
+  }
+};
+
+const detailBankConnect = async (bankid) => {
+  try {
+    let bank = await database.sequelize.query(
+      `${PROCEDURE_NAME.BANK_GETBYID} @BANKID=:BANKID`,
+      {
+        replacements: {
+          BANKID: bankid,
+        },
+        type: database.QueryTypes.SELECT,
+      }
+    );
+
+    if (bank.length) {
+      bank = UserClass.bankInfo(bank[0]);
+      return bank;
+    }
+
+    return null;
+  } catch (e) {
+    logger.error(e, {
+      function: "userService.detailBank",
+    });
+
+    return null;
+  }
+};
+>>>>>>> e51d7304c1a658cc38d9bfce8fbcbb7ae8889b0c
 
 const removeCacheOptions = () => {
   return cacheHelper.removeByKey(CACHE_CONST.SYS_USER_OPTIONS);

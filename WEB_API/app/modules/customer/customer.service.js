@@ -149,8 +149,10 @@ const detailCustomer = async (customerId) => {
   try {
     let customer = await database.sequelize.query(
       `${PROCEDURE_NAME.CUS_CUSTOMER_GETCUSTOMERBYID} @CUSTOMERID=:CUSTOMERID`,
+      `${PROCEDURE_NAME.CUS_CUSTOMER_GETCUSTOMERBYID} @CUSTOMERID=:CUSTOMERID`,
       {
         replacements: {
+          CUSTOMERID: customerId,
           CUSTOMERID: customerId,
         },
         type: database.QueryTypes.SELECT,
@@ -158,6 +160,10 @@ const detailCustomer = async (customerId) => {
     );
 
     if (customer.length) {
+      customer = CustomerClass.detail(customer[0]);
+      customer.isAdministrator =
+        customer.customer_name === config.adminCustomerName ? 1 : 0;
+
       customer = CustomerClass.detail(customer[0]);
       customer.isAdministrator =
         customer.customer_name === config.adminCustomerName ? 1 : 0;
@@ -317,15 +323,64 @@ const findByEmail = async (email) => {
 //     });
 
 //     return customers;
+//     const query = `${PROCEDURE_NAME.SYS_USER_GETOPTIONS}
+//       @IsActive=:IsActive`;
+//     const customers = await database.sequelize.query(query, {
+//       replacements: {
+//         IsActive: API_CONST.ISACTIVE.ALL,
+//       },
+//       type: database.QueryTypes.SELECT,
+//     });
+
+//     return customers;
 //   } catch (e) {
 //     logger.error(e, {
+//       function: "customerService.getOptions",
 //       function: "customerService.getOptions",
 //     });
 
 //     return [];
+//     return [];
 //   }
 // };
 
+const createCustomerAccount = async (bodyParams) => {
+  const params = bodyParams;
+
+  let data = {
+    CUSTOMERID: params.customer_id,
+    ACCOUNTNUMBER: params.accoun_name || "",
+    ACCOUNTHOLDER: params.account_holder || "",
+    CURRENTBALANCE: params.current_balance,
+    ISACTIVE: params.is_active,
+    ISACCOUNTPAYMENT: params.is_account_payment,
+    CREATEDUSER: params.auth_id,
+  };
+
+  let query = `${PROCEDURE_NAME.CUS_CUSTOMER_CREATEORUPDATE} 
+        @CUSTOMERID=:CUSTOMERID,
+        @ACCOUNTNUMBER=:ACCOUNTNUMBER,
+        @ACCOUNTHOLDER=:ACCOUNTHOLDER,
+        @CURRENTBALANCE=:CURRENTBALANCE,
+        @ISACTIVE=:ISACTIVE,
+        @ISACCOUNTPAYMENT=:ISACCOUNTPAYMENT,
+        @CREATEDUSER=:CREATEDUSER`;
+  
+  try {
+    const result = await database.sequelize.query(query, {
+      replacements: data,
+      type: database.QueryTypes.INSERT
+    });
+    if (!result) {
+      return null;
+    }
+    params.customer_id = result[0][0].RESULT;
+    return params.customer_id;
+  } catch (err) {
+    console.log("err.message", err.message);
+    return null;
+  }
+};
 module.exports = {
   getListCustomer,
   createCustomer,
@@ -337,4 +392,5 @@ module.exports = {
   generateCustomerName,
   logCustomerLogin,
   findByEmail,
+  createCustomerAccount,
 };

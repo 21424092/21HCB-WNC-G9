@@ -8,9 +8,6 @@ const envVarsSchema = Joi.object({
   NODE_ENV: Joi.string()
     .allow(['development', 'staging', 'production'])
     .default('development'),
-  APP_URL: Joi.string().required(),
-  RUN_LOCAL: Joi.string().optional().default('no'),
-  UNIT_TESTING: Joi.string().optional().default('no'),
   HASH_SECRET_KEY: Joi.string().required(),
   PUBLICKEY_RSA: Joi.string().required(),
   PRIVATEKEY_RSA: Joi.string().required(),

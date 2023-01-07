@@ -5,6 +5,9 @@
   "author": "",
   "license": "ISC",
   "main": "index.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "lint": "eslint . --fix",
     "start": "nodemon index.js",
@@ -15,10 +18,6 @@
     "hooks": {
       "pre-push": "npm run lint"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://27.71.224.44/git/ruby-api.git"
   },
   "devDependencies": {
     "cross-env": "^5.2.1",

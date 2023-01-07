@@ -51,7 +51,7 @@
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "mssql": "^5.1.0",
-    "node-fetch": "^3.3.0",
+    "node-fetch": "^2.6.7",
     "nodemailer": "^6.4.6",
     "query-string": "^6.8.3",
     "require-context": "^1.1.0",

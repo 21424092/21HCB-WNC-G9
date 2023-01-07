@@ -1,6 +1,5 @@
 const httpStatus = require("http-status");
-const fetch = (...args) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const SingleResponse = require("../../common/responses/single.response");
 const ErrorResponse = require("../../common/responses/error.response");

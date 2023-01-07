@@ -1,17 +1,17 @@
-const database = require("../../models");
-const CustomerClass = require("../customer/customer.class");
-const PROCEDURE_NAME = require("../../common/const/procedureName.const");
-const apiHelper = require("../../common/helpers/api.helper");
-const stringHelper = require("../../common/helpers/string.helper");
-const mssql = require("../../models/mssql");
-const logger = require("../../common/classes/logger.class");
-const API_CONST = require("../../common/const/api.const");
-const ServiceResponse = require("../../common/responses/service.response");
-const config = require("../../../config/config");
-const cacheHelper = require("../../common/helpers/cache.helper");
-const CACHE_CONST = require("../../common/const/cache.const");
-const cache = require("../../common/classes/cache.class");
-const _ = require("lodash");
+const database = require('../../models');
+const CustomerClass = require('../customer/customer.class');
+const PROCEDURE_NAME = require('../../common/const/procedureName.const');
+const apiHelper = require('../../common/helpers/api.helper');
+const stringHelper = require('../../common/helpers/string.helper');
+const mssql = require('../../models/mssql');
+const logger = require('../../common/classes/logger.class');
+const API_CONST = require('../../common/const/api.const');
+const ServiceResponse = require('../../common/responses/service.response');
+const config = require('../../../config/config');
+const cacheHelper = require('../../common/helpers/cache.helper');
+const CACHE_CONST = require('../../common/const/cache.const');
+const cache = require('../../common/classes/cache.class');
+const _ = require('lodash');
 
 const getListCustomer = async (req) => {
   try {
@@ -26,7 +26,7 @@ const getListCustomer = async (req) => {
       replacements: {
         PageSize: limit,
         PageIndex: page,
-        KEYWORD: apiHelper.getQueryParam(req, "search"),
+        KEYWORD: apiHelper.getQueryParam(req, 'search'),
       },
       type: database.QueryTypes.SELECT,
     });
@@ -39,7 +39,7 @@ const getListCustomer = async (req) => {
     };
   } catch (e) {
     logger.error(e, {
-      function: "customerService.getListCustomer",
+      function: 'customerService.getListCustomer',
     });
 
     return [];
@@ -53,7 +53,7 @@ const createCustomer = async (bodyParams = {}) => {
     return customerid;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.createCustomer",
+      function: 'customerService.createCustomer',
     });
 
     return null;
@@ -67,7 +67,7 @@ const updateCustomer = async (bodyParams) => {
     return customerid;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.updateCustomer",
+      function: 'customerService.updateCustomer',
     });
 
     return null;
@@ -78,15 +78,15 @@ const createCustomerOrUpdate = async (bodyParams) => {
   const params = bodyParams;
 
   let data = {
-    USERNAME: params.user_name || "",
-    FIRSTNAME: params.first_name || "",
-    LASTNAME: params.last_name || "",
+    USERNAME: params.user_name || '',
+    FIRSTNAME: params.first_name || '',
+    LASTNAME: params.last_name || '',
     FULLNAME: `${params.first_name} ${params.last_name}`,
-    GENDER: params.gender || "",
-    BIRTHDAY: params.birthday || "",
-    EMAIL: params.email || "",
-    PHONENUMBER: params.phone_number || "",
-    ADDRESS: params.address || "",
+    GENDER: params.gender || '',
+    BIRTHDAY: params.birthday || '',
+    EMAIL: params.email || '',
+    PHONENUMBER: params.phone_number || '',
+    ADDRESS: params.address || '',
     CREATEDUSER: params.auth_id,
   };
 
@@ -102,12 +102,12 @@ const createCustomerOrUpdate = async (bodyParams) => {
         @ADDRESS=:ADDRESS,
         @CREATEDUSER=:CREATEDUSER`;
   if (params.customer_id) {
-    data["USERID"] = params.customer_id;
-    query += ",@USERID=:USERID";
+    data['USERID'] = params.customer_id;
+    query += ',@USERID=:USERID';
   }
   if (params.password) {
-    data["PASSWORD"] = stringHelper.hashPassword(params.password);
-    query += ",@PASSWORD=:PASSWORD";
+    data['PASSWORD'] = stringHelper.hashPassword(params.password);
+    query += ',@PASSWORD=:PASSWORD';
   }
 
   let transaction;
@@ -127,7 +127,7 @@ const createCustomerOrUpdate = async (bodyParams) => {
       return null;
     }
     params.customer_id = result[0][0].RESULT;
-    if (params.customer_id === "-1") {
+    if (params.customer_id === '-1') {
       if (transaction) {
         await transaction.rollback();
       }
@@ -136,7 +136,7 @@ const createCustomerOrUpdate = async (bodyParams) => {
     await transaction.commit();
     return params.customer_id;
   } catch (err) {
-    console.log("err.message", err.message);
+    console.log('err.message', err.message);
     // Rollback transaction only if the transaction object is defined
     if (transaction) {
       await transaction.rollback();
@@ -154,7 +154,7 @@ const detailCustomer = async (customerId) => {
           CUSTOMERID: customerId,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     if (customer.length) {
@@ -166,7 +166,7 @@ const detailCustomer = async (customerId) => {
     return null;
   } catch (e) {
     logger.error(e, {
-      function: "customerService.detailCustomer",
+      function: 'customerService.detailCustomer',
     });
 
     return null;
@@ -182,7 +182,7 @@ const findByCustomerName = async (userName) => {
           UserName: userName,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     if (customer.length) {
@@ -191,7 +191,7 @@ const findByCustomerName = async (userName) => {
 
     return null;
   } catch (error) {
-    console.error("customerService.findByUserNameName", error);
+    console.error('customerService.findByUserNameName', error);
     return null;
   }
 };
@@ -206,12 +206,12 @@ const deleteCustomer = async (customerId, req) => {
           UPDATEDUSER: apiHelper.getAuthId(req),
         },
         type: database.QueryTypes.UPDATE,
-      }
+      },
     );
     removeCacheOptions();
     return true;
   } catch (error) {
-    console.error("customerService.deleteCustomer", error);
+    console.error('customerService.deleteCustomer', error);
     return false;
   }
 };
@@ -227,12 +227,12 @@ const changePasswordCustomer = async (customerId, password, authId) => {
           UPDATEDUSER: authId,
         },
         type: database.QueryTypes.UPDATE,
-      }
+      },
     );
 
     return true;
   } catch (error) {
-    console.error("customerService.changePasswordCustomer", error);
+    console.error('customerService.changePasswordCustomer', error);
     return false;
   }
 };
@@ -244,7 +244,7 @@ const generateCustomerName = async () => {
       {
         replacements: {},
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     let data = CustomerClass.generateCustomerName(customer[0]);
@@ -252,7 +252,7 @@ const generateCustomerName = async () => {
 
     return data;
   } catch (error) {
-    console.error("customerService.generateCustomername", error);
+    console.error('customerService.generateCustomername', error);
     return true;
   }
 };
@@ -262,14 +262,14 @@ const logCustomerLogin = async (data = {}) => {
     const pool = await mssql.pool;
     await pool
       .request()
-      .input("CUSTOMERID", apiHelper.getValueFromObject(data, "customer_id"))
-      .input("LOGTYPE", apiHelper.getValueFromObject(data, "log_type"))
+      .input('CUSTOMERID', apiHelper.getValueFromObject(data, 'customer_id'))
+      .input('LOGTYPE', apiHelper.getValueFromObject(data, 'log_type'))
       .execute(PROCEDURE_NAME.CUS_CUSTOMER_LOGIN_LOG_CREATE);
 
     return new ServiceResponse(true);
   } catch (e) {
     logger.error(e, {
-      function: "customerService.logCustomerLogin",
+      function: 'customerService.logCustomerLogin',
     });
 
     return new ServiceResponse(true);
@@ -289,7 +289,7 @@ const findByEmail = async (email) => {
           EMAIL: email,
         },
         type: database.QueryTypes.SELECT,
-      }
+      },
     );
 
     if (customer.length) {
@@ -298,7 +298,7 @@ const findByEmail = async (email) => {
 
     return null;
   } catch (error) {
-    console.error("customerService.findByEmail", error);
+    console.error('customerService.findByEmail', error);
     return null;
   }
 };
@@ -341,8 +341,8 @@ const createCustomerAccount = async (bodyParams) => {
 
   let data = {
     CUSTOMERID: params.customer_id,
-    ACCOUNTNUMBER: params.accoun_name || "",
-    ACCOUNTHOLDER: params.account_holder || "",
+    ACCOUNTNUMBER: params.accoun_name || '',
+    ACCOUNTHOLDER: params.account_holder || '',
     CURRENTBALANCE: params.current_balance,
     ISACTIVE: params.is_active,
     ISACCOUNTPAYMENT: params.is_account_payment,
@@ -369,7 +369,7 @@ const createCustomerAccount = async (bodyParams) => {
     params.customer_id = result[0][0].RESULT;
     return params.customer_id;
   } catch (err) {
-    console.log("err.message", err.message);
+    console.log('err.message', err.message);
     return null;
   }
 };

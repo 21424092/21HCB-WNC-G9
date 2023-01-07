@@ -1,12 +1,12 @@
 const httpStatus = require('http-status');
 const bcrypt = require('bcrypt');
-const authService = require('./auth.service');
 const SingleResponse = require('../../common/responses/single.response');
 const ErrorResponse = require('../../common/responses/error.response');
 const MessageResponse = require('../../common/responses/message.response');
 const stringHelper = require('../../common/helpers/string.helper');
 const RESPONSE_MSG = require('../../common/const/responseMsg.const');
 const userService = require('../user/user.service');
+const authService = require("./auth.service");
 
 const createToken = async (req, res, next) => {
   try {

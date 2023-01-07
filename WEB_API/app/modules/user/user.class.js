@@ -1,5 +1,4 @@
 const Transform = require('../../common/helpers/transform.helper');
-const config = require('../../../config/config');
 
 const template = {
   user_id: '{{#? USERID}}',
@@ -8,7 +7,6 @@ const template = {
   phone_number: '{{#? PHONENUMBER}}',
   address: '{{#? ADDRESS}}',
   gender: '{{ GENDER ? 1 : 0 }}',
-  default_picture_url: `${config.domain_cdn}{{DEFAULTPICTUREURL}}`,
   user_name: '{{#? USERNAME}}',
   password: '{{#? PASSWORD}}',
   first_name: '{{#? FIRSTNAME}}',
@@ -42,12 +40,10 @@ const detail = (user) => {
     'phone_number',
     'address',
     'gender',
-    'default_picture_url',
     'user_name',
     'first_name',
     'last_name',
     'birthday',
-    'description',
     'user_groups',
   ]);
 };
@@ -78,19 +74,6 @@ const options = (userGroups = []) => {
   return transform.transform(userGroups, ['id', 'name']);
 };
 
-// options
-const templateBank = {
-  id: '{{#? BANKLINKINGID}}',
-  name: '{{#? BANKLINKINGNAME}}',
-  secret: '{{#? BANKLINKINGSECRET}}',
-  status: '{{#? BANKLINKINGSTATUS}}',
-  type: 'bank_linking',
-};
-
-const bankInfo = (data) => {
-  let transform = new Transform(templateBank);
-  return transform.transform(data, ['id', 'name', 'secret', 'status', 'type']);
-};
 
 module.exports = {
   basicInfo,
@@ -98,5 +81,4 @@ module.exports = {
   list,
   generateUsername,
   options,
-  bankInfo,
 };

@@ -3,12 +3,10 @@ const UserClass = require("../user/user.class");
 const PROCEDURE_NAME = require("../../common/const/procedureName.const");
 const apiHelper = require("../../common/helpers/api.helper");
 const stringHelper = require("../../common/helpers/string.helper");
-const fileHelper = require("../../common/helpers/file.helper");
 const mssql = require("../../models/mssql");
 const logger = require("../../common/classes/logger.class");
 const API_CONST = require("../../common/const/api.const");
 const ServiceResponse = require("../../common/responses/service.response");
-const folderNameAvatar = "avatar";
 const config = require("../../../config/config");
 const cacheHelper = require("../../common/helpers/cache.helper");
 const CACHE_CONST = require("../../common/const/cache.const");
@@ -23,20 +21,12 @@ const getListUser = async (req) => {
     const query = `${PROCEDURE_NAME.SYS_USER_GETLIST} 
       @PageSize=:PageSize,
       @PageIndex=:PageIndex,
-      @KEYWORD=:KEYWORD,
-      @BIRTHDAY=:BIRTHDAY,
-      @FUNCTIONALIAS=:FUNCTIONALIAS,
-      @GENDER=:GENDER,
-      @ORDERBYDES=:ORDERBYDES`;
+      @KEYWORD=:KEYWORD`;
     const users = await database.sequelize.query(query, {
       replacements: {
         PageSize: limit,
         PageIndex: page,
         KEYWORD: apiHelper.getQueryParam(req, "search"),
-        BIRTHDAY: apiHelper.getQueryParam(req, "birthday"),
-        GENDER: apiHelper.getQueryParam(req, "gender"),
-        FUNCTIONALIAS: apiHelper.getQueryParam(req, "function_alias"),
-        ORDERBYDES: apiHelper.getQueryParam(req, "sortorder"),
       },
       type: database.QueryTypes.SELECT,
     });
@@ -84,42 +74,9 @@ const updateUser = async (bodyParams) => {
   }
 };
 
-const saveAvatar = async (base64, userId) => {
-  let avatarUrl = null;
-
-  try {
-    if (fileHelper.isBase64(base64)) {
-      const extension = fileHelper.getExtensionFromBase64(base64);
-      avatarUrl = await fileHelper.saveBase64(
-        folderNameAvatar,
-        base64,
-        `${userId}.${extension}`
-      );
-    } else {
-      avatarUrl = base64.split(config.domain_cdn)[1];
-    }
-  } catch (e) {
-    logger.error(e, {
-      function: "userService.saveAvatar",
-    });
-
-    return avatarUrl;
-  }
-
-  return avatarUrl;
-};
-
 const createUserOrUpdate = async (bodyParams) => {
   const params = bodyParams;
 
-  // Upload Avatar
-  const pathAvatar = await saveAvatar(
-    params.default_picture_url,
-    params.user_id
-  );
-  if (pathAvatar) {
-    params.default_picture_url = pathAvatar;
-  }
 
   let data = {
     USERNAME: params.user_name || "",
@@ -131,7 +88,6 @@ const createUserOrUpdate = async (bodyParams) => {
     EMAIL: params.email || "",
     PHONENUMBER: params.phone_number || "",
     ADDRESS: params.address || "",
-    DEFAULTPICTUREURL: params.default_picture_url || "",
     CREATEDUSER: params.auth_id,
   };
 
@@ -145,7 +101,6 @@ const createUserOrUpdate = async (bodyParams) => {
         @EMAIL=:EMAIL,
         @PHONENUMBER=:PHONENUMBER,
         @ADDRESS=:ADDRESS,
-        @DEFAULTPICTUREURL=:DEFAULTPICTUREURL,
         @CREATEDUSER=:CREATEDUSER`;
   if (params.user_id) {
     data["USERID"] = params.user_id;
@@ -313,6 +268,7 @@ const changePasswordUser = async (userId, password, authId) => {
     return false;
   }
 };
+
 const checkPassword = async (userId) => {
   try {
     const data = await database.sequelize.query(
@@ -330,6 +286,7 @@ const checkPassword = async (userId) => {
     return "";
   }
 };
+
 const generateUsername = async () => {
   try {
     const user = await database.sequelize.query(
@@ -371,51 +328,6 @@ const logUserLogin = async (data = {}) => {
   }
 };
 
-const logBankLogin = async (data = {}) => {
-  try {
-    const pool = await mssql.pool;
-    await pool
-      .request()
-      .input("CLIENTID", apiHelper.getValueFromObject(data, "clientid"))
-      .input("CLIENTSECRET", apiHelper.getValueFromObject(data, "clientsecret"))
-      .input("ISACTIVE", API_CONST.ISACTIVE.ACTIVE)
-      .execute(PROCEDURE_NAME.SYS_BANK_LOGIN_LOG_CREATE);
-
-    return new ServiceResponse(true);
-  } catch (e) {
-    logger.error(e, {
-      function: "userService.logUserLogin",
-    });
-
-    return new ServiceResponse(true);
-  }
-};
-const detailBankConnect = async (bankid) => {
-  try {
-    let bank = await database.sequelize.query(
-      `${PROCEDURE_NAME.BANK_GETBYID} @BANKID=:BANKID`,
-      {
-        replacements: {
-          BANKID: bankid,
-        },
-        type: database.QueryTypes.SELECT,
-      }
-    );
-
-    if (bank.length) {
-      bank = UserClass.bankInfo(bank[0]);
-      return bank;
-    }
-
-    return null;
-  } catch (e) {
-    logger.error(e, {
-      function: "userService.detailBank",
-    });
-
-    return null;
-  }
-};
 
 const removeCacheOptions = () => {
   return cacheHelper.removeByKey(CACHE_CONST.SYS_USER_OPTIONS);
@@ -443,6 +355,7 @@ const findByEmail = async (email) => {
     return null;
   }
 };
+
 const getOptionsAll = async (queryParams = {}) => {
   try {
     const ids = apiHelper.getValueFromObject(queryParams, "ids", []);
@@ -494,6 +407,7 @@ const getOptionsAll = async (queryParams = {}) => {
     return new ServiceResponse(true, "", []);
   }
 };
+
 const getOptions = async (req) => {
   try {
     const query = `${PROCEDURE_NAME.SYS_USER_GETOPTIONS} 
@@ -514,6 +428,7 @@ const getOptions = async (req) => {
     return [];
   }
 };
+
 const getByFunctionAlias = async (FunctionAlias) => {
   try {
     const query = `${PROCEDURE_NAME.SYS_USER_GETBYFUNCTIONALIAS} 
@@ -534,6 +449,7 @@ const getByFunctionAlias = async (FunctionAlias) => {
     return [];
   }
 };
+
 module.exports = {
   getListUser,
   createUser,
@@ -547,6 +463,4 @@ module.exports = {
   logUserLogin,
   findByEmail,
   getOptionsAll,
-  logBankLogin,
-  detailBankConnect,
 };

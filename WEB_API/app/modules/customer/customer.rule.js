@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const ruleCreateOrUpdate = {
   first_name: Joi.string().required(),
@@ -12,32 +12,29 @@ const ruleCreateOrUpdate = {
 
 const ruleResetPassword = {
   password: Joi.string().required(),
-  password_confirm: Joi.string().required().valid(Joi.ref('password')),
+  password_confirm: Joi.string().required().valid(Joi.ref("password")),
 };
 const ruleChangePasswordCustomer = {
   old_password: Joi.string().required(),
   new_password: Joi.string().required(),
-  re_password: Joi.string().required().valid(Joi.ref('new_password')),
+  re_password: Joi.string().required().valid(Joi.ref("new_password")),
 };
 
 const validateRules = {
-  // createCustomer: {
-  //   body: Object.assign({}, ruleCreateOrUpdate, ruleResetPassword, {
-  //     customer_name: Joi.required(),
-  //   }),
-  // },
-  // updateCustomer: {
-  //   body: ruleCreateOrUpdate,
-  // },
-  // resetPassword: {
-  //   body: ruleResetPassword,
-  // },
-  // changePasswordCustomer: {
-  //   body: ruleChangePasswordCustomer,
-  // },
-  // changePasswordCustomer: {
-  //   body: ruleChangePasswordCustomer,
-  // }
+  createCustomer: {
+    body: Object.assign({}, ruleCreateOrUpdate, ruleResetPassword, {
+      user_name: Joi.required(),
+    }),
+  },
+  updateCustomer: {
+    body: ruleCreateOrUpdate,
+  },
+  resetPassword: {
+    body: ruleResetPassword,
+  },
+  changePasswordCustomer: {
+    body: ruleChangePasswordCustomer,
+  },
 };
 
 module.exports = validateRules;

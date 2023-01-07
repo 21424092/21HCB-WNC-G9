@@ -15,45 +15,6 @@ const readFileAsString = (path) => {
   return '';
 };
 
-// const saveTmpBase64File = (tmpFilePath = '', base64Uri = '') => {
-//   const base64data = base64Uri.split(';base64,').pop();
-//   return new Promise((resolve, reject) => {
-//     try {
-//       fs.writeFile(tmpFilePath, base64data, 'base64', (err) => {
-//         if (err) {
-//           console.log('saveTmpBase64File.writeFile.error:', err);
-//           resolve(null);
-//         }
-//         resolve(tmpFilePath);
-//       });
-//     } catch (error) {
-//       console.log('saveTmpBase64File.error:', error);
-//       resolve(null);
-//     }
-//   });
-// };
-
-// const uploadAvatar = async (uid, extention, base64) => {
-//   try {
-//     const fileName = `${ uuid() }.${ extention }`.toLowerCase();
-//     const filePath = path.normalize(path.format({ dir: `profile/${uid}`, base: fileName }));
-//     const tmpFilePath = path.join(os.tmpdir(), filePath);
-//     const tempLocalDir = path.dirname(tmpFilePath);
-//
-//     // create localDir to save image
-//     await mkdirp(tempLocalDir);
-//
-//     // save tmp file to localDir
-//     const localFilePath = await saveTmpBase64File(tmpFilePath, base64);
-//
-//     return localFilePath;
-//   } catch (error) {
-//     console.log('error: ', error);
-//   }
-//   console.log('Failed to upload file');
-//   return null;
-// };
-
 const saveTmpBase64File = (pathFile, base64) => {
   try {
     const base64data = base64.split(';base64,').pop();

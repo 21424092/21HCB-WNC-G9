@@ -52,7 +52,7 @@ console.log(data);
     }
     // commit
     await transaction.commit();
-    return result;
+    return result[0][0];
   } catch (err) {
     console.log("err.message", err.message);
     // Rollback transaction only if the transaction object is defined
@@ -62,7 +62,55 @@ console.log(data);
     return null;
   }
 };
+const logBankLogin = async (data = {}) => {
+  try {
+    const pool = await mssql.pool;
+    await pool
+      .request()
+      .input("CLIENTID", apiHelper.getValueFromObject(data, "clientid"))
+      .input("CLIENTSECRET", apiHelper.getValueFromObject(data, "clientsecret"))
+      .input("ISACTIVE", API_CONST.ISACTIVE.ACTIVE)
+      .execute(PROCEDURE_NAME.SYS_BANK_LOGIN_LOG_CREATE);
+
+    return new ServiceResponse(true);
+  } catch (e) {
+    logger.error(e, {
+      function: "userService.logUserLogin",
+    });
+
+    return new ServiceResponse(true);
+  }
+};
+
+const detailBankConnect = async (bankid) => {
+  try {
+    let bank = await database.sequelize.query(
+      `${PROCEDURE_NAME.BANK_GETBYID} @BANKID=:BANKID`,
+      {
+        replacements: {
+          BANKID: bankid,
+        },
+        type: database.QueryTypes.SELECT,
+      }
+    );
+
+    if (bank.length) {
+      bank = UserClass.bankInfo(bank[0]);
+      return bank;
+    }
+
+    return null;
+  } catch (e) {
+    logger.error(e, {
+      function: "userService.detailBank",
+    });
+
+    return null;
+  }
+};
 
 module.exports = {
   createTransaction,
+  logBankLogin,
+  detailBankConnect,
 };

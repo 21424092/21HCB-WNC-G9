@@ -5,7 +5,6 @@ const ListResponse = require('../../common/responses/list.response');
 const ErrorResponse = require('../../common/responses/error.response');
 const RESPONSE_MSG = require('../../common/const/responseMsg.const');
 const ValidationResponse = require('../../common/responses/validation.response');
-const optionService = require('../../common/services/options.service');
 const apiHelper = require('../../common/helpers/api.helper');
 const stringHelper = require('../../common/helpers/string.helper');
 /**

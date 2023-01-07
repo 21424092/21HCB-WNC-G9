@@ -152,7 +152,6 @@ const detailCustomer = async (customerId) => {
       {
         replacements: {
           CUSTOMERID: customerId,
-          CUSTOMERID: customerId,
         },
         type: database.QueryTypes.SELECT,
       },

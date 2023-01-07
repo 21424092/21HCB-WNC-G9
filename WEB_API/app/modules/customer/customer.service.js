@@ -149,7 +149,6 @@ const detailCustomer = async (customerId) => {
   try {
     let customer = await database.sequelize.query(
       `${PROCEDURE_NAME.CUS_CUSTOMER_GETCUSTOMERBYID} @CUSTOMERID=:CUSTOMERID`,
-      `${PROCEDURE_NAME.CUS_CUSTOMER_GETCUSTOMERBYID} @CUSTOMERID=:CUSTOMERID`,
       {
         replacements: {
           CUSTOMERID: customerId,
@@ -349,8 +348,8 @@ const createCustomerAccount = async (bodyParams) => {
 
   let data = {
     CUSTOMERID: params.customer_id,
-    ACCOUNTNUMBER: params.accoun_name || "",
-    ACCOUNTHOLDER: params.account_holder || "",
+    ACCOUNTNUMBER: params.accoun_name || '',
+    ACCOUNTHOLDER: params.account_holder || '',
     CURRENTBALANCE: params.current_balance,
     ISACTIVE: params.is_active,
     ISACCOUNTPAYMENT: params.is_account_payment,
@@ -365,11 +364,11 @@ const createCustomerAccount = async (bodyParams) => {
         @ISACTIVE=:ISACTIVE,
         @ISACCOUNTPAYMENT=:ISACCOUNTPAYMENT,
         @CREATEDUSER=:CREATEDUSER`;
-  
+
   try {
     const result = await database.sequelize.query(query, {
       replacements: data,
-      type: database.QueryTypes.INSERT
+      type: database.QueryTypes.INSERT,
     });
     if (!result) {
       return null;
@@ -377,7 +376,7 @@ const createCustomerAccount = async (bodyParams) => {
     params.customer_id = result[0][0].RESULT;
     return params.customer_id;
   } catch (err) {
-    console.log("err.message", err.message);
+    console.log('err.message', err.message);
     return null;
   }
 };

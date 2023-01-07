@@ -18,8 +18,8 @@ const createToken = async (req, res, next) => {
         new ErrorResponse(
           httpStatus.BAD_REQUEST,
           {},
-          RESPONSE_MSG.AUTH.LOGIN.FAILED
-        )
+          RESPONSE_MSG.AUTH.LOGIN.FAILED,
+        ),
       );
     }
 
@@ -36,16 +36,16 @@ const createToken = async (req, res, next) => {
     // create a token
     const tokenData = await authService.generateToken(user);
     return res.json(
-      new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS)
+      new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS),
     );
   } catch (error) {
-    console.log("createToken", error);
+    console.log('createToken', error);
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -59,20 +59,20 @@ const refreshToken = async (req, res, next) => {
         new ErrorResponse(
           httpStatus.BAD_REQUEST,
           tokenData.error,
-          RESPONSE_MSG.AUTH.LOGIN.REFRESH_TOKEN_FAILED
-        )
+          RESPONSE_MSG.AUTH.LOGIN.REFRESH_TOKEN_FAILED,
+        ),
       );
     }
     return res.json(
-      new SingleResponse(tokenData, RESPONSE_MSG.REQUEST_SUCCESS)
+      new SingleResponse(tokenData, RESPONSE_MSG.REQUEST_SUCCESS),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -86,17 +86,17 @@ const getProfile = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
 
 const bankAccessToken = async (req, res, next) => {
   try {
-    let authorization = req.headers["authorization"];
-    let deAuthorization = Buffer.from(authorization, "base64").toString(
-      "ascii"
+    let authorization = req.headers['authorization'];
+    let deAuthorization = Buffer.from(authorization, 'base64').toString(
+      'ascii',
     );
     const clientid = deAuthorization.substring(0, 36);
     const clientsecret = deAuthorization.substring(36, deAuthorization.length);
@@ -117,25 +117,25 @@ const bankAccessToken = async (req, res, next) => {
     });
     if (tokenData) {
       return res.json(
-        new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS)
+        new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS),
       );
     } else {
       return next(
         new ErrorResponse(
           httpStatus.UNAUTHORIZED,
           null,
-          RESPONSE_MSG.UNAUTHORIZED
-        )
+          RESPONSE_MSG.UNAUTHORIZED,
+        ),
       );
     }
   } catch (error) {
-    console.log("createToken", error);
+    console.log('createToken', error);
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -149,20 +149,20 @@ const bankRefreshToken = async (req, res, next) => {
         new ErrorResponse(
           httpStatus.BAD_REQUEST,
           tokenData.error,
-          RESPONSE_MSG.AUTH.LOGIN.REFRESH_TOKEN_FAILED
-        )
+          RESPONSE_MSG.AUTH.LOGIN.REFRESH_TOKEN_FAILED,
+        ),
       );
     }
     return res.json(
-      new SingleResponse(tokenData, RESPONSE_MSG.REQUEST_SUCCESS)
+      new SingleResponse(tokenData, RESPONSE_MSG.REQUEST_SUCCESS),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -177,8 +177,8 @@ const createCustomerToken = async (req, res, next) => {
         new ErrorResponse(
           httpStatus.BAD_REQUEST,
           {},
-          RESPONSE_MSG.AUTH.LOGIN.FAILED
-        )
+          RESPONSE_MSG.AUTH.LOGIN.FAILED,
+        ),
       );
     }
 
@@ -186,7 +186,7 @@ const createCustomerToken = async (req, res, next) => {
     customerService
       .logCustomerLogin({
         customer_id: customer.customer_id,
-        log_type: "LOGIN",
+        log_type: 'LOGIN',
       })
       .then(() => {
         return null;
@@ -195,16 +195,16 @@ const createCustomerToken = async (req, res, next) => {
     // create a token
     const tokenData = await authService.generateCustomerToken(customer);
     return res.json(
-      new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS)
+      new SingleResponse(tokenData, RESPONSE_MSG.AUTH.LOGIN.SUCCESS),
     );
   } catch (error) {
-    console.log("createToken", error);
+    console.log('createToken', error);
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -218,20 +218,20 @@ const refreshCustomerToken = async (req, res, next) => {
         new ErrorResponse(
           httpStatus.BAD_REQUEST,
           tokenData.error,
-          RESPONSE_MSG.AUTH.LOGIN.REFRESH_TOKEN_FAILED
-        )
+          RESPONSE_MSG.AUTH.LOGIN.REFRESH_TOKEN_FAILED,
+        ),
       );
     }
     return res.json(
-      new SingleResponse(tokenData, RESPONSE_MSG.REQUEST_SUCCESS)
+      new SingleResponse(tokenData, RESPONSE_MSG.REQUEST_SUCCESS),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -244,8 +244,8 @@ const logout = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };

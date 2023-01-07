@@ -113,6 +113,4 @@ module.exports = {
   createTransaction,
   logBankLogin,
   detailBankConnect,
-  logBankLogin,
-  detailBankConnect,
 };

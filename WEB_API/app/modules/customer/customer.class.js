@@ -80,9 +80,4 @@ module.exports = {
   list,
   generateCustomerName,
   options,
-  basicInfo,
-  detail,
-  list,
-  generateCustomerName,
-  options,
 };

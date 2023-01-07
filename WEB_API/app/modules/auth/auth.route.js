@@ -23,10 +23,10 @@ routes.route('/bank-access-token').post(authController.bankAccessToken);
 
 routes.route('/bank-refresh-token').post(authController.bankRefreshToken);
 
-routes.route("/customer-access-token").post(authController.createCustomerToken);
+routes.route('/customer-access-token').post(authController.createCustomerToken);
 
 routes
-  .route("/customer-refresh-token")
+  .route('/customer-refresh-token')
   .post(authController.refreshCustomerToken);
 
 module.exports = {

@@ -2,7 +2,7 @@
   "name": "wnc_g9_bank",
   "version": "0.1.0",
   "description": "Admin Template - Bootstrap 4",
-  "author": "Thuan Huynh",
+  "author": "TrungNC",
   "private": true,
   "dependencies": {
     "@coreui/coreui": "^2.1.12",

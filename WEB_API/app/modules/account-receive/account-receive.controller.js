@@ -111,10 +111,12 @@ const deleteAccountReceive = async (req, res, next) => {
  */
 const detailAccountReceive = async (req, res, next) => {
   try {
+    console.log( req.params)
     // Check accountReceive exists
     const serviceRes = await accountReceiveService.detailAccountReceive(
       req.params.accountReceiveId
     );
+    console.log("serviceRes", serviceRes);
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }

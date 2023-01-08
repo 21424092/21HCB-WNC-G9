@@ -37,7 +37,7 @@ const generateToken = async (user) => {
       token_id: uuid(),
       user_id: user.user_id,
       user_name: user.user_name,
-      type: "admin_banking"
+      type: 'admin_banking',
     };
     // Get information of user
     const userDetail = await userService.detailUser(user.user_id);
@@ -108,7 +108,7 @@ const generateBankToken = async (model) => {
     const data = {
       clientid: model.clientid,
       clientsecret: model.clientsecret,
-      type: "bank_banking",
+      type: 'bank_banking',
     };
     // Get information of user
     const bankDetail = await userService.detailBankConnect(data.clientid);

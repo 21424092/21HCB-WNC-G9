@@ -1,9 +1,9 @@
-const httpStatus = require("http-status");
-const menuService = require("./menu.service");
-const SingleResponse = require("../../common/responses/single.response");
-const ListResponse = require("../../common/responses/list.response");
-const ErrorResponse = require("../../common/responses/error.response");
-const RESPONSE_MSG = require("../../common/const/responseMsg.const");
+const httpStatus = require('http-status');
+const menuService = require('./menu.service');
+const SingleResponse = require('../../common/responses/single.response');
+const ListResponse = require('../../common/responses/list.response');
+const ErrorResponse = require('../../common/responses/error.response');
+const RESPONSE_MSG = require('../../common/const/responseMsg.const');
 
 /**
  * Get list menu
@@ -19,19 +19,19 @@ const getListMenu = async (req, res, next) => {
 
     return res.json(
       new ListResponse(
-        menus["data"],
-        menus["total"],
-        menus["page"],
-        menus["limit"]
-      )
+        menus['data'],
+        menus['total'],
+        menus['page'],
+        menus['limit'],
+      ),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -47,14 +47,14 @@ const getListMenuByUser = async (req, res, next) => {
   try {
     const menus = await menuService.getListMenuByUser(req);
 
-    return res.json(new SingleResponse(menus["data"]));
+    return res.json(new SingleResponse(menus['data']));
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -62,14 +62,14 @@ const getListMenuByCustomer = async (req, res, next) => {
   try {
     const menus = await menuService.getListMenuByCustomer(req);
 
-    return res.json(new SingleResponse(menus["data"]));
+    return res.json(new SingleResponse(menus['data']));
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -87,7 +87,7 @@ const createMenu = async (req, res, next) => {
 
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.MENU.CREATE_FAILED)
+        new ErrorResponse(null, null, RESPONSE_MSG.MENU.CREATE_FAILED),
       );
     }
 
@@ -97,8 +97,8 @@ const createMenu = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -117,7 +117,7 @@ const updateMenu = async (req, res, next) => {
     const func = await menuService.detailMenu(req.params.menuId);
     if (!func) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
 
@@ -126,7 +126,7 @@ const updateMenu = async (req, res, next) => {
 
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.MENU.UPDATE_FAILED)
+        new ErrorResponse(null, null, RESPONSE_MSG.MENU.UPDATE_FAILED),
       );
     }
 
@@ -136,8 +136,8 @@ const updateMenu = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -150,7 +150,7 @@ const deleteMenu = async (req, res, next) => {
     const func = await menuService.detailMenu(menuId);
     if (!func) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
 
@@ -163,8 +163,8 @@ const deleteMenu = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -177,7 +177,7 @@ const detailMenu = async (req, res, next) => {
     const func = await menuService.detailMenu(menuId);
     if (!func) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
 
@@ -187,8 +187,8 @@ const detailMenu = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -201,7 +201,7 @@ const changeStatusMenu = async (req, res, next) => {
     const func = await menuService.detailMenu(menuId);
     if (!func) {
       return next(
-        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND),
       );
     }
 
@@ -209,15 +209,15 @@ const changeStatusMenu = async (req, res, next) => {
     await menuService.changeStatusMenu(menuId, req);
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.MENU.CHANGE_STATUS_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.MENU.CHANGE_STATUS_SUCCESS),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };

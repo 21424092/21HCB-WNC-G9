@@ -27,7 +27,7 @@ import AccountReceiveModel from "../../models/AccountReceiveModel";
 /**
  * @class AccountReceiveAdd
  */
-export default class AccountReceiveAdd extends PureComponent {
+export default class Retweet extends PureComponent {
   /** @var {Object} */
   formikProps = null;
 
@@ -50,7 +50,7 @@ export default class AccountReceiveAdd extends PureComponent {
       /** @var {Boolean} */
       ready: false,
       /** @var {Array} */
-      listbank: [{ name: "-- Chọn --", id: "" }]
+      listbank: [{ name: "-- Chọn --", id: "" }],
     };
   }
 

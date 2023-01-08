@@ -1,19 +1,19 @@
 //
 import Model from "../Model";
 //
-import AccountReceiveEntity from "../AccountReceiveEntity";
+import DebitEntity from "../DebitEntity";
 // Util(s)
 // import { jqxGridColumns } from '../../utils/jqwidgets';
 
 /**
- * @class AccountReceiveModel
+ * @class DebitModel
  */
-export default class AccountReceiveModel extends Model {
+export default class DebitModel extends Model {
   /** @var {String} redux store::state key */
   _stateKeyName = "account_receive";
 
   /** @var {Ref} */
-  _entity = AccountReceiveEntity;
+  _entity = DebitEntity;
 
   /** @var {String} */
   static API_ACCOUNT_RECEIVE_LIST = "account-receive";
@@ -100,7 +100,7 @@ export default class AccountReceiveModel extends Model {
     return this._api
       .get(_static.API_ACCOUNT_RECEIVE_READ.replace(":id", id))
       .then((res) => { console.log(res)
-        return new AccountReceiveEntity(res)});
+        return new DebitEntity(res)});
   }
 
   /**
@@ -142,4 +142,4 @@ export default class AccountReceiveModel extends Model {
   }
 }
 // Make alias
-const _static = AccountReceiveModel;
+const _static = DebitModel;

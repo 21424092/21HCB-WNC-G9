@@ -22,12 +22,12 @@ import Select from "react-select";
 import Loading from "../Common/Loading";
 
 // Model(s)
-import AccountReceiveModel from "../../models/AccountReceiveModel";
+import DebitModel from "../../models/DebitModel";
 
 /**
- * @class AccountReceiveAdd
+ * @class DebitAdd
  */
-export default class AccountReceiveAdd extends PureComponent {
+export default class DebitAdd extends PureComponent {
   /** @var {Object} */
   formikProps = null;
 
@@ -35,14 +35,14 @@ export default class AccountReceiveAdd extends PureComponent {
     super(props);
 
     // Init model(s)
-    this._accountReceiveModel = new AccountReceiveModel();
+    this._debitModel = new DebitModel();
 
     // Bind method(s)
     this.handleFormikSubmit = this.handleFormikSubmit.bind(this);
     this.handleFormikBeforeRender = this.handleFormikBeforeRender.bind(this);
     // Init state
     // +++
-    // let { accountReceiveEnt } = props;
+    // let { debitEnt } = props;
     // +++
     this.state = {
       /** @var {Array} */
@@ -68,10 +68,10 @@ export default class AccountReceiveAdd extends PureComponent {
    * @return {Object}
    */
   getInitialValues() {
-    let { accountReceiveEnt } = this.props;
-    let values = Object.assign({}, this._accountReceiveModel.fillable(), {});
-    if (accountReceiveEnt) {
-      Object.assign(values, accountReceiveEnt);
+    let { debitEnt } = this.props;
+    let values = Object.assign({}, this._debitModel.fillable(), {});
+    if (debitEnt) {
+      Object.assign(values, debitEnt);
     }
     // Format
     Object.keys(values).forEach((key) => {
@@ -89,7 +89,7 @@ export default class AccountReceiveAdd extends PureComponent {
   async _getBundleData() {
     let bundle = {};
     let all = [
-      this._accountReceiveModel
+      this._debitModel
         .getListBank()
         .then((data) => (bundle["listbank"] = data)),
     ];
@@ -148,7 +148,7 @@ export default class AccountReceiveAdd extends PureComponent {
   }
 
   handleFormikSubmit(values, fromProps) {
-    let { accountReceiveEnt } = this.props;
+    let { debitEnt } = this.props;
     let { setSubmitting, resetForm } = fromProps;
     let willRedirect = false;
     let alerts = [];
@@ -161,9 +161,9 @@ export default class AccountReceiveAdd extends PureComponent {
     });
     // console.log('formData: ', formData);
     //
-    let apiCall = accountReceiveEnt
-      ? this._accountReceiveModel.update(accountReceiveEnt.id(), formData)
-      : this._accountReceiveModel.create(formData);
+    let apiCall = debitEnt
+      ? this._debitModel.update(debitEnt.id(), formData)
+      : this._debitModel.create(formData);
     apiCall
       .then((data) => {
         // OK
@@ -173,7 +173,7 @@ export default class AccountReceiveAdd extends PureComponent {
           return window._$g.rdr("/list-of-receiving-accounts");
         }
         // Reset form (only when add new)
-        if (!accountReceiveEnt) {
+        if (!debitEnt) {
           resetForm();
         }
         // Chain
@@ -203,7 +203,7 @@ export default class AccountReceiveAdd extends PureComponent {
 
   render() {
     let { ready, alerts, listbank } = this.state;
-    let { accountReceiveEnt, noEdit } = this.props;
+    let { debitEnt, noEdit } = this.props;
     /** @var {Object} */
     let initialValues = this.getInitialValues();
 
@@ -219,14 +219,14 @@ export default class AccountReceiveAdd extends PureComponent {
             <Card>
               <CardHeader>
                 <b>
-                  {accountReceiveEnt
+                  {debitEnt
                     ? noEdit
                       ? "Chi tiết"
                       : "Chỉnh sửa"
                     : "Thêm mới"}{" "}
                   người nhận{" "}
-                  {accountReceiveEnt
-                    ? `"${accountReceiveEnt.account_holder}"`
+                  {debitEnt
+                    ? `"${debitEnt.account_holder}"`
                     : ""}
                 </b>
               </CardHeader>
@@ -476,7 +476,7 @@ export default class AccountReceiveAdd extends PureComponent {
                                 className="mr-2 btn-block-sm"
                                 onClick={() =>
                                   window._$g.rdr(
-                                    `/list-of-receiving-accounts/edit/${accountReceiveEnt.customer_account_receive_id}`
+                                    `/list-of-receiving-accounts/edit/${debitEnt.customer_account_receive_id}`
                                   )
                                 }
                               >

@@ -89,9 +89,13 @@ const AccountReceiveDetail = React.lazy(() =>
 const AccountReceiveEdit = React.lazy(() =>
   import("./components/AccountReceive/AccountReceiveEdit")
 );
-const AccountReceiveDelete = React.lazy(() =>
-  import("./components/AccountReceive/AccountReceiveDelete")
-);
+//.end#FunctionGroups
+
+// FunctionGroups
+const Debit = React.lazy(() => import("./components/Debit/Debit"));
+const DebitAdd = React.lazy(() => import("./components/Debit/DebitAdd"));
+const DebitDetail = React.lazy(() => import("./components/Debit/DebitDetail"));
+const DebitEdit = React.lazy(() => import("./components/Debit/DebitEdit"));
 //.end#FunctionGroups
 
 // Admin Website: Customer
@@ -99,8 +103,9 @@ const Customer = React.lazy(() => import("./components/Customers/Customers"));
 const CustomerAdd = React.lazy(() =>
   import("./components/Customers/CustomerAdd")
 );
-
 const Accounts = React.lazy(() => import("./components/Account/Accounts"));
+const Retweet = React.lazy(() => import("./components/Tranfer/Retweet"));
+
 //.End
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -361,7 +366,7 @@ const routes = [
   {
     path: "/list-of-receiving-accounts",
     exact: true,
-    name: "Danh sách nhóm quyền",
+    name: "Danh sách người nhận",
     function: "SYS_FUNCTIONGROUP_VIEW",
     component: AccountReceive,
   },
@@ -380,21 +385,50 @@ const routes = [
     component: AccountReceiveEdit,
   },
   {
-    path: "/list-of-receiving-accounts/delete/:id",
-    exact: true,
-    name: "Xóa",
-    function: "SYS_FUNCTIONGROUP_DEL",
-    component: AccountReceiveDelete,
-  },
-  {
     path: "/list-of-receiving-accounts/details/:id",
     exact: true,
     name: "Chi tiết",
     function: "SYS_FUNCTIONGROUP_VIEW",
     component: AccountReceiveDetail,
   },
+  //FunctionGroups
+  {
+    path: "/debit",
+    exact: true,
+    name: "Danh sách nợ",
+    function: "SYS_FUNCTIONGROUP_VIEW",
+    component: Debit,
+  },
+  {
+    path: "/debit/add",
+    exact: true,
+    name: "Thêm mới",
+    function: "SYS_FUNCTIONGROUP_ADD",
+    component: DebitAdd,
+  },
+  {
+    path: "/debit/edit/:id",
+    exact: true,
+    name: "Chỉnh sửa",
+    function: "SYS_FUNCTIONGROUP_EDIT",
+    component: DebitEdit,
+  },
+  {
+    path: "/debit/details/:id",
+    exact: true,
+    name: "Chi tiết",
+    function: "SYS_FUNCTIONGROUP_VIEW",
+    component: DebitDetail,
+  },
   //.end#FunctionGroups
 
+  {
+    path: "/retweet",
+    exact: true,
+    name: "Chuyển khoản nội bộ",
+    function: "SYS_FUNCTIONGROUP_ADD",
+    component: Retweet,
+  },
   //.End
 ];
 

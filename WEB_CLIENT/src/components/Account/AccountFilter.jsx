@@ -60,10 +60,7 @@ class AccountFilter extends Component {
             />
           </FormGroup>
         </Col>
-        <Col
-          xs={2}
-          className="d-flex flex-row justify-content-end align-items-center"
-        >
+        <Col xs={2}>
           <FormGroup className="mb-2 ml-2 mb-sm-0">
             <Button
               className="col-12 MuiPaper-filter__custom--button"

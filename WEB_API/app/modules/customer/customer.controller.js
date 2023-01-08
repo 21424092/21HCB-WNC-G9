@@ -1,11 +1,11 @@
-const httpStatus = require("http-status");
-const customerService = require("./customer.service");
-const SingleResponse = require("../../common/responses/single.response");
-const ListResponse = require("../../common/responses/list.response");
-const ErrorResponse = require("../../common/responses/error.response");
-const RESPONSE_MSG = require("../../common/const/responseMsg.const");
-const ValidationResponse = require("../../common/responses/validation.response");
-const optionService = require("../../common/services/options.service");
+const httpStatus = require('http-status');
+const customerService = require('./customer.service');
+const SingleResponse = require('../../common/responses/single.response');
+const ListResponse = require('../../common/responses/list.response');
+const ErrorResponse = require('../../common/responses/error.response');
+const RESPONSE_MSG = require('../../common/const/responseMsg.const');
+const ValidationResponse = require('../../common/responses/validation.response');
+const optionService = require('../../common/services/options.service');
 
 const getListCustomer = async (req, res, next) => {
   try {
@@ -13,19 +13,19 @@ const getListCustomer = async (req, res, next) => {
 
     return res.json(
       new ListResponse(
-        customers["data"],
-        customers["total"],
-        customers["page"],
-        customers["limit"]
-      )
+        customers['data'],
+        customers['total'],
+        customers['page'],
+        customers['limit'],
+      ),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -37,19 +37,19 @@ const getListAccountCustomer = async (req, res, next) => {
 
     return res.json(
       new ListResponse(
-        customers["data"],
-        customers["total"],
-        customers["page"],
-        customers["limit"]
-      )
+        customers['data'],
+        customers['total'],
+        customers['page'],
+        customers['limit'],
+      ),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -60,7 +60,7 @@ const createCustomer = async (req, res, next) => {
     params.customer_id = null;
     // Check customer name exists
     const customerExist = await customerService.findByCustomerName(
-      req.body.user_name
+      req.body.user_name,
     );
     if (customerExist) {
       const customer = await customerService.generateCustomerName();
@@ -70,27 +70,27 @@ const createCustomer = async (req, res, next) => {
     // Check email exists
     const emailExist = await customerService.findByEmail(req.body.email);
     if (emailExist) {
-      return next(new ValidationResponse("email", "already  exists"));
+      return next(new ValidationResponse('email', 'already  exists'));
     }
 
     const result = await customerService.createCustomer(params);
 
     if (!result) {
       return next(
-        new ErrorResponse(null, null, RESPONSE_MSG.USER.CREATE_FAILED)
+        new ErrorResponse(null, null, RESPONSE_MSG.USER.CREATE_FAILED),
       );
     }
 
     return res.json(
-      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS)
+      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS),
     );
   } catch (error) {
     return next(
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
@@ -100,10 +100,10 @@ const createCustomerAccount = async (req, res, next) => {
     let params = req.body;
     // Check customer name exists
     const customerAccountExist = await customerService.checkExitsPaymentAccount(
-      req.body.account_number
+      req.body.account_number,
     );
     if (customerAccountExist > 0) {
-      return next(new ErrorResponse(null, null, "Số tài khoản đã tồn tại"));
+      return next(new ErrorResponse(null, null, 'Số tài khoản đã tồn tại'));
     }
 
     // Check customer name exists
@@ -122,13 +122,13 @@ const createCustomerAccount = async (req, res, next) => {
         new ErrorResponse(
           null,
           null,
-          "Tạo tài khoản cho người dùng không thành công"
-        )
+          'Tạo tài khoản cho người dùng không thành công',
+        ),
       );
     }
 
     return res.json(
-      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS)
+      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS),
     );
   } catch (error) {
     console.log(error);
@@ -136,15 +136,15 @@ const createCustomerAccount = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };
 
 const getListCustomerAccount = async (req, res, next) => {
   try {
-    const serviceRes = await optionService("CUS_CUSTOMER_ACCOUNT", {
+    const serviceRes = await optionService('CUS_CUSTOMER_ACCOUNT', {
       parent_id: req.params.customerId,
     });
     return res.json(new SingleResponse(serviceRes.getData()));
@@ -158,26 +158,25 @@ const updatePaidAccount = async (req, res, next) => {
     let params = req.body;
     // Check customer name exists
     const customerAccountExist = await customerService.checkExitsPaymentAccount(
-      req.body.account_number
+      req.body.account_number,
     );
     if (customerAccountExist <= 0) {
-      return next(new ErrorResponse(null, null, "Số tài khoản không tồn tại"));
+      return next(new ErrorResponse(null, null, 'Số tài khoản không tồn tại'));
     }
 
     const result = await customerService.updatePaidCustomerAccount(params);
-    console.log(result);
     if (!result) {
       return next(
         new ErrorResponse(
           null,
           null,
-          "Nộp tiền tài khoản cho người dùng không thành công"
-        )
+          'Nộp tiền tài khoản cho người dùng không thành công',
+        ),
       );
     }
 
     return res.json(
-      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS)
+      new SingleResponse(result, RESPONSE_MSG.USER.CREATE_SUCCESS),
     );
   } catch (error) {
     console.log(error);
@@ -185,8 +184,8 @@ const updatePaidAccount = async (req, res, next) => {
       new ErrorResponse(
         httpStatus.NOT_IMPLEMENTED,
         error,
-        RESPONSE_MSG.REQUEST_FAILED
-      )
+        RESPONSE_MSG.REQUEST_FAILED,
+      ),
     );
   }
 };

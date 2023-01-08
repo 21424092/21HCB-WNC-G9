@@ -1,4 +1,4 @@
-const AccountReceiveClass = require('../account-receive/account-receive.class');
+const DebitClass = require('../account-receive/account-receive.class');
 const PROCEDURE_NAME = require('../../common/const/procedureName.const');
 const apiHelper = require('../../common/helpers/api.helper');
 const mssql = require('../../models/mssql');
@@ -15,7 +15,7 @@ const CACHE_CONST = require('../../common/const/cache.const');
  * @param queryParams
  * @returns ServiceResponse
  */
-const getListAccountReceive = async (queryParams = {}) => {
+const getListDebit = async (queryParams = {}) => {
   try {
     const currentPage = apiHelper.getCurrentPage(queryParams);
     const itemsPerPage = apiHelper.getItemsPerPage(queryParams);
@@ -27,19 +27,19 @@ const getListAccountReceive = async (queryParams = {}) => {
       .input('PageSize', itemsPerPage)
       .input('PageIndex', currentPage)
       .input('KEYWORD', keyword)
-      .execute(PROCEDURE_NAME.CUS_CUSTOMER_ACCOUNT_RECEIVE_GETLIST);
+      .execute(PROCEDURE_NAME.CUS_CUSTOMER_DEBIT_GETLIST);
 
-    const accountReceives = data.recordset;
+    const debits = data.recordset;
 
     return new ServiceResponse(true, '', {
-      data: AccountReceiveClass.list(accountReceives),
+      data: DebitClass.list(debits),
       page: currentPage,
       limit: itemsPerPage,
-      total: apiHelper.getTotalData(accountReceives),
+      total: apiHelper.getTotalData(debits),
     });
   } catch (e) {
     logger.error(e, {
-      function: 'accountReceiveService.getListAccountReceive',
+      function: 'debitService.getListDebit',
     });
 
     return new ServiceResponse(true, '', {});
@@ -52,11 +52,11 @@ const getListAccountReceive = async (queryParams = {}) => {
  * @param bodyParams
  * @returns ServiceResponse
  */
-const createAccountReceive = async (bodyParams = {}) => {
+const createDebit = async (bodyParams = {}) => {
   return await createUserOrUpdate(bodyParams);
 };
 
-const updateAccountReceive = async (bodyParams = {}) => {
+const updateDebit = async (bodyParams = {}) => {
   return await createUserOrUpdate(bodyParams);
 };
 
@@ -70,10 +70,10 @@ const createUserOrUpdate = async (bodyParams = {}) => {
     await transaction.begin();
 
     // Save SYS_USERGROUP
-    const requestAccountReceive = new sql.Request(transaction);
-    const resultAccountReceive = await requestAccountReceive
+    const requestDebit = new sql.Request(transaction);
+    const resultDebit = await requestDebit
       .input(
-        'CUSTOMERACCOUNTRECEIVEID',
+        'CUSTOMERDEBITID',
         apiHelper.getValueFromObject(bodyParams, 'customer_account_receive_id'),
       )
       .input(
@@ -88,9 +88,9 @@ const createUserOrUpdate = async (bodyParams = {}) => {
       .input('BANKID', apiHelper.getValueFromObject(bodyParams, 'bank_id'))
       .input('ISACTIVE', apiHelper.getValueFromObject(bodyParams, 'is_active'))
       .input('CREATEDUSER', apiHelper.getValueFromObject(bodyParams, 'auth_id'))
-      .execute(PROCEDURE_NAME.CUS_CUSTOMER_ACCOUNT_RECEIVE_CREATEORUPDATE);
+      .execute(PROCEDURE_NAME.CUS_CUSTOMER_DEBIT_CREATEORUPDATE);
     // Get USERGROUPID
-    const accountReceiveId = resultAccountReceive.recordset[0].RESULT;
+    const debitId = resultDebit.recordset[0].RESULT;
 
     // Commit transaction
     await transaction.commit();
@@ -98,9 +98,9 @@ const createUserOrUpdate = async (bodyParams = {}) => {
     removeCacheOptions();
 
     // Return ok
-    return new ServiceResponse(true, '', accountReceiveId);
+    return new ServiceResponse(true, '', debitId);
   } catch (e) {
-    logger.error(e, { function: 'accountReceiveService.createUserOrUpdate' });
+    logger.error(e, { function: 'debitService.createUserOrUpdate' });
 
     // Rollback transaction
     await transaction.rollback();
@@ -112,30 +112,30 @@ const createUserOrUpdate = async (bodyParams = {}) => {
   }
 };
 
-const detailAccountReceive = async (accountReceiveId) => {
+const detailDebit = async (debitId) => {
   try {
     const pool = await mssql.pool;
 
     const data = await pool
       .request()
-      .input('CUSTOMERACCOUNTRECEIVEID', accountReceiveId)
-      .execute(PROCEDURE_NAME.CUS_CUSTOMER_ACCOUNT_RECEIVE_DETAIL);
-    let accountReceive = AccountReceiveClass.detail(data.recordset[0]);
+      .input('CUSTOMERDEBITID', debitId)
+      .execute(PROCEDURE_NAME.CUS_CUSTOMER_DEBIT_DETAIL);
+    let debit = DebitClass.detail(data.recordset[0]);
 
     // If exists SYS_USERGROUP
-    if (accountReceive) {
-      return new ServiceResponse(true, '', accountReceive);
+    if (debit) {
+      return new ServiceResponse(true, '', debit);
     }
 
     return new ServiceResponse(false, RESPONSE_MSG.NOT_FOUND);
   } catch (e) {
-    logger.error(e, { function: 'accountReceiveService.detailAccountReceive' });
+    logger.error(e, { function: 'debitService.detailDebit' });
 
     return new ServiceResponse(false, e.message);
   }
 };
 
-const deleteAccountReceive = async (accountReceiveId, req) => {
+const deleteDebit = async (debitId, req) => {
   const pool = await mssql.pool;
   const transaction = await new sql.Transaction(pool);
 
@@ -144,11 +144,11 @@ const deleteAccountReceive = async (accountReceiveId, req) => {
     await transaction.begin();
 
     // Delete user group
-    const requestAccountReceive = new sql.Request(transaction);
-    await requestAccountReceive
-      .input('CUSTOMERACCOUNTRECEIVEID', accountReceiveId)
+    const requestDebit = new sql.Request(transaction);
+    await requestDebit
+      .input('CUSTOMERDEBITID', debitId)
       .input('UPDATEDUSER', apiHelper.getAuthId(req))
-      .execute(PROCEDURE_NAME.CUS_CUSTOMER_ACCOUNT_RECEIVE_DELETE);
+      .execute(PROCEDURE_NAME.CUS_CUSTOMER_DEBIT_DELETE);
 
     // Commit transaction
     await transaction.commit();
@@ -158,7 +158,7 @@ const deleteAccountReceive = async (accountReceiveId, req) => {
     // Return ok
     return new ServiceResponse(true);
   } catch (e) {
-    logger.error(e, { function: 'accountReceiveService.deleteAccountReceive' });
+    logger.error(e, { function: 'debitService.deleteDebit' });
 
     // Rollback transaction
     await transaction.rollback();
@@ -168,22 +168,22 @@ const deleteAccountReceive = async (accountReceiveId, req) => {
   }
 };
 
-const changeStatusAccountReceive = async (accountReceiveId, bodyParams) => {
+const changeStatusDebit = async (debitId, bodyParams) => {
   try {
     const pool = await mssql.pool;
     await pool
       .request()
-      .input('CUSTOMERACCOUNTRECEIVEID', accountReceiveId)
+      .input('CUSTOMERDEBITID', debitId)
       .input('ISACTIVE', apiHelper.getValueFromObject(bodyParams, 'is_active'))
       .input('UPDATEDUSER', apiHelper.getValueFromObject(bodyParams, 'auth_id'))
-      .execute(PROCEDURE_NAME.CUS_CUSTOMER_ACCOUNT_RECEIVE_CHANGESTATUS);
+      .execute(PROCEDURE_NAME.CUS_CUSTOMER_DEBIT_CHANGESTATUS);
 
     removeCacheOptions();
 
     return new ServiceResponse(true);
   } catch (e) {
     logger.error(e, {
-      function: 'accountReceiveService.changeStatusAccountReceive',
+      function: 'debitService.changeStatusDebit',
     });
 
     return new ServiceResponse(false);
@@ -195,10 +195,10 @@ const removeCacheOptions = () => {
 };
 
 module.exports = {
-  getListAccountReceive,
-  createAccountReceive,
-  detailAccountReceive,
-  updateAccountReceive,
-  deleteAccountReceive,
-  changeStatusAccountReceive,
+  getListDebit,
+  createDebit,
+  detailDebit,
+  updateDebit,
+  deleteDebit,
+  changeStatusDebit,
 };

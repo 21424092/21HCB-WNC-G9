@@ -1,12 +1,12 @@
 const Transform = require('../../common/helpers/transform.helper');
 
 const template = {
-  customer_account_receive_id: "{{#? CUSTOMERACCOUNTRECEIVEID}}",
+  customer_debit_id: "{{#? CUSTOMERDEBITID}}",
+  account_id: "{{#? ACCOUNTID}}",
   account_number: "{{#? ACCOUNTNUMBER}}",
   account_holder: "{{#? ACCOUNTHOLDER}}",
-  nickname: "{{#? NICKNAME}}",
-  bank_id: "{{#? BANKID}}",
-  bank_name: "{{#? BANKNAME}}",
+  current_debit: "{{#? CURRENTDEBIT}}",
+  content_debit: "{{#? CONTENTDEBIT}}",
   is_active: "{{#? ISACTIVE ? 1 : 0}}",
   created_user: "{{#? CREATEDUSER}}",
   created_date: "{{#? CREATEDDATE}}",
@@ -19,26 +19,26 @@ const template = {
 
 let transform = new Transform(template);
 
-const detail = (user) => {
-  return transform.transform(user, [
-    "customer_account_receive_id",
+const detail = (model) => {
+  return transform.transform(model, [
+    "customer_debit_id",
+    "account_id",
     "account_number",
     "account_holder",
-    "nickname",
-    "bank_id",
-    "bank_name",
+    "current_debit",
+    "content_debit",
     "is_active",
   ]);
 };
 
-const list = (users = []) => {
-  return transform.transform(users, [
-    "customer_account_receive_id",
+const list = (models = []) => {
+  return transform.transform(models, [
+    "customer_debit_id",
+    "account_id",
     "account_number",
     "account_holder",
-    "nickname",
-    "bank_id",
-    "bank_name",
+    "current_debit",
+    "content_debit",
     "is_active",
   ]);
 };

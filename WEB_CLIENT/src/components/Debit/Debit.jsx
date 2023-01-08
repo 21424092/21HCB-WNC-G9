@@ -10,29 +10,29 @@ import { CircularProgress } from "@material-ui/core";
 import { layoutFullWidthHeight } from "../../utils/html";
 import { configTableOptions, configIDRowTable } from "../../utils/index";
 // Model(s)
-import AccountReceiveModel from "../../models/AccountReceiveModel";
+import DebitModel from "../../models/DebitModel";
 // Component(s)
 
-import AccountReceivesFilter from "./AccountReceiveFilter";
+import DebitsFilter from "./DebitFilter";
 import CustomPagination from "../../utils/CustomPagination";
 import UserModel from "../../models/UserModel";
 // Set layout full-wh
 layoutFullWidthHeight();
 
 /**
- * @class AccountReceives
+ * @class Debits
  */
-class AccountReceive extends PureComponent {
+class Debit extends PureComponent {
   /**
-   * @var {AccountReceiveModel}
+   * @var {DebitModel}
    */
-  _accountReceiveModel;
+  _debitModel;
 
   constructor(props) {
     super(props);
 
     // Init model(s)
-    this._accountReceiveModel = new AccountReceiveModel();
+    this._debitModel = new DebitModel();
     this._userModel = new UserModel();
   }
   state = {
@@ -54,7 +54,7 @@ class AccountReceive extends PureComponent {
   // get data
   getData = (query = {}) => {
     this.setState({ isLoading: true });
-    return this._accountReceiveModel.list(query).then((res) => {
+    return this._debitModel.list(query).then((res) => {
       let data = [...res.items];
       let isLoading = false;
       let count = res.totalItems;
@@ -105,7 +105,7 @@ class AccountReceive extends PureComponent {
   handleDelete = (confirm, id, rowIndex) => {
     const { data } = this.state;
     if (confirm) {
-      this._accountReceiveModel
+      this._debitModel
         .delete(id)
         .then(() => {
           const cloneData = [...data];
@@ -134,7 +134,7 @@ class AccountReceive extends PureComponent {
   onChangeStatus = (confirm, status, id, idx) => {
     if (confirm) {
       let postData = { is_active: status ? 1 : 0 };
-      this._accountReceiveModel
+      this._debitModel
         .changeStatus(id, postData)
         .then(() => {
           const cloneData = [...this.state.data];
@@ -346,7 +346,7 @@ class AccountReceive extends PureComponent {
           {this.state.toggleSearch && (
             <CardBody className="px-0 py-0">
               <div className="MuiPaper-filter__custom z-index-2">
-                <AccountReceivesFilter
+                <DebitsFilter
                   userArr={this.state.user}
                   handleSubmit={this.handleSubmitFilter}
                   handleAdd={this.handleClickAdd}
@@ -386,4 +386,4 @@ class AccountReceive extends PureComponent {
   }
 }
 
-export default AccountReceive;
+export default Debit;

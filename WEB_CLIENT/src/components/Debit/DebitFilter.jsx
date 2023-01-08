@@ -1,13 +1,19 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import { Input, Button, FormGroup, Row, Col } from "reactstrap";
+import { Input, Button, FormGroup, Col, Row } from "reactstrap";
+class DebitsFilter extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      inputValue: "",
+    };
+  }
 
-// Component(s)
-// Model(s)
-
-class CustomerFilter extends Component {
+  handleClickAdd = () => {
+    window._$g.rdr("/list-of-receiving-accounts/add");
+  };
   handleChange = (event) => {
-    this.setState({ inputValue: event.target.value || "" });
+    this.setState({ [event.target.name]: event.target.value });
   };
 
   handleKeyDown = (event) => {
@@ -36,14 +42,10 @@ class CustomerFilter extends Component {
     }
   };
 
-  handleClickAdd = () => {
-    window._$g.rdr("/customers/add");
-  };
-
   render() {
     return (
       <Row className="w-100 d-flex flex-row justify-content-end align-items-center mb-2 mt-2 mr-2">
-        <Col xs={6}>
+        <Col xs={4}>
           <FormGroup className="mb-2 ml-2 mb-sm-0">
             <Input
               className="MuiPaper-filter__custom--input"
@@ -60,7 +62,7 @@ class CustomerFilter extends Component {
             />
           </FormGroup>
         </Col>
-        <Col xs={2}>
+        <Col xs={1}>
           <FormGroup className="mb-2 ml-2 mb-sm-0">
             <Button
               className="col-12 MuiPaper-filter__custom--button"
@@ -72,6 +74,8 @@ class CustomerFilter extends Component {
               <span className="ml-1">Tìm kiếm</span>
             </Button>
           </FormGroup>
+        </Col>
+        <Col xs={1}>
           <FormGroup className="mb-2 ml-2 mb-sm-0">
             <Button
               className="col-12 MuiPaper-filter__custom--button"
@@ -89,8 +93,8 @@ class CustomerFilter extends Component {
   }
 }
 
-CustomerFilter.propTypes = {
+DebitsFilter.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
 };
 
-export default CustomerFilter;
+export default DebitsFilter;

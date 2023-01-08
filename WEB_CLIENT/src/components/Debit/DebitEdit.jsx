@@ -2,28 +2,28 @@ import React, { PureComponent } from "react";
 
 // Component(s)
 import Loading from "../Common/Loading";
-import AccountReceiveAdd from "./AccountReceiveAdd";
+import DebitAdd from "./DebitAdd";
 
 // Model(s)
-import AccountReceiveModel from "../../models/AccountReceiveModel";
+import DebitModel from "../../models/DebitModel";
 
 /** @var {Object} */
 const userAuth = window._$g.userAuth;
 
 /**
- * @class AccountReceiveEdit
+ * @class DebitEdit
  */
-export default class AccountReceiveEdit extends PureComponent {
+export default class DebitEdit extends PureComponent {
   constructor(props) {
     super(props);
 
     // Init model(s)
-    this._accountReceiveModel = new AccountReceiveModel();
+    this._debitModel = new DebitModel();
 
     // Init state
     this.state = {
-      /** @var {AccountReceiveEntity} */
-      accountReceiveEnt: null,
+      /** @var {DebitEntity} */
+      debitEnt: null,
     };
   }
 
@@ -31,28 +31,28 @@ export default class AccountReceiveEdit extends PureComponent {
     // Fetch record data
     (async () => {
       let ID = this.props.match.params.id;
-      let accountReceiveEnt = await this._accountReceiveModel
+      let debitEnt = await this._debitModel
         .read(ID)
         .catch(() => {
           setTimeout(() => window._$g.rdr("/404"));
         });
-      accountReceiveEnt && this.setState({ accountReceiveEnt });
+      debitEnt && this.setState({ debitEnt });
     })();
     //.end
   }
 
   render() {
-    let { accountReceiveEnt } = this.state;
+    let { debitEnt } = this.state;
     let { noEdit } = this.props;
 
     // Ready?
-    if (!accountReceiveEnt) {
+    if (!debitEnt) {
       return <Loading />;
     }
 
     return (
-      <AccountReceiveAdd
-        accountReceiveEnt={accountReceiveEnt}
+      <DebitAdd
+        debitEnt={debitEnt}
         noEdit={noEdit || userAuth._isAdministrator()}
         {...this.props}
       />

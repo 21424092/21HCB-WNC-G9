@@ -1,161 +1,140 @@
 import React, { PureComponent } from "react";
 import { Card, CardBody, CardHeader, Button } from "reactstrap";
-
 // Material
 import MUIDataTable from "mui-datatables";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 import { CircularProgress } from "@material-ui/core";
-import CustomPagination from "../../utils/CustomPagination";
-
-// Component(s)
-import UserFilter from "./UserFilter";
 
 // Util(s)
-// import { layoutFullWidthHeight } from '../../utils/html'
+import { layoutFullWidthHeight } from "../../utils/html";
 import { configTableOptions, configIDRowTable } from "../../utils/index";
 // Model(s)
-import UserModel from "../../models/UserModel";
+import AccountReceiveModel from "../../models/AccountReceiveModel";
+// Component(s)
 
+import AccountReceivesFilter from "./AccountReceiveFilter";
+import CustomPagination from "../../utils/CustomPagination";
+import UserModel from "../../models/UserModel";
 // Set layout full-wh
-// layoutFullWidthHeight()
+layoutFullWidthHeight();
+
+/** @var {Object} */
+const userAuth = window._$g.userAuth;
 
 /**
- * @class Users
+ * @class AccountReceives
  */
-class Users extends PureComponent {
+class AccountReceive extends PureComponent {
   /**
-   * @var {UserModel}
+   * @var {AccountReceiveModel}
    */
-  _userModel;
+  _functionGroupModel;
 
   constructor(props) {
     super(props);
 
     // Init model(s)
+    this._functionGroupModel = new AccountReceiveModel();
     this._userModel = new UserModel();
-    // Bind method(s)
   }
-
   state = {
     toggleSearch: true,
     page: 0,
     count: 1,
     data: [],
+    isLoading: false,
     query: {
       itemsPerPage: 25,
       page: 1,
+      is_active: 1,
+      is_system: 2,
     },
-    isLoading: false,
-    isOpenSnackbar: false,
-    snackbarMsg: "",
-    snackBarClss: "info",
     /** @var {Array} */
-    roles: [
-      { name: "Role 1", value: "1" },
-      { name: "Role 2", value: "2" },
-      { name: "Role 3", value: "3" },
-      { name: "Role 4", value: "4" },
-    ],
+    user: [{ name: "-- Chọn --", id: "" }],
   };
 
   componentDidMount() {
-    // Get bundle data
+    this.getData({ ...this.state.query });
+  }
+
+  // get data
+  getData = (query = {}) => {
     this.setState({ isLoading: true });
-    (async () => {
-      let bundle = await this._getBundleData();
-      let { data = {} } = bundle;
-      let dataConfig = data.items || [];
+    let bundle = this._getBundleData();
+    return this._functionGroupModel.list(query).then((res) => {
+      let data = [...res.items];
       let isLoading = false;
-      let count = data.totalItems;
-      let page = 0;
-      //
+      let count = res.totalItems;
+      let page = query["page"] - 1 || 0;
+      let { user = [] } = this.state;
+
+      user = user.concat(bundle.user || []);
+      console.log(user);
       this.setState(
         {
           isLoading,
         },
         () => {
           this.setState({
-            data: dataConfig,
+            data,
             count,
             page,
+            query,
+            user,
           });
         }
       );
-    })();
-    //.end
-  }
+    });
+  };
 
   /**
    * Goi API, lay toan bo data lien quan, vd: chuc vu, phong ban, dia chi,...
    */
-  async _getBundleData() {
+  _getBundleData() {
     let bundle = {};
-    let all = [
-      // @TODO:
-      this._userModel.list().then((data) => (bundle["data"] = data)),
-    ];
-    await Promise.all(all).catch((err) => {
-      window._$g.dialogs.alert(
-        window._$g._(`Khởi tạo dữ liệu không thành công (${err.message}).`),
-        () => {
-          window.location.reload();
-        }
-      );
-    });
-    // console.log('bundle: ', bundle);
+    // let all = [
+    //   // @TODO:
+    //   this._userModel.getOptions()
+    //     .then(data => (bundle['user'] = data)),
+    // ]
     return bundle;
   }
 
-  // get data
-  getData = (query = {}) => {
-    this.setState({ isLoading: true });
-    return this._userModel.list(query).then((res) => {
-      let data = res.items;
-      let isLoading = false;
-      let count = res.totalItems;
-      let page = query["page"] - 1 || 0;
-      this.setState({
-        data,
-        isLoading,
-        count,
-        page,
-        query,
-      });
-    });
-  };
-
   handleClickAdd = () => {
-    window._$g.rdr("/users/add");
+    window._$g.rdr("/list-of-receiving-accounts/add");
   };
 
-  handleActionItemClick(type, id, rowIndex) {
+  handleActionItemClick = (type, id, rowIndex) => {
     let routes = {
-      detail: "/users/detail/",
-      delete: "/users/delete/",
-      edit: "/users/edit/",
-      changePassword: "/users/change-password/",
+      detail: "/list-of-receiving-accounts/details/",
+      delete: "/list-of-receiving-accounts/delete/",
+      edit: "/list-of-receiving-accounts/edit/",
     };
     const route = routes[type];
-    if (type.match(/detail|edit|changePassword/i)) {
+    if (type.match(/detail|edit/i)) {
       window._$g.rdr(`${route}${id}`);
     } else {
       window._$g.dialogs.prompt(
         "Bạn có chắc chắn muốn xóa dữ liệu đang chọn?",
         "Xóa",
-        (confirm) => this.handleClose(confirm, id, rowIndex)
+        (confirm) => this.handleDelete(confirm, id, rowIndex)
       );
     }
-  }
+  };
 
-  handleClose(confirm, id, rowIndex) {
+  handleDelete = (confirm, id, rowIndex) => {
     const { data } = this.state;
     if (confirm) {
-      this._userModel
+      this._functionGroupModel
         .delete(id)
         .then(() => {
-          const cloneData = JSON.parse(JSON.stringify(data));
+          const cloneData = [...data];
           cloneData.splice(rowIndex, 1);
+          const count = cloneData.length;
           this.setState({
             data: cloneData,
+            count,
           });
         })
         .catch(() => {
@@ -164,12 +143,60 @@ class Users extends PureComponent {
           );
         });
     }
-  }
+  };
+  handleChangeStatus = (status, id, rowIndex) => {
+    window._$g.dialogs.prompt(
+      "Bạn có chắc chắn muốn thay đổi trạng thái dữ liệu đang chọn?",
+      "Cập nhật",
+      (confirm) => this.onChangeStatus(confirm, status, id, rowIndex)
+    );
+  };
 
-  handleSubmitFilter = (search) => {
+  onChangeStatus = (confirm, status, id, idx) => {
+    if (confirm) {
+      let postData = { is_active: status ? 1 : 0 };
+      this._functionGroupModel
+        .changeStatus(id, postData)
+        .then(() => {
+          const cloneData = [...this.state.data];
+          cloneData[idx].is_active = status;
+          this.setState(
+            {
+              data: cloneData,
+            },
+            () => {
+              window._$g.toastr.show(
+                "Cập nhật trạng thái thành công.",
+                "success"
+              );
+            }
+          );
+        })
+        .catch(() => {
+          window._$g.toastr.show(
+            "Cập nhật trạng thái không thành công.",
+            "error"
+          );
+        });
+    }
+  };
+  handleSubmitFilter = (
+    keyword,
+    is_active,
+    created_date_from,
+    created_date_to,
+    username
+  ) => {
     let query = { ...this.state.query };
     query.page = 1;
-    query = Object.assign(query, { search });
+    query = Object.assign(query, {
+      keyword,
+      is_active,
+      created_date_from,
+      created_date_to,
+      username,
+    });
+    console.log(query);
     this.getData(query).catch(() => {
       window._$g.dialogs.alert(
         window._$g._("Bạn vui lòng chọn dòng dữ liệu cần thao tác!")
@@ -192,67 +219,84 @@ class Users extends PureComponent {
 
   render() {
     const columns = [
-      configIDRowTable("user_id", "/users/detail/", this.state.query),
+      configIDRowTable(
+        "customer_account_receive_id",
+        "/list-of-receiving-accounts/details/",
+        this.state.query
+      ),
       {
-        name: "user_name",
-        label: "Mã NV",
+        name: "account_holder",
+        label: "Tên tài khoản",
         options: {
           filter: false,
           sort: false,
         },
       },
       {
-        name: "full_name",
-        label: "Họ và tên",
+        name: "account_number",
+        label: "Số tài khoản",
         options: {
           filter: false,
           sort: false,
         },
       },
       {
-        name: "gender",
-        label: "Giới tính",
+        name: "nickname",
+        label: "Nickname",
         options: {
           filter: false,
           sort: false,
-          customBodyRender: (value, tableMeta, updateValue) => {
-            let result = null;
-            switch ("" + value) {
-              case "0":
-                result = <span>Nữ</span>;
-                break;
-              case "1":
-                result = <span>Nam</span>;
-                break;
-              default:
-                result = <span>Khác</span>;
-            }
-            return result;
+        },
+      },
+      {
+        name: "create_date",
+        label: "Ngày tạo",
+        options: {
+          filter: false,
+          sort: false,
+        },
+      },
+      {
+        name: "is_active",
+        label: "Kích hoạt",
+        options: {
+          filter: true,
+          customHeadRender: (columnMeta, handleToggleColumn) => {
+            return (
+              <th
+                key={`head-th-${columnMeta.label}`}
+                className="MuiTableCell-root MuiTableCell-head"
+              >
+                <div className="text-center">{columnMeta.label}</div>
+              </th>
+            );
           },
-        },
-      },
-      {
-        name: "phone_number",
-        label: "Điện thoại",
-        options: {
-          filter: false,
-          sort: false,
-        },
-      },
-      {
-        name: "address_full",
-        label: "Địa chỉ",
-        options: {
-          filter: false,
-          sort: false,
-        },
-      },
-      {
-        name: "email",
-        label: "Email",
-        options: {
-          filter: false,
-          sort: false,
+          customBodyRender: (value, tableMeta, updateValue) => {
+            return (
+              <div className="text-center">
+                <FormControlLabel
+                  label={value ? "Có" : "Không"}
+                  value={value ? "Có" : "Không"}
+                  control={
+                    <Switch
+                      color="primary"
+                      checked={value === 1}
+                      value={value}
+                    />
+                  }
+                  onChange={(event) => {
+                    let checked = 1 - 1 * event.target.value;
+                    this.handleChangeStatus(
+                      checked,
+                      this.state.data[tableMeta["rowIndex"]]
+                        .customer_account_receive_id,
+                      tableMeta["rowIndex"]
+                    );
+                  }}
+                />
+              </div>
+            );
+          },
         },
       },
       {
@@ -271,7 +315,8 @@ class Users extends PureComponent {
                   onClick={(evt) =>
                     this.handleActionItemClick(
                       "detail",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
+                      this.state.data[tableMeta["rowIndex"]]
+                        .customer_account_receive_id,
                       tableMeta["rowIndex"]
                     )
                   }
@@ -279,32 +324,20 @@ class Users extends PureComponent {
                   <i className="fa fa-info" />
                 </Button>
                 <Button
-                  color="primary"
+                  color="success"
                   title="Chỉnh sửa"
                   className="mr-1"
                   onClick={(evt) =>
                     this.handleActionItemClick(
                       "edit",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
+                      this.state.data[tableMeta["rowIndex"]]
+                        .customer_account_receive_id,
                       tableMeta["rowIndex"]
                     )
                   }
+                  disabled={userAuth._isAdministrator()}
                 >
                   <i className="fa fa-edit" />
-                </Button>
-                <Button
-                  color="success"
-                  title="Thay đổi mật khẩu"
-                  className="mr-1"
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "changePassword",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-lock"></i>
                 </Button>
                 <Button
                   color="danger"
@@ -313,10 +346,12 @@ class Users extends PureComponent {
                   onClick={(evt) =>
                     this.handleActionItemClick(
                       "delete",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
+                      this.state.data[tableMeta["rowIndex"]]
+                        .customer_account_receive_id,
                       tableMeta["rowIndex"]
                     )
                   }
+                  disabled={userAuth._isAdministrator()}
                 >
                   <i className="fa fa-trash" />
                 </Button>
@@ -353,7 +388,11 @@ class Users extends PureComponent {
           {this.state.toggleSearch && (
             <CardBody className="px-0 py-0">
               <div className="MuiPaper-filter__custom z-index-2">
-                <UserFilter handleSubmit={this.handleSubmitFilter} />
+                <AccountReceivesFilter
+                  userArr={this.state.user}
+                  handleSubmit={this.handleSubmitFilter}
+                  handleAdd={this.handleClickAdd}
+                />
               </div>
             </CardBody>
           )}
@@ -369,7 +408,7 @@ class Users extends PureComponent {
         </Button>
         <Card className="animated fadeIn">
           <CardBody className="px-0 py-0">
-            <div className="MuiPaper-root__custom MuiPaper-user">
+            <div className="MuiPaper-root__custom">
               {this.state.isLoading ? (
                 <div className="d-flex flex-fill justify-content-center mt-5 mb-5">
                   <CircularProgress />
@@ -398,4 +437,4 @@ class Users extends PureComponent {
   }
 }
 
-export default Users;
+export default AccountReceive;

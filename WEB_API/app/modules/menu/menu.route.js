@@ -12,7 +12,9 @@ routes.route('')
   .get(menuController.getListMenu);
 // List menu by user
 routes.route('/get-by-user')
-  .get(menuController.getListMenuByUser);
+  .get(menuController.getListMenuByUser);// List menu by user
+routes.route('/get-by-customer')
+  .get(menuController.getListMenuByCustomer);
 
 // Create new a menu
 routes.route('')

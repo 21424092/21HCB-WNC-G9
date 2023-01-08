@@ -5,7 +5,7 @@ import { Input, Button, FormGroup, Row, Col } from "reactstrap";
 // Component(s)
 // Model(s)
 
-class CustomerFilter extends Component {
+class AccountFilter extends Component {
   handleChange = (event) => {
     this.setState({ inputValue: event.target.value || "" });
   };
@@ -75,25 +75,14 @@ class CustomerFilter extends Component {
               <span className="ml-1">Tìm kiếm</span>
             </Button>
           </FormGroup>
-          <FormGroup className="mb-2 ml-2 mb-sm-0">
-            <Button
-              className="col-12 MuiPaper-filter__custom--button"
-              onClick={() => this.handleClickAdd()}
-              color="success"
-              size="sm"
-            >
-              <i className="fa fa-plus" />
-              <span className="ml-1">Thêm mới</span>
-            </Button>
-          </FormGroup>
         </Col>
       </Row>
     );
   }
 }
 
-CustomerFilter.propTypes = {
+AccountFilter.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
 };
 
-export default CustomerFilter;
+export default AccountFilter;

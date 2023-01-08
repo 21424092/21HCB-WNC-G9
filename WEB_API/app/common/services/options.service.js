@@ -53,9 +53,9 @@ module.exports = async function (tableName, queryParams) {
       if(idsFilter.length && !idsFilter.includes(item.ID.toString())) {
         isFilter = false;
       }
-      if(parentId && Number(parentId) !== Number(item.PARENTID)) {
-        isFilter = false;
-      }
+      // if(parentId && Number(parentId) !== Number(item.PARENTID)) {
+      //   isFilter = false;
+      // }
 
       if(isFilter) {
         return item;

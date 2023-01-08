@@ -38,12 +38,14 @@ const validateRules = {
   createAccountCustomer: {
     body: {
       customer_id: Joi.number().required(),
-      last_name: Joi.string().required(),
-      gender: Joi.number().valid(0, 1).required(),
-      birthday: Joi.string().regex(/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/),
-      email: Joi.string().email().required(),
-      phone_number: Joi.string(),
-      address: Joi.string(),
+      account_number: Joi.string().required(),
+      account_holder: Joi.string().required(),
+    },
+  },
+  updatePaidAccountCustomer: {
+    body: {
+      account_number: Joi.string().required(),
+      current_balance: Joi.number().required(),
     },
   },
 };

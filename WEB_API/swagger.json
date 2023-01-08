@@ -15,6 +15,21 @@
                 "email": "chitrung0895@gmail.com"
             }
         },
+        "host": "localhost:3000",
+        "basePath": "/",
+        "securityDefinitions": {
+            "Authorization": {
+                "type": "apiKey",
+                "name": "authorization",
+                "in": "header",
+                "description": "Authentication token"
+            }
+        },
+        "security": [
+            {
+                "Authorization": []
+            }
+        ],
         "servers": [
             {
                 "url": "http://localhost:3000/api"

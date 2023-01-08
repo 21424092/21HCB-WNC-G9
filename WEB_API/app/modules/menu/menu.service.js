@@ -57,6 +57,21 @@ const getListMenuByUser = async (req) => {
     return [];
   }
 };
+const getListMenuByCustomer = async (req) => {
+  try {
+    const query = `${PROCEDURE_NAME.SYS_MENU_GETBYCUSTOMER}`;
+    const menus = await database.sequelize.query(query, {
+      type: database.QueryTypes.SELECT,
+    });
+    return {
+      data: MenuClass.list(menus),
+    };
+  } catch (error) {
+    console.error('menuService.getListMenuByUser', error);
+    return [];
+  }
+};
+
 
 const createMenu = async (req) => {
   try {
@@ -192,4 +207,5 @@ module.exports = {
   updateMenu,
   deleteMenu,
   changeStatusMenu,
+  getListMenuByCustomer,
 };

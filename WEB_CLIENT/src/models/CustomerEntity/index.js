@@ -1,17 +1,12 @@
-import Entity from '../Entity';
+import Entity from "../Entity";
 
-export default class CustomerEntity extends Entity
-{
+export default class CustomerEntity extends Entity {
+  primaryKey = "customer_id";
   /**
-   * @var {String} Primary Key
+   *
+   * @returns {String}
    */
-  primaryKey = 'customer_id';
-
-  _fullname()
-  {
-    return this.fullname || [
-      this.first_name,
-      this.last_name
-    ].join(' ').trim();
+  _fullname() {
+    return this.fullname || [this.first_name, this.last_name].join(" ").trim();
   }
 }

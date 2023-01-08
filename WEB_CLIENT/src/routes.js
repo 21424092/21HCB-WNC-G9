@@ -76,18 +76,31 @@ const Permissions = React.lazy(() =>
 );
 //.end#Permissions
 
+// FunctionGroups
+const AccountReceive = React.lazy(() =>
+  import("./components/AccountReceive/AccountReceive")
+);
+const AccountReceiveAdd = React.lazy(() =>
+  import("./components/AccountReceive/AccountReceiveAdd")
+);
+const AccountReceiveDetail = React.lazy(() =>
+  import("./components/AccountReceive/AccountReceiveDetail")
+);
+const AccountReceiveEdit = React.lazy(() =>
+  import("./components/AccountReceive/AccountReceiveEdit")
+);
+const AccountReceiveDelete = React.lazy(() =>
+  import("./components/AccountReceive/AccountReceiveDelete")
+);
+//.end#FunctionGroups
+
 // Admin Website: Customer
 const Customer = React.lazy(() => import("./components/Customers/Customers"));
-const CustomerAdd = React.lazy(() => import("./components/Customers/CustomerAdd"));
-const CustomerDetail = React.lazy(() =>
-  import("./components/Customers/CustomerDetail")
+const CustomerAdd = React.lazy(() =>
+  import("./components/Customers/CustomerAdd")
 );
-const CustomerEdit = React.lazy(() =>
-  import("./components/Customers/CustomerEdit")
-);
-const CustomerChangePassword = React.lazy(() =>
-  import("./components/Customers/CustomerChangePassword")
-);
+
+const Accounts = React.lazy(() => import("./components/Account/Accounts"));
 //.End
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -99,7 +112,9 @@ const routes = [
     name: "Trang chủ",
     function: "DASHBOARD_VIEW",
     component: () => {
-      window._$g.rdr("/users");
+      if (!!window._$g.userAuth) window._$g.rdr("/users");
+      if (!!window._$g.customerAuth) window._$g.rdr("/account-list");
+
       return null;
     },
   },
@@ -335,26 +350,51 @@ const routes = [
     component: CustomerAdd,
   },
   {
-    path: "/customers/detail/:id",
+    path: "/account-list",
     exact: true,
-    name: "Chi tiết",
-    function: "CRM_ACCOUNT_VIEW",
-    component: CustomerDetail,
+    name: "Danh sách tài khoản",
+    function: "CRM_ACCOUNT_ADD",
+    component: Accounts,
+  },
+
+  //FunctionGroups
+  {
+    path: "/list-of-receiving-accounts",
+    exact: true,
+    name: "Danh sách nhóm quyền",
+    function: "SYS_FUNCTIONGROUP_VIEW",
+    component: AccountReceive,
   },
   {
-    path: "/customers/edit/:id",
+    path: "/list-of-receiving-accounts/add",
+    exact: true,
+    name: "Thêm mới",
+    function: "SYS_FUNCTIONGROUP_ADD",
+    component: AccountReceiveAdd,
+  },
+  {
+    path: "/list-of-receiving-accounts/edit/:id",
     exact: true,
     name: "Chỉnh sửa",
-    function: "CRM_ACCOUNT_EDIT",
-    component: CustomerEdit,
+    function: "SYS_FUNCTIONGROUP_EDIT",
+    component: AccountReceiveEdit,
   },
   {
-    path: "/customers/customers-change-password/:id",
+    path: "/list-of-receiving-accounts/delete/:id",
     exact: true,
-    name: "Thay đổi mật khẩu",
-    function: "SYS_ACCOUNT_PASSWORD",
-    component: CustomerChangePassword,
+    name: "Xóa",
+    function: "SYS_FUNCTIONGROUP_DEL",
+    component: AccountReceiveDelete,
   },
+  {
+    path: "/list-of-receiving-accounts/details/:id",
+    exact: true,
+    name: "Chi tiết",
+    function: "SYS_FUNCTIONGROUP_VIEW",
+    component: AccountReceiveDetail,
+  },
+  //.end#FunctionGroups
+
   //.End
 ];
 

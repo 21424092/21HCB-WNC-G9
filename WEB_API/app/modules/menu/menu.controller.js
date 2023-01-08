@@ -1,9 +1,9 @@
-const httpStatus = require('http-status');
-const menuService = require('./menu.service');
-const SingleResponse = require('../../common/responses/single.response');
-const ListResponse = require('../../common/responses/list.response');
-const ErrorResponse = require('../../common/responses/error.response');
-const RESPONSE_MSG = require('../../common/const/responseMsg.const');
+const httpStatus = require("http-status");
+const menuService = require("./menu.service");
+const SingleResponse = require("../../common/responses/single.response");
+const ListResponse = require("../../common/responses/list.response");
+const ErrorResponse = require("../../common/responses/error.response");
+const RESPONSE_MSG = require("../../common/const/responseMsg.const");
 
 /**
  * Get list menu
@@ -17,9 +17,22 @@ const getListMenu = async (req, res, next) => {
   try {
     const menus = await menuService.getListMenu(req);
 
-    return res.json(new ListResponse(menus['data'], menus['total'], menus['page'], menus['limit']));
+    return res.json(
+      new ListResponse(
+        menus["data"],
+        menus["total"],
+        menus["page"],
+        menus["limit"]
+      )
+    );
   } catch (error) {
-    return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 /**
@@ -34,9 +47,30 @@ const getListMenuByUser = async (req, res, next) => {
   try {
     const menus = await menuService.getListMenuByUser(req);
 
-    return res.json(new SingleResponse(menus['data']));
+    return res.json(new SingleResponse(menus["data"]));
   } catch (error) {
-    return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
+  }
+};
+const getListMenuByCustomer = async (req, res, next) => {
+  try {
+    const menus = await menuService.getListMenuByCustomer(req);
+
+    return res.json(new SingleResponse(menus["data"]));
+  } catch (error) {
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 /**
@@ -51,13 +85,21 @@ const createMenu = async (req, res, next) => {
   try {
     const result = await menuService.createMenu(req);
 
-    if(! result) {
-      return next(new ErrorResponse(null, null, RESPONSE_MSG.MENU.CREATE_FAILED));
+    if (!result) {
+      return next(
+        new ErrorResponse(null, null, RESPONSE_MSG.MENU.CREATE_FAILED)
+      );
     }
 
     return res.json(new SingleResponse(null, RESPONSE_MSG.MENU.CREATE_SUCCESS));
   } catch (error) {
-    return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 
@@ -73,20 +115,30 @@ const updateMenu = async (req, res, next) => {
   try {
     // Check menu exists
     const func = await menuService.detailMenu(req.params.menuId);
-    if(! func) {
-      return next(new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND));
+    if (!func) {
+      return next(
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+      );
     }
 
     // Update menu
     const result = await menuService.updateMenu(req);
 
-    if(! result) {
-      return next(new ErrorResponse(null, null, RESPONSE_MSG.MENU.UPDATE_FAILED));
+    if (!result) {
+      return next(
+        new ErrorResponse(null, null, RESPONSE_MSG.MENU.UPDATE_FAILED)
+      );
     }
 
     return res.json(new SingleResponse(null, RESPONSE_MSG.MENU.UPDATE_SUCCESS));
   } catch (error) {
-    return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 
@@ -96,8 +148,10 @@ const deleteMenu = async (req, res, next) => {
 
     // Check menu exists
     const func = await menuService.detailMenu(menuId);
-    if(! func) {
-      return next(new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND));
+    if (!func) {
+      return next(
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+      );
     }
 
     // Delete menu
@@ -105,7 +159,13 @@ const deleteMenu = async (req, res, next) => {
 
     return res.json(new SingleResponse(null, RESPONSE_MSG.MENU.DELETE_SUCCESS));
   } catch (error) {
-    return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 
@@ -115,13 +175,21 @@ const detailMenu = async (req, res, next) => {
 
     // Check menu exists
     const func = await menuService.detailMenu(menuId);
-    if(! func) {
-      return next(new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND));
+    if (!func) {
+      return next(
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+      );
     }
 
     return res.json(new SingleResponse(func));
   } catch (error) {
-    return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 
@@ -131,22 +199,33 @@ const changeStatusMenu = async (req, res, next) => {
 
     // Check menu exists
     const func = await menuService.detailMenu(menuId);
-    if(! func) {
-      return next(new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND));
+    if (!func) {
+      return next(
+        new ErrorResponse(httpStatus.NOT_FOUND, null, RESPONSE_MSG.NOT_FOUND)
+      );
     }
 
     // Update password of menu
     await menuService.changeStatusMenu(menuId, req);
 
-    return res.json(new SingleResponse(null, RESPONSE_MSG.MENU.CHANGE_STATUS_SUCCESS));
+    return res.json(
+      new SingleResponse(null, RESPONSE_MSG.MENU.CHANGE_STATUS_SUCCESS)
+    );
   } catch (error) {
-    return next(new ErrorResponse(httpStatus.NOT_IMPLEMENTED, error, RESPONSE_MSG.REQUEST_FAILED));
+    return next(
+      new ErrorResponse(
+        httpStatus.NOT_IMPLEMENTED,
+        error,
+        RESPONSE_MSG.REQUEST_FAILED
+      )
+    );
   }
 };
 
 module.exports = {
   getListMenu,
   getListMenuByUser,
+  getListMenuByCustomer,
   createMenu,
   updateMenu,
   deleteMenu,

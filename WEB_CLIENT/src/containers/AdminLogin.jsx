@@ -95,7 +95,14 @@ export default class AdminLogin extends Component {
 
     this._userModel
       .login(values.user_name, values.password, gg_token)
-      .then((data) => (userAuth = data))
+      .then((data) => {
+        userAuth = data;
+
+        this.setState(() => ({
+          userAuth,
+          alerts,
+        }));
+      })
       .catch((err) => {
         alerts.push({ color: "danger", msg: err.message });
       })
@@ -115,10 +122,8 @@ export default class AdminLogin extends Component {
 
   render() {
     let { userAuth, alerts, refreshReCaptcha } = this.state;
-    console.log(refreshReCaptcha);
     /** @var {Object} */
     let initialValues = this.getInitialValues();
-    // console.log('initialValues: ', initialValues);
 
     // Redirect to dashboard?!
     if (userAuth) {
@@ -169,9 +174,7 @@ export default class AdminLogin extends Component {
                               <fieldset disabled={isSubmitting}>
                                 <h1>{window._$g._("Đăng nhập")}</h1>
                                 <p className="text-muted">
-                                  {window._$g._(
-                                    "Đăng nhập vào tài khoản của bạn"
-                                  )}
+                                  {window._$g._("Đăng nhập phân hệ quản trị")}
                                 </p>
                                 <InputGroup className="mb-1">
                                   <InputGroupAddon addonType="prepend">

@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { Card, CardBody, CardHeader, Button } from "reactstrap";
+import { Card, CardBody, CardHeader } from "reactstrap";
 
 // Material
 import MUIDataTable from "mui-datatables";
@@ -7,32 +7,28 @@ import { CircularProgress } from "@material-ui/core";
 import CustomPagination from "../../utils/CustomPagination";
 
 // Component(s)
-import UserFilter from "./UserFilter";
-
+import AccountFilter from "./AccountFilter";
 // Util(s)
-// import { layoutFullWidthHeight } from '../../utils/html'
-import { configTableOptions, configIDRowTable } from "../../utils/index";
+import {
+  configTableOptions,
+  configIDRowTable,
+  numberFormat,
+} from "../../utils/index";
 // Model(s)
-import UserModel from "../../models/UserModel";
-
-// Set layout full-wh
-// layoutFullWidthHeight()
+import CustomerModel from "../../models/CustomerModel";
 
 /**
- * @class Users
+ * @class Customers
  */
-class Users extends PureComponent {
+class Accounts extends PureComponent {
   /**
-   * @var {UserModel}
+   * @var {CustomerModel}
    */
-  _userModel;
+  _customerModel;
 
   constructor(props) {
     super(props);
-
-    // Init model(s)
-    this._userModel = new UserModel();
-    // Bind method(s)
+    this._customerModel = new CustomerModel();
   }
 
   state = {
@@ -48,13 +44,10 @@ class Users extends PureComponent {
     isOpenSnackbar: false,
     snackbarMsg: "",
     snackBarClss: "info",
-    /** @var {Array} */
-    roles: [
-      { name: "Role 1", value: "1" },
-      { name: "Role 2", value: "2" },
-      { name: "Role 3", value: "3" },
-      { name: "Role 4", value: "4" },
-    ],
+    open: false,
+    accountCustomer: null,
+    openPaid: false,
+    paidAccountCustomer: null,
   };
 
   componentDidMount() {
@@ -91,7 +84,9 @@ class Users extends PureComponent {
     let bundle = {};
     let all = [
       // @TODO:
-      this._userModel.list().then((data) => (bundle["data"] = data)),
+      this._customerModel
+        .listTaiKhoan()
+        .then((data) => (bundle["data"] = data)),
     ];
     await Promise.all(all).catch((err) => {
       window._$g.dialogs.alert(
@@ -108,7 +103,7 @@ class Users extends PureComponent {
   // get data
   getData = (query = {}) => {
     this.setState({ isLoading: true });
-    return this._userModel.list(query).then((res) => {
+    return this._customerModel.listTaiKhoan(query).then((res) => {
       let data = res.items;
       let isLoading = false;
       let count = res.totalItems;
@@ -123,19 +118,29 @@ class Users extends PureComponent {
     });
   };
 
-  handleClickAdd = () => {
-    window._$g.rdr("/users/add");
-  };
-
   handleActionItemClick(type, id, rowIndex) {
-    let routes = {
-      detail: "/users/detail/",
-      delete: "/users/delete/",
-      edit: "/users/edit/",
-      changePassword: "/users/change-password/",
-    };
+    let routes = {};
     const route = routes[type];
-    if (type.match(/detail|edit|changePassword/i)) {
+    if (type.match(/add_account/i)) {
+      this.setState({
+        open: true,
+        accountCustomer: {
+          customer_id: id * 1,
+          account_number: "",
+          account_holder: "",
+          current_balance: 0,
+        },
+      });
+    } else if (type.match(/paid_account/i)) {
+      this.setState({
+        openPaid: true,
+        paidAccountCustomer: {
+          customer_id: id * 1,
+          account_number: "",
+          current_balance: 0,
+        },
+      });
+    } else if (type.match(/history_account/i)) {
       window._$g.rdr(`${route}${id}`);
     } else {
       window._$g.dialogs.prompt(
@@ -149,7 +154,7 @@ class Users extends PureComponent {
   handleClose(confirm, id, rowIndex) {
     const { data } = this.state;
     if (confirm) {
-      this._userModel
+      this._customerModel
         .delete(id)
         .then(() => {
           const cloneData = JSON.parse(JSON.stringify(data));
@@ -192,136 +197,31 @@ class Users extends PureComponent {
 
   render() {
     const columns = [
-      configIDRowTable("user_id", "/users/detail/", this.state.query),
+      configIDRowTable("customer_id", "", this.state.query),
       {
-        name: "user_name",
-        label: "Mã NV",
+        name: "account_holder",
+        label: "Tên tài khoản",
         options: {
           filter: false,
           sort: false,
         },
       },
       {
-        name: "full_name",
-        label: "Họ và tên",
+        name: "account_number",
+        label: "Số tài khoản",
         options: {
           filter: false,
           sort: false,
         },
       },
       {
-        name: "gender",
-        label: "Giới tính",
+        name: "current_balance",
+        label: "Số dư",
         options: {
           filter: false,
           sort: false,
           customBodyRender: (value, tableMeta, updateValue) => {
-            let result = null;
-            switch ("" + value) {
-              case "0":
-                result = <span>Nữ</span>;
-                break;
-              case "1":
-                result = <span>Nam</span>;
-                break;
-              default:
-                result = <span>Khác</span>;
-            }
-            return result;
-          },
-        },
-      },
-      {
-        name: "phone_number",
-        label: "Điện thoại",
-        options: {
-          filter: false,
-          sort: false,
-        },
-      },
-      {
-        name: "address_full",
-        label: "Địa chỉ",
-        options: {
-          filter: false,
-          sort: false,
-        },
-      },
-      {
-        name: "email",
-        label: "Email",
-        options: {
-          filter: false,
-          sort: false,
-        },
-      },
-      {
-        name: "Thao tác",
-        options: {
-          filter: false,
-          sort: false,
-          empty: true,
-          customBodyRender: (value, tableMeta, updateValue) => {
-            return (
-              <div className="text-center">
-                <Button
-                  color="warning"
-                  title="Chi tiết"
-                  className="mr-1"
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "detail",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-info" />
-                </Button>
-                <Button
-                  color="primary"
-                  title="Chỉnh sửa"
-                  className="mr-1"
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "edit",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-edit" />
-                </Button>
-                <Button
-                  color="success"
-                  title="Thay đổi mật khẩu"
-                  className="mr-1"
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "changePassword",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-lock"></i>
-                </Button>
-                <Button
-                  color="danger"
-                  title="Xóa"
-                  className=""
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "delete",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-trash" />
-                </Button>
-              </div>
-            );
+            return <div className="text-right">{numberFormat(value)}</div>;
           },
         },
       },
@@ -353,23 +253,14 @@ class Users extends PureComponent {
           {this.state.toggleSearch && (
             <CardBody className="px-0 py-0">
               <div className="MuiPaper-filter__custom z-index-2">
-                <UserFilter handleSubmit={this.handleSubmitFilter} />
+                <AccountFilter handleSubmit={this.handleSubmitFilter} />
               </div>
             </CardBody>
           )}
         </Card>
-        <Button
-          className="col-12 max-w-110 mb-3 mobile-reset-width"
-          onClick={() => this.handleClickAdd()}
-          color="success"
-          size="sm"
-        >
-          <i className="fa fa-plus" />
-          <span className="ml-1">Thêm mới</span>
-        </Button>
         <Card className="animated fadeIn">
           <CardBody className="px-0 py-0">
-            <div className="MuiPaper-root__custom MuiPaper-user">
+            <div className="MuiPaper-root__custom MuiPaper-customer">
               {this.state.isLoading ? (
                 <div className="d-flex flex-fill justify-content-center mt-5 mb-5">
                   <CircularProgress />
@@ -398,4 +289,4 @@ class Users extends PureComponent {
   }
 }
 
-export default Users;
+export default Accounts;

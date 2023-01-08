@@ -31,7 +31,7 @@ const DefaultHeader = React.lazy(() => import("./DefaultHeader"));
 /**
  * @class DefaultLayout
  */
-class DefaultLayout extends Component {
+class CustomerLayout extends Component {
   /**
    * @var {UserModel}
    */
@@ -166,4 +166,4 @@ class DefaultLayout extends Component {
   }
 }
 
-export default DefaultLayout;
+export default CustomerLayout;

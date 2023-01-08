@@ -1,63 +1,31 @@
-const express = require('express');
-const validate = require('express-validation');
-const rules = require('./customer.rule');
-const customerController = require('./customer.controller');
+const express = require("express");
+const validate = require("express-validation");
+const rules = require("./customer.rule");
+const customerController = require("./customer.controller");
 
 const routes = express.Router();
 
-const prefix = '/customer';
-
-// List customer
-routes.route('').get(customerController.getListCustomer);
-
-// Create new a customer
+const prefix = "/customer";
+routes.route("").get(customerController.getListCustomer);
+routes.route("/list-account").get(customerController.getListAccountCustomer);
 routes
-  .route('')
+  .route("")
   .post(validate(rules.createCustomer), customerController.createCustomer);
-
-// Generate customername
-routes.route('/create').post(customerController.generateCustomerName);
-
-// List options function
-// routes.route("/get-options").get(customerController.getOptions);
-
-// List customer
-routes.route('').get(customerController.getListCustomer);
-
-// Create new a customer
 routes
-  .route('')
-  .post(validate(rules.createCustomer), customerController.createCustomer);
-
-// Generate customername
-routes.route('/create').post(customerController.generateCustomerName);
-
-// List options function
-// routes.route("/get-options").get(customerController.getOptions);
-
-// Reset password a customer -- admin
-routes
-  .route('/:customerId/change-password')
-  .put(validate(rules.resetPassword), customerController.resetPassword);
-// Change password a customer
-routes
-  .route('/:customerId/change-password-customer')
-  .put(
-    validate(rules.changePasswordCustomer),
-    customerController.changePasswordCustomer,
+  .route("/create-account")
+  .post(
+    validate(rules.createAccountCustomer),
+    customerController.createCustomerAccount
   );
-// Update a customer
+  routes
+    .route("/update-paid-account")
+    .post(
+      validate(rules.updatePaidAccountCustomer),
+      customerController.updatePaidAccount
+    );
 routes
-  .route('/:customerId')
-  .put(validate(rules.updateCustomer), customerController.updateCustomer);
-
-// Delete a customer
-routes.route('/:customerId').delete(customerController.deleteCustomer);
-
-// Detail a customer
-routes.route('/:customerId').get(customerController.detailCustomer);
-// Generate customername
-routes.route('/create-account').post(validate(rules.createAccountCustomer),customerController.createCustomerAccount);
+  .route("/opts-customer-account/:customerId(\\d+)")
+  .get(customerController.getListCustomerAccount);
 
 module.exports = {
   prefix,

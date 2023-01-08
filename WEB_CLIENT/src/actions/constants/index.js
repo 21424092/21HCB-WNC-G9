@@ -12,3 +12,6 @@ export * from './user_group';
 
 // price
 export * from './price';
+
+// customer
+export * from './customer';

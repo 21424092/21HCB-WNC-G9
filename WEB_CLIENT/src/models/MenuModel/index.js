@@ -1,11 +1,6 @@
 //
 import Model from '../Model';
 import MenuEntity from '../MenuEntity';
-// Util(s)
-// import { jqxGridColumns } from '../../utils/jqwidgets';
-
-// import navigation from './_nav';
-
 /**
  * @class MenuModel
  */
@@ -32,6 +27,8 @@ export default class MenuModel extends Model {
   static API_MENU_UPDATE_STATUS = "menu/:id/change-status"; // PUT
   /** @var {String} */
   static API_MENU_GET_BY_USER = "menu/get-by-user"; // GET
+  /** @var {String} */
+  static API_MENU_GET_BY_CUSTOMER = "menu/get-by-customer"; // GET
 
   /**
    * @var {String} Primary Key
@@ -356,6 +353,16 @@ export default class MenuModel extends Model {
   /**
    * @return {Promise}
    */
+  getByCustomer(_data = {}) {
+    // Get, format data?!
+    let data = Object.assign({}, _data);
+    //
+    return this._api.get(_static.API_MENU_GET_BY_CUSTOMER, data);
+  }
+
+  /**
+   * @return {Promise}
+   */
   getNavigation(_opts) {
     // Format options
     let opts = _opts || {
@@ -372,6 +379,60 @@ export default class MenuModel extends Model {
 
     //
     return this.getByUser(apiOpts)
+      .then((data) => {
+        let ret = _static.getOptionsRecursive(data || [], opts);
+        // console.log('getNavigationRecursive: ', ret, data);
+        return ret;
+      })
+      .then((items) => {
+        let itemsMap = {};
+        let ret = (items || []).map((item) => {
+          let opts = item._ || {};
+          delete item._;
+          let parentItem = itemsMap[item.parent_id];
+          let navItem = {
+            title: !(1 * item.parent_id),
+            name: item.menu_name,
+            class: item.class_menu,
+            url: item.link_menu,
+            icon: item.icon_path,
+            attributes: Object.assign(
+              {
+                id: `menu-item-${item.menu_id}`,
+              },
+              item.attributes
+            ),
+          };
+          itemsMap[item.menu_id] = navItem;
+          if (parentItem && opts.level > 2) {
+            parentItem.children = parentItem.children || [];
+            parentItem.children.push(navItem);
+            return null;
+          }
+          return navItem;
+        });
+        return { items: ret.filter((item) => !!item) };
+      });
+  }
+  /**
+   * @return {Promise}
+   */
+  getNavigationCustomer(_opts) {
+    // Format options
+    let opts = _opts || {
+      prefix: "",
+      //
+      //
+      merge: function ({ item, output, opts /*, input*/ }) {
+        let { level } = opts;
+        output.push(Object.assign(item, { _: { level } }));
+      },
+    };
+    let apiOpts = Object.assign({}, opts["_api"]);
+    delete opts["_api"];
+
+    //
+    return this.getByCustomer(apiOpts)
       .then((data) => {
         let ret = _static.getOptionsRecursive(data || [], opts);
         // console.log('getNavigationRecursive: ', ret, data);

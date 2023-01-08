@@ -4,20 +4,19 @@ import { Card, CardBody, CardHeader, Button } from "reactstrap";
 // Material
 import MUIDataTable from "mui-datatables";
 import { CircularProgress } from "@material-ui/core";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import CustomPagination from "../../utils/CustomPagination";
 
 // Component(s)
-
 import CustomerFilter from "./CustomerFilter";
-
+import CustomerAccountPaid from "./CustomerAccountPaid";
+import CustomerAccountAdd from "./CustomerAccountAdd";
 // Util(s)
-// import { layoutFullWidthHeight } from '../../utils/html'
 import { configTableOptions, configIDRowTable } from "../../utils/index";
 // Model(s)
 import CustomerModel from "../../models/CustomerModel";
-
-// Set layout full-wh
-// layoutFullWidthHeight()
 
 /**
  * @class Customers
@@ -26,14 +25,11 @@ class Customers extends PureComponent {
   /**
    * @var {CustomerModel}
    */
-  _userModel;
+  _customerModel;
 
   constructor(props) {
     super(props);
-
-    // Init model(s)
-    this._userModel = new CustomerModel();
-    // Bind method(s)
+    this._customerModel = new CustomerModel();
   }
 
   state = {
@@ -49,13 +45,10 @@ class Customers extends PureComponent {
     isOpenSnackbar: false,
     snackbarMsg: "",
     snackBarClss: "info",
-    /** @var {Array} */
-    roles: [
-      { name: "Role 1", value: "1" },
-      { name: "Role 2", value: "2" },
-      { name: "Role 3", value: "3" },
-      { name: "Role 4", value: "4" },
-    ],
+    open: false,
+    accountCustomer: null,
+    openPaid: false,
+    paidAccountCustomer: null,
   };
 
   componentDidMount() {
@@ -92,7 +85,7 @@ class Customers extends PureComponent {
     let bundle = {};
     let all = [
       // @TODO:
-      this._userModel.list().then((data) => (bundle["data"] = data)),
+      this._customerModel.list().then((data) => (bundle["data"] = data)),
     ];
     await Promise.all(all).catch((err) => {
       window._$g.dialogs.alert(
@@ -109,7 +102,7 @@ class Customers extends PureComponent {
   // get data
   getData = (query = {}) => {
     this.setState({ isLoading: true });
-    return this._userModel.list(query).then((res) => {
+    return this._customerModel.list(query).then((res) => {
       let data = res.items;
       let isLoading = false;
       let count = res.totalItems;
@@ -125,14 +118,28 @@ class Customers extends PureComponent {
   };
 
   handleActionItemClick(type, id, rowIndex) {
-    let routes = {
-      detail: "/customers/detail/",
-      delete: "/customers/delete/",
-      edit: "/customers/edit/",
-      changePassword: "/customers/change-password/",
-    };
+    let routes = {};
     const route = routes[type];
-    if (type.match(/detail|edit|changePassword/i)) {
+    if (type.match(/add_account/i)) {
+      this.setState({
+        open: true,
+        accountCustomer: {
+          customer_id: id * 1,
+          account_number: "",
+          account_holder: "",
+          current_balance: 0,
+        },
+      });
+    } else if (type.match(/paid_account/i)) {
+      this.setState({
+        openPaid: true,
+        paidAccountCustomer: {
+          customer_id: id * 1,
+          account_number: "",
+          current_balance: 0,
+        },
+      });
+    } else if (type.match(/history_account/i)) {
       window._$g.rdr(`${route}${id}`);
     } else {
       window._$g.dialogs.prompt(
@@ -146,7 +153,7 @@ class Customers extends PureComponent {
   handleClose(confirm, id, rowIndex) {
     const { data } = this.state;
     if (confirm) {
-      this._userModel
+      this._customerModel
         .delete(id)
         .then(() => {
           const cloneData = JSON.parse(JSON.stringify(data));
@@ -189,10 +196,18 @@ class Customers extends PureComponent {
 
   render() {
     const columns = [
-      configIDRowTable("user_id", "/customers/detail/", this.state.query),
+      configIDRowTable("customer_id", "", this.state.query),
       {
         name: "user_name",
         label: "Tên tài khoản",
+        options: {
+          filter: false,
+          sort: false,
+        },
+      },
+      {
+        name: "user_name",
+        label: "Tên người dùng",
         options: {
           filter: false,
           sort: false,
@@ -262,27 +277,13 @@ class Customers extends PureComponent {
             return (
               <div className="text-center">
                 <Button
-                  color="warning"
-                  title="Lịch sử giao dịch"
-                  className="mr-1"
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "detail",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-history" />
-                </Button>
-                <Button
                   color="primary"
                   title="Thêm tài khoản"
                   className="mr-1"
                   onClick={(evt) =>
                     this.handleActionItemClick(
-                      "edit",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
+                      "add_account",
+                      this.state.data[tableMeta["rowIndex"]].customer_id,
                       tableMeta["rowIndex"]
                     )
                   }
@@ -295,15 +296,28 @@ class Customers extends PureComponent {
                   className="mr-1"
                   onClick={(evt) =>
                     this.handleActionItemClick(
-                      "edit",
-                      this.state.data[tableMeta["rowIndex"]].user_id,
+                      "paid_account",
+                      this.state.data[tableMeta["rowIndex"]].customer_id,
                       tableMeta["rowIndex"]
                     )
                   }
                 >
                   <i className="fa fa-money" />
                 </Button>
-
+                <Button
+                  color="warning"
+                  title="Lịch sử giao dịch"
+                  className="mr-1"
+                  onClick={(evt) =>
+                    this.handleActionItemClick(
+                      "detail",
+                      this.state.data[tableMeta["rowIndex"]].customer_id,
+                      tableMeta["rowIndex"]
+                    )
+                  }
+                >
+                  <i className="fa fa-history" />
+                </Button>
               </div>
             );
           },
@@ -311,7 +325,7 @@ class Customers extends PureComponent {
       },
     ];
 
-    const { count, page, query } = this.state;
+    const { count, page, query, open, accountCustomer , openPaid, paidAccountCustomer } = this.state;
     const options = configTableOptions(count, page, query);
 
     return (
@@ -344,7 +358,7 @@ class Customers extends PureComponent {
         </Card>
         <Card className="animated fadeIn">
           <CardBody className="px-0 py-0">
-            <div className="MuiPaper-root__custom MuiPaper-user">
+            <div className="MuiPaper-root__custom MuiPaper-customer">
               {this.state.isLoading ? (
                 <div className="d-flex flex-fill justify-content-center mt-5 mb-5">
                   <CircularProgress />
@@ -368,6 +382,67 @@ class Customers extends PureComponent {
             </div>
           </CardBody>
         </Card>
+        <Dialog
+          open={!!open}
+          keepMounted
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            <b>Thêm mới tài khoản</b>
+          </DialogTitle>
+          <DialogContent>
+            {!!accountCustomer && (
+              <CustomerAccountAdd
+                onCloseDialog={() =>
+                  this.setState({
+                    open: !open,
+                    accountCustomer: {
+                      customer_id: "",
+                      account_number: "",
+                      account_holder: "",
+                      current_balance: 0,
+                    },
+                  })
+                }
+                accountCustomerEnt={this.state.accountCustomer}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={!!openPaid}
+          keepMounted
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            <b>Nộp tiền vào tài khoản</b>
+          </DialogTitle>
+          <DialogContent
+            style={{ minHeight: "50vh" }}
+          >
+            {!!paidAccountCustomer && (
+              <CustomerAccountPaid
+                onCloseDialog={() =>
+                  this.setState({
+                    openPaid: !openPaid,
+                    paidAccountCustomer: {
+                      customer_id: "",
+                      account_number: "",
+                      current_balance: 0,
+                    },
+                  })
+                }
+                paidAccountCustomerEnt={this.state.paidAccountCustomer}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }

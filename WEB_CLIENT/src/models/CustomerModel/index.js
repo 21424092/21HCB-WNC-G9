@@ -1,58 +1,24 @@
-//
 import Model from "../Model";
-//
 import CustomerEntity from "../CustomerEntity";
-
-import {
-  // userAdd,
-  userAuthSet,
-} from "../../actions/user";
-
-/**
- * @class CustomerModel
- */
+import { customerAuthSet } from "../../actions/customer";
+import moment from "moment";
+import crypto from "crypto";
 export default class CustomerModel extends Model {
-  /** @var {String} redux store::state key */
   _stateKeyName = "customers";
-
-  /** @var {Ref} */
   _entity = CustomerEntity;
 
-  /** @var {String} */
   static API_CUS_LIST = "customer";
-  /** @var {String} */
+  static API_CUS_LIST_ACCOUNT = "customer/list-account";
   static API_CUS_OPTS = "customer/get-options";
-  /** @var {String} */
   static API_CUS_INIT = "customer/create";
-  /** @var {String} */
-  static API_CUS_CREATE = "customer";
-  /** @var {String} */
-  static API_CUS_UPDATE = "customer/:id"; // PUT
-  /** @var {String} */
-  static API_CUS_READ = "customer/:id"; // GET
-  /** @var {String} */
-  static API_CUS_DELETE = "customer/:id"; // DELETE
-  /** @var {String} */
-  static API_CUS_CHANGE_PASSWORD = "customer/:id/change-password"; // PUT
-  /** @var {String} */
-  static API_CHANGE_PASSWORD_USER = "customer/:id/change-password-customer"; // PUT
-  /** @var {String} */
-  static API_CUS_FUNCTIONS = "function/functions-by-customer-group"; // GET
+  static API_CUS_CREATEACCOUNT = "customer/create-account";
+  static API_CUS_ACCOUNT_OPTS = "customer/opts-customer-account/:id";
+  static API_CUS_ACCOUNT_UPDATEPAID = "customer/update-paid-account";
+  static API_CUS_AUTH = "auth/customer-access-token";
+  static API_CUSTOMER_PROFILE = "auth/get-profile-customer";
 
-  /**
-   * @var {String} Primary Key
-   */
   primaryKey = "customer_id";
-
-  /**
-   * Column datafield prefix
-   * @var {String}
-   */
   static columnPrefix = "";
-
-  /**
-   * @return {Object}
-   */
   fillable = () => ({
     user_name: "",
     password: "",
@@ -65,12 +31,8 @@ export default class CustomerModel extends Model {
     phone_number: "",
     address: "",
   });
-
-  /**
-   * @return {Object}
-   */
   static buildAuthHeader() {
-    let auth = _static.getUserAuthStatic();
+    let auth = _static.getCustomerAuthStatic();
     return {
       name: auth ? auth.tokenKey : null,
       value: auth ? `${auth.tokenType} ${auth.accessToken}` : null,
@@ -78,21 +40,21 @@ export default class CustomerModel extends Model {
   }
 
   /**
-   * Get current authed user
+   * Get current authed customer
    * @returns CustomerEntity|null
    */
-  getUserAuth() {
-    let userAuth = this._store.getState()["userAuth"];
-    return userAuth && new CustomerEntity(userAuth);
+  getCustomerAuth() {
+    let customerAuth = this._store.getState()["customerAuth"];
+    return customerAuth && new CustomerEntity(customerAuth);
   }
 
   /**
-   * Get current authed user static
+   * Get current authed customer static
    * @returns CustomerEntity|null
    */
-  static getUserAuthStatic() {
-    let userAuth = _static._storeStatic.getState()["userAuth"];
-    return userAuth && new CustomerEntity(userAuth);
+  static getCustomerAuthStatic() {
+    let customerAuth = _static._storeStatic.getState()["customerAuth"];
+    return customerAuth && new CustomerEntity(customerAuth);
   }
 
   /**
@@ -100,9 +62,10 @@ export default class CustomerModel extends Model {
    */
   static getPrefsStatic(key) {
     let prefs = {};
-    let userAuth = window._$g.userAuth || _static.getUserAuthStatic();
-    if (userAuth) {
-      prefs = userAuth._prefs || {};
+    let customerAuth =
+      window._$g.customerAuth || _static.getCustomerAuthStatic();
+    if (customerAuth) {
+      prefs = customerAuth._prefs || {};
     }
     return key ? prefs[key] : prefs;
   }
@@ -111,12 +74,13 @@ export default class CustomerModel extends Model {
    *
    */
   static addPrefStatic(key, value) {
-    let userAuth = window._$g.userAuth || _static.getUserAuthStatic();
-    if (userAuth) {
-      let prefs = userAuth._prefs || {};
+    let customerAuth =
+      window._$g.customerAuth || _static.getCustomerAuthStatic();
+    if (customerAuth) {
+      let prefs = customerAuth._prefs || {};
       prefs[key] = value;
-      userAuth._prefs = prefs;
-      _static.storeUserAuthStatic(userAuth);
+      customerAuth._prefs = prefs;
+      _static.storeCustomerAuthStatic(customerAuth);
     }
   }
 
@@ -124,55 +88,42 @@ export default class CustomerModel extends Model {
    *
    */
   static setPrefStatic(prefs) {
-    let userAuth = window._$g.userAuth || _static.getUserAuthStatic();
-    if (userAuth) {
-      userAuth._prefs = prefs || {};
-      _static.storeUserAuthStatic(userAuth);
+    let customerAuth =
+      window._$g.customerAuth || _static.getCustomerAuthStatic();
+    if (customerAuth) {
+      customerAuth._prefs = prefs || {};
+      _static.storeCustomerAuthStatic(customerAuth);
     }
   }
 
   /**
-   * Store auth user
+   * Store auth customer
    * @param {Object} data
    */
-  static storeUserAuthStatic(data) {
-    let userAuth = _static.getUserAuthStatic();
-    let authData = Object.assign(userAuth || {}, data);
+  static storeCustomerAuthStatic(data) {
+    let customerAuth = _static.getCustomerAuthStatic();
+    let authData = Object.assign(customerAuth || {}, data);
     // let ent = new CustomerEntity(authData);
-    _static._storeStatic.dispatch(userAuthSet(authData));
+    _static._storeStatic.dispatch(customerAuthSet(authData));
     return data;
   }
 
-  /**
-   * Login
-   * @param {String} user_name
-   * @param {String} password
-   * @param {Boolean} remember
-   * @return Promise
-   */
-  login(user_name, password, remember) {
+  login(user_name, password, gg_token) {
     return this._api
-      .post(_static.API_USER_AUTH, {
+      .post(_static.API_CUS_AUTH, {
         user_name: user_name,
         password,
-        remember,
+        gg_token: gg_token,
       })
       .then(
         (loginData) =>
-          _static.storeUserAuthStatic(loginData) &&
-          this._api.get(_static.API_USER_PROFILE).then((profileData) => {
-            _static.storeUserAuthStatic(
+          _static.storeCustomerAuthStatic(loginData) &&
+          this._api.get(_static.API_CUSTOMER_PROFILE).then((profileData) => {
+            _static.storeCustomerAuthStatic(
               Object.assign(profileData, {
-                _prefs: {}, // Self init user's preferences,...
+                _prefs: {}, // Self init customer's preferences,...
               })
             );
-            if (!profileData.isAdministrator) {
-              return this._api
-                .get(_static.API_USER_FUNCTIONS)
-                .then((_functions) =>
-                  _static.storeUserAuthStatic({ _functions })
-                );
-            }
             return profileData;
           })
       );
@@ -186,195 +137,41 @@ export default class CustomerModel extends Model {
   logout(data) {
     return new Promise((resolve) => {
       return this._api
-        .post(_static.API_USER_LOGOUT, data || {})
+        .post(_static.API_CUSTOMER_LOGOUT, data || {})
         .then(
           () => {},
           (err) => {}
         ) // try/catch all
         .finally((data) => {
-          // Clear auth user
-          this._store.dispatch(userAuthSet(null));
+          // Clear auth customer
+          this._store.dispatch(customerAuthSet(null));
           // Return, chain promise call
           return resolve(data || { data: true });
         });
     });
   }
 
-  /**
-   *
-   * @param {object} data
-   */
-  // constructor(data) { super(data); }
-
-  dataList(_opts = {}) {
-    // Get, format input(s)
-    let opts = Object.assign({}, _opts);
-
-    return new Promise((resolve) => {
-      // Fetch data
-      let dataList = super.dataList([], opts);
-      // +++ Include 'Favorites'?
-
-      // Filter?
-      let { filters = {} } = opts;
-      // ---
-      if (Object.keys(filters).length) {
-        dataList = dataList.filter((item, idx) => {
-          let rtn = true;
-          // Filter by: fullname or tel?
-          if (filters.fullname_or_tel) {
-            rtn = false;
-            let fnOrTelLC = filters.fullname_or_tel.toString().toLowerCase();
-            let fnLC = item.fullname().toString().toLowerCase();
-            let telLC = item.tel.toString().toLowerCase();
-            if (fnLC.indexOf(fnOrTelLC) >= 0 || telLC.indexOf(fnOrTelLC) >= 0) {
-              rtn = true;
-            }
-          }
-          return rtn;
-        });
-      }
-      //.end
-
-      // Return
-      setTimeout(() => {
-        resolve(dataList);
-      }, 1e3);
-    });
-  }
-
-  findOne(_opts = {}) {
-    // Fetch data
-    let dataList = this.dataList(_opts);
-
-    // Filters
-    return dataList[0] || null;
-  }
-
-  /**
-   * Get list
-   * @returns Promise
-   */
   list(_opts = {}) {
-    let opts = Object.assign(
-      {
-        // itemsPerPage:,
-        // page,
-        // is_active
-        // is_system
-      },
-      _opts
-    );
+    let opts = Object.assign({}, _opts);
     return this._api.get(_static.API_CUS_LIST, opts);
   }
 
-  /**
-   * @return {Promise}
-   */
-  init(_data = {}) {
-    // Validate data?!
-    let data = Object.assign({}, _data);
-    // console.log('Customer#init: ', data);
-    //
-    return this._api.post(_static.API_CUS_INIT, data);
-  }
-
-  /**
-   * Get options (list opiton)
-   * @param {Object} _opts Options
-   * @returns Promise
-   */
-  getOptions(_opts = {}) {
+  listTaiKhoan(_opts = {}) {
     let opts = Object.assign({}, _opts);
-    return this._api.get(_static.API_CUS_OPTS, opts);
+    return this._api.get(_static.API_CUS_LIST_ACCOUNT, opts);
   }
 
-  /**
-   * Get options full
-   * @param {Object} _opts Options
-   * @returns Promise
-   */
-  getOptionsFull(_opts = {}) {
-    let apiOpts = Object.assign(
-      {
-        itemsPerPage: _static._MAX_ITEMS_PER_PAGE,
-      },
-      _opts
-    );
-    let opts = Object.assign({}, apiOpts["_opts"]);
-    delete apiOpts["_opts"];
-
-    return this.list(apiOpts).then(({ items }) => {
-      return opts["raw"]
-        ? items
-        : items.map(({ full_name: name, customer_id: id, user_name }) => ({
-            name,
-            id,
-            user_name,
-          }));
-    });
-  }
-
-  /**
-   * @return {Promise}
-   */
-  create(_data = {}) {
-    // Validate data?!
-    let data = Object.assign({}, this.fillable(), _data);
+  create(data = {}) {
     return this._api.post(_static.API_CUS_CREATE, data);
   }
-
-  /**
-   * @return {Promise}
-   */
-  read(id, _data = {}) {
-    // Validate data?!
-    let data = Object.assign({}, _data);
-    //
-    return this._api
-      .get(_static.API_CUS_READ.replace(":id", id), data)
-      .then((data) => new CustomerEntity(data));
+  createAccount(data = {}) {
+    return this._api.post(_static.API_CUS_CREATEACCOUNT, data);
   }
-
-  /**
-   * @return {Promise}
-   */
-  update(id, _data = {}) {
-    let data = Object.assign({}, _data);
-    return this._api.put(_static.API_CUS_UPDATE.replace(":id", id), data);
+  updatePaidAccount(data = {}) {
+    return this._api.post(_static.API_CUS_ACCOUNT_UPDATEPAID, data);
   }
-
-  /**
-   * @return {Promise}
-   */
-  delete(id, _data = {}) {
-    let data = Object.assign({}, _data);
-    return this._api.delete(_static.API_CUS_DELETE.replace(":id", id), data);
-  }
-
-  /**
-   * @return {Promise}
-   */
-  changePassword(id, _data = {}) {
-    let data = Object.assign({}, _data);
-    //
-    return this._api.put(
-      _static.API_CUS_CHANGE_PASSWORD.replace(":id", id),
-      data
-    );
-  }
-
-  /**
-   * @return {Promise}
-   */
-  changePasswordCustomer(id, _data = {}) {
-    // Validate data?!
-    let data = Object.assign({}, _data);
-    //
-    return this._api.put(
-      _static.API_CHANGE_PASSWORD_USER.replace(":id", id),
-      data
-    );
+  getOptions(id) {
+    return this._api.get(_static.API_CUS_ACCOUNT_OPTS.replace(":id", id));
   }
 }
 // Make alias
@@ -387,11 +184,20 @@ _static._apiStatic
       args: { config },
     } = event;
     // Inject 'header'
-    let { headers = {} } = config;
+    let { headers = {}, url } = config;
 
     // +++ auth token data
     let { name: hAuthName, value: hAuthValue } = _static.buildAuthHeader();
-
+    if (hAuthName && hAuthValue) {
+      headers[hAuthName] = hAuthValue;
+    }
+    let secret_key = process.env.REACT_APP_SECRET_KEY;
+    let secret_time = moment().format("YYYYMMDDHHmmss");
+    headers["x-secret-time"] = secret_time;
+    headers["x-secret-key"] = crypto
+      .createHash("sha256")
+      .update("/api/" + url + secret_time + secret_key)
+      .digest("hex");
     Object.assign(config, { headers });
     //.end*/
     // console.log('beforeRequest: ', config);

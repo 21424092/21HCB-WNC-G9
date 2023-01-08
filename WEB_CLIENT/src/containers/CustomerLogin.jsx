@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Redirect } from "react-router-dom";
@@ -23,40 +23,46 @@ import {
   Alert,
 } from "reactstrap";
 // Model(s)
-import UserModel from "../models/UserModel";
+import CustomerModel from "../models/CustomerModel";
 import bg from "../assets/img/bg.jpeg";
 
 /**
  * @class Login
  */
-export default class CustomerLogin extends PureComponent {
+export default class CustomerLogin extends Component {
   /**
    * @var {UserModel}
    */
-  _userModel;
-
+  _customerModel;
   formikValidationSchema = Yup.object().shape({
-    user_name: Yup.string().required("ID nhân viên là bắt buộc."),
+    user_name: Yup.string().required("Tên đăng nhập là bắt buộc."),
     password: Yup.string().required("Mật khẩu là bắt buộc."),
   });
 
   constructor(props) {
     super(props);
-
     // Init model(s)
-    this._userModel = new UserModel();
+    this._customerModel = new CustomerModel();
 
     // Init state
     this.state = {
       // @var {UserEntity}|null
-      userAuth: this._userModel.getUserAuth(),
+      customerAuth: this._customerModel.getCustomerAuth(),
       alerts: [],
+      gg_token: "",
+      refreshReCaptcha: false,
     };
 
     // Bind methods
     this.handleFormikSubmit = this.handleFormikSubmit.bind(this);
   }
-
+  shouldComponentUpdate(prevProps, prevState) {
+    if (prevState.refreshReCaptcha !== this.state.refreshReCaptcha) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   /**
    *
    * @return {Object}
@@ -75,9 +81,10 @@ export default class CustomerLogin extends PureComponent {
    * @returns false
    */
   handleFormikSubmit(values, formProps) {
+    let { gg_token, refreshReCaptcha } = this.state;
     let { setSubmitting } = formProps;
     let alerts = [];
-    let userAuth = null;
+    let customerAuth = null;
     //
     this.setState(
       () => ({ alerts }),
@@ -85,10 +92,18 @@ export default class CustomerLogin extends PureComponent {
         window.scrollTo(0, 0);
       }
     );
-    //
-    this._userModel
-      .login(values.user_name, values.password, values.remember)
-      .then((data) => (userAuth = data))
+
+    this._customerModel
+      .login(values.user_name, values.password, gg_token)
+      .then((data) => {
+        customerAuth = data;
+
+        this.setState(() => ({
+          customerAuth,
+          alerts,
+          refreshReCaptcha: !refreshReCaptcha,
+        }));
+      })
       .catch((err) => {
         alerts.push({ color: "danger", msg: err.message });
       })
@@ -96,23 +111,23 @@ export default class CustomerLogin extends PureComponent {
         // Submit form is done!
         setSubmitting(false);
         //
-        this.setState(() => ({ userAuth, alerts }));
+        this.setState(() => ({
+          customerAuth,
+          alerts,
+        }));
       });
 
     return false;
   }
 
   render() {
-    let { userAuth, alerts } = this.state;
+    let { customerAuth, alerts, refreshReCaptcha } = this.state;
     /** @var {Object} */
     let initialValues = this.getInitialValues();
-    // console.log('initialValues: ', initialValues);
-
     // Redirect to dashboard?!
-    if (userAuth) {
+    if (customerAuth) {
       return <Redirect to="/" push />;
     }
-
     return (
       <div
         className="app flex-row align-items-center"
@@ -121,8 +136,9 @@ export default class CustomerLogin extends PureComponent {
           backgroundSize: "cover",
         }}
       >
-        {" "}
-        <GoogleReCaptchaProvider reCaptchaKey="6LdFTbwjAAAAALIw4avuH_bwp5H7cuiKRQ-vGc2m">
+        <GoogleReCaptchaProvider
+          reCaptchaKey={process.env.REACT_APP_RECAPTCHA_KEY}
+        >
           <Container>
             <Row className="justify-content-center">
               <Col md="5">
@@ -145,34 +161,19 @@ export default class CustomerLogin extends PureComponent {
                       <Formik
                         initialValues={initialValues}
                         validationSchema={this.formikValidationSchema}
-                        // validate={this.handleFormikValidate}
                         validateOnBlur={false}
                         validateOnChange={false}
                         onSubmit={this.handleFormikSubmit}
                       >
                         {(formikProps) => {
-                          let {
-                            // values,
-                            // errors,
-                            // status,
-                            // touched,
-                            // handleChange, handleBlur,
-                            // submitForm,
-                            // resetForm,
-                            handleSubmit,
-                            handleReset,
-                            // isValidating,
-                            isSubmitting,
-                            /* and other goodies */
-                          } = (this.formikProps = formikProps);
+                          let { handleSubmit, handleReset, isSubmitting } =
+                            (this.formikProps = formikProps);
                           return (
                             <Form onSubmit={handleSubmit} onReset={handleReset}>
                               <fieldset disabled={isSubmitting}>
                                 <h1>{window._$g._("Đăng nhập")}</h1>
                                 <p className="text-muted">
-                                  {window._$g._(
-                                    "Đăng nhập vào tài khoản của bạn"
-                                  )}
+                                  {window._$g._("Đăng nhập phân hệ khách hàng")}
                                 </p>
                                 <InputGroup className="mb-1">
                                   <InputGroupAddon addonType="prepend">
@@ -188,7 +189,7 @@ export default class CustomerLogin extends PureComponent {
                                         onBlur={null}
                                         type="text"
                                         id="user_name"
-                                        placeholder="ID nhân viên"
+                                        placeholder="Tên đăng nhập"
                                       />
                                     )}
                                   />
@@ -237,8 +238,11 @@ export default class CustomerLogin extends PureComponent {
                                 <InputGroup className="mb-4">
                                   <Col xs="12">
                                     <GoogleReCaptcha
+                                      refreshReCaptcha={refreshReCaptcha}
                                       onVerify={(token) => {
-                                    console.log(token)
+                                        this.setState({
+                                          gg_token: token,
+                                        });
                                       }}
                                     />
                                   </Col>
@@ -258,11 +262,6 @@ export default class CustomerLogin extends PureComponent {
                                       </div>
                                     ) : null}
                                   </Col>
-                                  {/*<Col xs="12" className="text-right">
-                                <Button color="link" className="px-0">
-                                  {window._$g._("Forgot password?")}
-                                </Button>
-                              </Col>*/}
                                 </Row>
                               </fieldset>
                             </Form>
@@ -271,31 +270,6 @@ export default class CustomerLogin extends PureComponent {
                       </Formik>
                     </CardBody>
                   </Card>
-                  {/*<Card
-                  className="text-white bg-primary py-5 d-md-down-none"
-                  style={{ width: "35%" }}
-                >
-                  <CardBody className="text-center">
-                    <div>
-                      <h2>{window._$g._("Sign up")}</h2>
-                      <p>
-                        {window._$g._(
-                          "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-                        )}
-                      </p>
-                      <Link to="/register">
-                        <Button
-                          color="primary"
-                          className="mt-3"
-                          active
-                          tabIndex={-1}
-                        >
-                          {window._$g._("Register Now!")}
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardBody>
-                </Card>*/}
                 </CardGroup>
               </Col>
             </Row>

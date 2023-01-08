@@ -13,7 +13,6 @@ import {
   FormGroup,
   Label,
   Input,
-  Media,
   InputGroup,
   InputGroupAddon,
   Table,
@@ -306,7 +305,7 @@ export default class UserAdd extends PureComponent {
   }
 
   render() {
-    let { _id, ready, alerts, usrImgBase64, userGroups, genders } = this.state;
+    let { _id, ready, alerts, userGroups, genders } = this.state;
     let { userEnt, noEdit } = this.props;
     /** @var {Object} */
     let initialValues = this.getInitialValues();

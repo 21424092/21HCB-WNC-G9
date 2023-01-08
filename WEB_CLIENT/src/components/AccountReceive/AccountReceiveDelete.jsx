@@ -2,20 +2,20 @@ import React, { PureComponent } from 'react';
 
 // Component(s)
 // import Loading from '../Common/Loading';
-import CustomerDetail from './CustomerDetail';
+import AccountReceiveDetail from './AccountReceiveDetail';
 
 // Model(s)
-import CustomerModel from "../../models/CustomerModel";
+import AccountReceiveModel from "../../models/AccountReceiveModel";
 
 /**
- * @class CustomerDelete
+ * @class AccountReceiveDelete
  */
-export default class CustomerDelete extends PureComponent {
+export default class AccountReceiveDelete extends PureComponent {
   constructor(props) {
     super(props);
 
     // Init model(s)
-    this._userModel = new CustomerModel();
+    this._functionGroupModel = new AccountReceiveModel();
 
     // Bind method(s)
     this.handlePressBtnDelete = this.handlePressBtnDelete.bind(this);
@@ -27,11 +27,11 @@ export default class CustomerDelete extends PureComponent {
     };
   }
 
-  handlePressBtnDelete(userEnt) {
+  handlePressBtnDelete(funcGroupEnt) {
     //
     this.setState({ isSubmitting: true });
     //
-    this._userModel.delete(userEnt.id())
+    this._functionGroupModel.delete(funcGroupEnt.id())
       .then(data => { // OK
         window._$g.toastr.show('Xóa thành công!', 'success');
         setTimeout(() => {
@@ -51,6 +51,6 @@ export default class CustomerDelete extends PureComponent {
   render() {
     let { isSubmitting } = this.state;
     let props = this.props;
-    return <CustomerDetail {...props} isSubmitting={isSubmitting} deleteMode onPressBtnDelete={this.handlePressBtnDelete} />
+    return <AccountReceiveDetail {...props} isSubmitting={isSubmitting} deleteMode onPressBtnDelete={this.handlePressBtnDelete} />
   }
 }

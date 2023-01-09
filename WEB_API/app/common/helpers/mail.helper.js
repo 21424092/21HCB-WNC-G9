@@ -1,9 +1,9 @@
-const config = require("../../../config/config");
-const nodeMailer = require("nodemailer");
+const config = require('../../../config/config');
+const nodeMailer = require('nodemailer');
 const adminEmail = config.sendGmail.user;
 const adminPassword = config.sendGmail.pass;
 // Mình sử dụng host của google - gmail
-const mailHost = "smtp.gmail.com";
+const mailHost = 'smtp.gmail.com';
 // 587 là một cổng tiêu chuẩn và phổ biến trong giao thức SMTP
 const mailPort = 587;
 const sendMail = (to, subject, htmlContent) => {

@@ -44,7 +44,7 @@ const getListDebit = async (params = {}) => {
     //
     return {
       list: DebitClass.list(dataList),
-      total: dataList[0]?.TOTALITEMS || 0,
+      total: dataList[0].TOTALITEMS || 0,
     };
   } catch (error) {
     console.error("functionGroupService.getList", error);

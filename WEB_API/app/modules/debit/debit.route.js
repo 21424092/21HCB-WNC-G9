@@ -26,7 +26,7 @@ routes.route('/:debitId(\\d+)')
   .get(debitController.detailDebit);
 // Detail a debit
 routes
-  .route("/get-account/:accountNumber")
+  .route('/get-account/:accountNumber')
   .get(debitController.detailAccountDebit);
 
 // Change status a debit
@@ -34,15 +34,15 @@ routes.route('/:debitId/change-status')
   .put(validate(rules.changeStatusDebit), debitController.changeStatusDebit);
 // Create new a debit
 routes
-  .route("/cancel-debit")
+  .route('/cancel-debit')
   .post(validate(rules.cancelDebit), debitController.cancelDebit);
-  // Create new a debit
+// Create new a debit
 routes
-  .route("/done-debit")
+  .route('/done-debit')
   .post(validate(rules.doneDebit), debitController.doneDebit);
 // Detail a debit
 routes
-  .route("/send-otp/:customerDebitId")
+  .route('/send-otp/:customerDebitId')
   .get(debitController.sendMailOTP);
 module.exports = {
   prefix,

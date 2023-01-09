@@ -21,11 +21,11 @@ if (error) {
 }
 
 const config = {
-  appName: 'Ruby Bank API',
+  appName: "Ruby Bank API",
   env: envVars.NODE_ENV,
   port: 3000,
-  runLocal: envVars.RUN_LOCAL === 'yes',
-  testing: envVars.UNIT_TESTING === 'yes',
+  runLocal: envVars.RUN_LOCAL === "yes",
+  testing: envVars.UNIT_TESTING === "yes",
   appWelcome: envVars.APP_WELCOME,
   appUrl: envVars.APP_URL,
   hashSecretKey: envVars.HASH_SECRET_KEY,
@@ -33,15 +33,15 @@ const config = {
   publicKey: envVars.PUBLICKEY_RSA,
   recaptchaKey: envVars.RECAPTCHA_KEY,
   token: {
-    key: 'Authorization',
-    type: 'Bearer',
+    key: "Authorization",
+    type: "Bearer",
   },
   database: {
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     host: process.env.DB_HOST,
-    dialect: 'mssql',
+    dialect: "mssql",
   },
   sql: {
     database: process.env.DB_NAME,
@@ -56,8 +56,8 @@ const config = {
     },
   },
   sendGmail: {
-    user: 'chitrung0895@gmail.com',
-    pass: 'Des123456@',
+    user: "chitrung0895@gmail.com",
+    pass: "fytusefcgaksavov",
   },
 };
 

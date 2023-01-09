@@ -13,9 +13,7 @@ import {
   FormGroup,
   Label,
   Input,
-  CustomInput,
 } from "reactstrap";
-import Select from "react-select";
 
 // Component(s)
 
@@ -49,8 +47,6 @@ export default class DebitAdd extends PureComponent {
       alerts: [],
       /** @var {Boolean} */
       ready: false,
-      /** @var {Array} */
-      listbank: [{ name: "-- Chọn --", id: "" }]
     };
   }
 
@@ -88,11 +84,7 @@ export default class DebitAdd extends PureComponent {
    */
   async _getBundleData() {
     let bundle = {};
-    let all = [
-      this._debitModel
-        .getListBank()
-        .then((data) => (bundle["listbank"] = data)),
-    ];
+    let all = [];
     await Promise.all(all).catch((err) =>
       window._$g.dialogs.alert(
         window._$g._(`Khởi tạo dữ liệu không thành công (${err.message}).`),
@@ -116,9 +108,10 @@ export default class DebitAdd extends PureComponent {
   formikValidationSchema = Yup.object().shape({
     account_holder: Yup.string().required("Tên tài khoản là bắt buộc."),
     account_number: Yup.string().required("Số tài khoản là bắt buộc."),
-    bank_id: Yup.number().test(
+    content_debit: Yup.string().required("Nội dung nhắc nợ bắt buộc."),
+    current_debit: Yup.number().test(
       "so-tai-khoan-validation",
-      "Vui lòng chọn ngân hàng.",
+      "Số tiền nhắc nợ.",
       function (value) {
         if (!!value && value > 0) {
           return true;
@@ -138,11 +131,46 @@ export default class DebitAdd extends PureComponent {
       // +++
     });
   }
-
+  handleChange = (event, setFieldValue, field) => {
+    let alerts = [];
+    this.setState(() => ({ alerts }));
+    this._debitModel
+      .getAccount(event.target.value)
+      .then((data) => {
+        if (data.account_id > 0) {
+          setFieldValue("account_id", data.account_id * 1);
+          setFieldValue("account_holder", data.account_holder);
+          return field.onChange({
+            target: {
+              type: "select",
+              name: "account_holder",
+              value: data.account_holder,
+            },
+          });
+        } else {
+          let msg = [`<b>Tài khoản không tồn tại</b>`];
+          alerts.push({ color: "danger", msg });
+          this.setState(
+            () => ({ alerts }),
+            () => {
+              window.scrollTo(0, 0);
+            }
+          );
+        }
+      })
+      .catch((apiData) => {
+        // NG
+        let { errors, statusText, message } = apiData;
+        let msg = [`<b>${statusText || message}</b>`]
+          .concat(errors || [])
+          .join("<br/>");
+        alerts.push({ color: "danger", msg });
+      });
+  };
   /** @var {String} */
   _btnType = null;
 
-  handleSubmit(btnType, { submitForm }) {
+  handleSubmit(btnType, { submitForm }) {    
     this._btnType = btnType;
     return submitForm();
   }
@@ -170,7 +198,7 @@ export default class DebitAdd extends PureComponent {
         window._$g.toastr.show("Lưu thành công!", "success");
         if (this._btnType === "save_n_close") {
           willRedirect = true;
-          return window._$g.rdr("/list-of-receiving-accounts");
+          return window._$g.rdr("/debit-remind");
         }
         // Reset form (only when add new)
         if (!debitEnt) {
@@ -202,7 +230,7 @@ export default class DebitAdd extends PureComponent {
   }
 
   render() {
-    let { ready, alerts, listbank } = this.state;
+    let { ready, alerts } = this.state;
     let { debitEnt, noEdit } = this.props;
     /** @var {Object} */
     let initialValues = this.getInitialValues();
@@ -219,15 +247,8 @@ export default class DebitAdd extends PureComponent {
             <Card>
               <CardHeader>
                 <b>
-                  {debitEnt
-                    ? noEdit
-                      ? "Chi tiết"
-                      : "Chỉnh sửa"
-                    : "Thêm mới"}{" "}
-                  người nhận{" "}
-                  {debitEnt
-                    ? `"${debitEnt.account_holder}"`
-                    : ""}
+                  {debitEnt ? (noEdit ? "Chi tiết" : "Chỉnh sửa") : "Thêm mới"}{" "}
+                  người nhận {debitEnt ? `"${debitEnt.account_holder}"` : ""}
                 </b>
               </CardHeader>
               <CardBody>
@@ -252,12 +273,12 @@ export default class DebitAdd extends PureComponent {
                 >
                   {(formikProps) => {
                     let {
-                      values,
                       submitForm,
                       resetForm,
                       handleSubmit,
                       handleReset,
                       isSubmitting,
+                      setFieldValue,
                     } = (this.formikProps = formikProps);
                     // [Event]
                     this.handleFormikBeforeRender({ initialValues });
@@ -269,54 +290,37 @@ export default class DebitAdd extends PureComponent {
                         onReset={handleReset}
                       >
                         <Row>
-                          <Col sm={12}>
+                          <Col xs={12}>
                             <FormGroup row>
-                              <Label for="account_list" sm={3}>
-                                Ngân hàng
+                              <Label for="account_number" sm={3}>
+                                Số tài khoản
                                 <span className="font-weight-bold red-text">
                                   *
                                 </span>
                               </Label>
                               <Col sm={9}>
                                 <Field
-                                  name="bank_id"
-                                  render={({ field /*, form*/ }) => {
-                                    let options = listbank.map(
-                                      ({ name: label, id: value }) => ({
-                                        value,
-                                        label,
-                                      })
-                                    );
-                                    let defaultValue = options.find(
-                                      ({ value }) => value === field.value
-                                    );
-                                    let placeholder =
-                                      (listbank[0] && listbank[0].name) || "";
-                                    return (
-                                      <Select
-                                        id="bank_id"
-                                        name="bank_id"
-                                        className="z-index-9999"
-                                        onChange={(item) =>
-                                          field.onChange({
-                                            target: {
-                                              type: "select",
-                                              name: "bank_id",
-                                              value: item.value,
-                                            },
-                                          })
-                                        }
-                                        isSearchable={true}
-                                        placeholder={placeholder}
-                                        defaultValue={defaultValue}
-                                        options={options}
-                                        isDisabled={noEdit}
-                                      />
-                                    );
-                                  }}
+                                  name="account_number"
+                                  render={({ field /* _form */ }) => (
+                                    <Input
+                                      {...field}
+                                      onBlur={(e) =>
+                                        this.handleChange(
+                                          e,
+                                          setFieldValue,
+                                          field
+                                        )
+                                      }
+                                      type="text"
+                                      name="account_number"
+                                      id="account_number"
+                                      placeholder=""
+                                      disabled={noEdit}
+                                    />
+                                  )}
                                 />
                                 <ErrorMessage
-                                  name="bank_id"
+                                  name="account_number"
                                   component={({ children }) => (
                                     <Alert
                                       color="danger"
@@ -372,29 +376,27 @@ export default class DebitAdd extends PureComponent {
                         <Row>
                           <Col xs={12}>
                             <FormGroup row>
-                              <Label for="account_number" sm={3}>
-                                Số tài khoản
-                                <span className="font-weight-bold red-text">
-                                  *
-                                </span>
+                              <Label for="current_debit" sm={3}>
+                                Số tiền
                               </Label>
                               <Col sm={9}>
                                 <Field
-                                  name="account_number"
+                                  name="current_debit"
                                   render={({ field /* _form */ }) => (
                                     <Input
                                       {...field}
                                       onBlur={null}
-                                      type="text"
-                                      name="account_number"
-                                      id="account_number"
+                                      type="number"
+                                      className="text-right"
+                                      name="current_debit"
+                                      id="current_debit"
                                       placeholder=""
                                       disabled={noEdit}
                                     />
                                   )}
                                 />
                                 <ErrorMessage
-                                  name="account_number"
+                                  name="current_debit"
                                   component={({ children }) => (
                                     <Alert
                                       color="danger"
@@ -411,26 +413,26 @@ export default class DebitAdd extends PureComponent {
                         <Row>
                           <Col xs={12}>
                             <FormGroup row>
-                              <Label for="nickname" sm={3}>
-                                Biệt danh
+                              <Label for="content_debit" sm={3}>
+                                Nội dung nhắc nợ
                               </Label>
                               <Col sm={9}>
                                 <Field
-                                  name="nickname"
+                                  name="content_debit"
                                   render={({ field /* _form */ }) => (
                                     <Input
                                       {...field}
                                       onBlur={null}
-                                      type="text"
-                                      name="nickname"
-                                      id="nickname"
+                                      type="textarea"
+                                      name="content_debit"
+                                      id="content_debit"
                                       placeholder=""
                                       disabled={noEdit}
                                     />
                                   )}
                                 />
                                 <ErrorMessage
-                                  name="nickname"
+                                  name="content_debit"
                                   component={({ children }) => (
                                     <Alert
                                       color="danger"
@@ -438,30 +440,6 @@ export default class DebitAdd extends PureComponent {
                                     >
                                       {children}
                                     </Alert>
-                                  )}
-                                />
-                              </Col>
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs={12}>
-                            <FormGroup row>
-                              <Label for="is_active" sm={3}></Label>
-                              <Col xs={6} sm={4}>
-                                <Field
-                                  name="is_active"
-                                  render={({ field /* _form */ }) => (
-                                    <CustomInput
-                                      {...field}
-                                      className="pull-left"
-                                      onBlur={null}
-                                      checked={values.is_active}
-                                      type="switch"
-                                      id="is_active"
-                                      label="Kích hoạt?"
-                                      disabled={noEdit}
-                                    />
                                   )}
                                 />
                               </Col>
@@ -476,7 +454,7 @@ export default class DebitAdd extends PureComponent {
                                 className="mr-2 btn-block-sm"
                                 onClick={() =>
                                   window._$g.rdr(
-                                    `/list-of-receiving-accounts/edit/${debitEnt.customer_account_receive_id}`
+                                    `/debit-remind/edit/${debitEnt.customer_debit_id}`
                                   )
                                 }
                               >
@@ -523,9 +501,7 @@ export default class DebitAdd extends PureComponent {
                             )}
                             <Button
                               disabled={isSubmitting}
-                              onClick={() =>
-                                window._$g.rdr("/list-of-receiving-accounts")
-                              }
+                              onClick={() => window._$g.rdr("/debit-remind")}
                               className="btn-block-sm mt-md-0 mt-sm-2"
                             >
                               <i className="fa fa-times-circle mr-1" />

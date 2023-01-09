@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { Card, CardBody, CardHeader } from "reactstrap";
+import { Card, CardBody, CardHeader, Button } from "reactstrap";
 
 // Material
 import MUIDataTable from "mui-datatables";
@@ -197,7 +197,7 @@ class Accounts extends PureComponent {
 
   render() {
     const columns = [
-      configIDRowTable("customer_id", "", this.state.query),
+      configIDRowTable("customer_account_id", "", this.state.query),
       {
         name: "account_holder",
         label: "Tên tài khoản",
@@ -222,6 +222,35 @@ class Accounts extends PureComponent {
           sort: false,
           customBodyRender: (value, tableMeta, updateValue) => {
             return <div className="text-right">{numberFormat(value)}</div>;
+          },
+        },
+      },
+      {
+        name: "Thao tác",
+        options: {
+          filter: false,
+          sort: false,
+          empty: true,
+          customBodyRender: (value, tableMeta, updateValue) => {
+            return (
+              <div className="text-center">
+                <Button
+                  color="danger"
+                  title="Đóng tài khoản"
+                  className="mr-1"
+                  onClick={(evt) =>
+                    this.handleActionItemClick(
+                      "payment",
+                      this.state.data[tableMeta["rowIndex"]]
+                        .customer_account_id,
+                      tableMeta["rowIndex"]
+                    )
+                  }
+                >
+                  <i className="fa fa-trash" />
+                </Button>
+              </div>
+            );
           },
         },
       },

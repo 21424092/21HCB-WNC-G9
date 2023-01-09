@@ -424,7 +424,7 @@ class Customers extends PureComponent {
             <b>Nộp tiền vào tài khoản</b>
           </DialogTitle>
           <DialogContent
-            style={{ minHeight: "50vh" }}
+            style={{ minHeight: "70vh" }}
           >
             {!!paidAccountCustomer && (
               <CustomerAccountPaid

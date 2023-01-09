@@ -1,14 +1,29 @@
 import React, { PureComponent } from "react";
-import { Card, CardBody, CardHeader, Button } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Button,
+  Col,
+  Row,
+  FormGroup,
+  Label,
+  Input,
+} from "reactstrap";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 // Material
 import MUIDataTable from "mui-datatables";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
 import { CircularProgress } from "@material-ui/core";
 
 // Util(s)
 import { layoutFullWidthHeight } from "../../utils/html";
-import { configTableOptions, configIDRowTable } from "../../utils/index";
+import {
+  configTableOptions,
+  configIDRowTable,
+  numberFormat,
+} from "../../utils/index";
 // Model(s)
 import DebitModel from "../../models/DebitModel";
 // Component(s)
@@ -45,6 +60,14 @@ class Debit extends PureComponent {
       itemsPerPage: 25,
       page: 1,
     },
+    openPaid: false,
+    debitCancel: null,
+    openPayment: false,
+    debitPayment: null,
+    type: "",
+    id: 0,
+    rowIndex: 0,
+    content: "",
   };
 
   componentDidMount() {
@@ -85,28 +108,37 @@ class Debit extends PureComponent {
   }
 
   handleActionItemClick = (type, id, rowIndex) => {
-    let routes = {
-      detail: "/list-of-receiving-accounts/details/",
-      delete: "/list-of-receiving-accounts/delete/",
-      edit: "/list-of-receiving-accounts/edit/",
-    };
-    const route = routes[type];
-    if (type.match(/detail|edit/i)) {
-      window._$g.rdr(`${route}${id}`);
+    if (type.match(/payment/i)) {
+      this.handlePayment(id, rowIndex);
     } else {
-      window._$g.dialogs.prompt(
-        "Bạn có chắc chắn muốn xóa dữ liệu đang chọn?",
-        "Xóa",
-        (confirm) => this.handleDelete(confirm, id, rowIndex)
-      );
+      this.setState({
+        openPaid: true,
+        debitCancel: {
+          customer_debit_id: id * 1,
+          content: "",
+        },
+        type,
+        id,
+        rowIndex,
+      });
     }
   };
-
+  handleSubmitCancelDebit = (type, id, rowIndex) => {
+    window._$g.dialogs.prompt(
+      "Bạn có chắc chắn muốn xóa dữ liệu đang chọn?",
+      "Xóa",
+      (confirm) => this.handleDelete(confirm, id, rowIndex)
+    );
+  };
+  handleClickAdd = () => {
+    window._$g.rdr("/debit-remind/add");
+  };
   handleDelete = (confirm, id, rowIndex) => {
-    const { data } = this.state;
+    const { debitCancel, data, content } = this.state;
+    let model = Object.assign({ ...debitCancel }, { content });
     if (confirm) {
       this._debitModel
-        .delete(id)
+        .canceldebit(model)
         .then(() => {
           const cloneData = [...data];
           cloneData.splice(rowIndex, 1);
@@ -114,6 +146,7 @@ class Debit extends PureComponent {
           this.setState({
             data: cloneData,
             count,
+            openPaid: false,
           });
         })
         .catch(() => {
@@ -123,34 +156,27 @@ class Debit extends PureComponent {
         });
     }
   };
-  handleChangeStatus = (status, id, rowIndex) => {
+  handlePayment = (id, rowIndex) => {
     window._$g.dialogs.prompt(
-      "Bạn có chắc chắn muốn thay đổi trạng thái dữ liệu đang chọn?",
+      "Bạn có chắc chắn muốn thanh toán nợ?",
       "Cập nhật",
-      (confirm) => this.onChangeStatus(confirm, status, id, rowIndex)
+      (confirm) => this.onPayment(confirm, id, rowIndex)
     );
   };
-
-  onChangeStatus = (confirm, status, id, idx) => {
+  onPayment = (confirm, id, idx) => {
     if (confirm) {
-      let postData = { is_active: status ? 1 : 0 };
+      this.setState({
+        openPayment: true,
+        debitPayment: {
+          customer_debit_id: id * 1,
+          opt: "",
+        },
+        id,
+        rowIndex: idx,
+      });
       this._debitModel
-        .changeStatus(id, postData)
-        .then(() => {
-          const cloneData = [...this.state.data];
-          cloneData[idx].is_active = status;
-          this.setState(
-            {
-              data: cloneData,
-            },
-            () => {
-              window._$g.toastr.show(
-                "Cập nhật trạng thái thành công.",
-                "success"
-              );
-            }
-          );
-        })
+        .sendOTP(id)
+        .then((data) => {})
         .catch(() => {
           window._$g.toastr.show(
             "Cập nhật trạng thái không thành công.",
@@ -159,11 +185,34 @@ class Debit extends PureComponent {
         });
     }
   };
-  handleSubmitFilter = (keyword) => {
+  handleOTPPayment = () => {
+    const { debitPayment, otp, rowIndex, data } = this.state;
+    let model = Object.assign({ ...debitPayment }, { otp });
+    this._debitModel
+      .donedebit(model)
+      .then(() => {
+        const cloneData = [...data];
+        cloneData.splice(rowIndex, 1);
+        const count = cloneData.length;
+        this.setState({
+          data: cloneData,
+          count,
+          openPayment: false,
+        });
+      })
+      .catch(() => {
+        window._$g.dialogs.alert(
+          window._$g._("Bạn vui lòng chọn dòng dữ liệu cần thao tác!")
+        );
+      });
+  };
+  handleSubmitFilter = (keyword, created_date_from, created_date_to) => {
     let query = { ...this.state.query };
     query.page = 1;
     query = Object.assign(query, {
       keyword,
+      created_date_from,
+      created_date_to,
     });
     this.getData(query).catch(() => {
       window._$g.dialogs.alert(
@@ -185,11 +234,17 @@ class Debit extends PureComponent {
     this.getData(query);
   };
 
+  handleChange = (event) => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+  handleChangeOTP = (event) => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
   render() {
     const columns = [
       configIDRowTable(
-        "customer_account_receive_id",
-        "/list-of-receiving-accounts/details/",
+        "customer_debit_id",
+        "/debit-remind/details/",
         this.state.query
       ),
       {
@@ -209,54 +264,30 @@ class Debit extends PureComponent {
         },
       },
       {
-        name: "nickname",
-        label: "Nickname",
+        name: "current_debit",
+        label: "Số tiền nợ",
+        options: {
+          filter: false,
+          sort: false,
+          customBodyRender: (value, tableMeta, updateValue) => {
+            return <div className="text-right">{numberFormat(value)}</div>;
+          },
+        },
+      },
+      {
+        name: "content_debit",
+        label: "Nội dung nợ",
         options: {
           filter: false,
           sort: false,
         },
       },
       {
-        name: "is_active",
-        label: "Kích hoạt",
+        name: "status_debit",
+        label: "Trạng thái",
         options: {
-          filter: true,
-          customHeadRender: (columnMeta, handleToggleColumn) => {
-            return (
-              <th
-                key={`head-th-${columnMeta.label}`}
-                className="MuiTableCell-root MuiTableCell-head"
-              >
-                <div className="text-center">{columnMeta.label}</div>
-              </th>
-            );
-          },
-          customBodyRender: (value, tableMeta, updateValue) => {
-            return (
-              <div className="text-center">
-                <FormControlLabel
-                  label={value ? "Có" : "Không"}
-                  value={value ? "Có" : "Không"}
-                  control={
-                    <Switch
-                      color="primary"
-                      checked={value === 1}
-                      value={value}
-                    />
-                  }
-                  onChange={(event) => {
-                    let checked = 1 - 1 * event.target.value;
-                    this.handleChangeStatus(
-                      checked,
-                      this.state.data[tableMeta["rowIndex"]]
-                        .customer_account_receive_id,
-                      tableMeta["rowIndex"]
-                    );
-                  }}
-                />
-              </div>
-            );
-          },
+          filter: false,
+          sort: false,
         },
       },
       {
@@ -266,61 +297,63 @@ class Debit extends PureComponent {
           sort: false,
           empty: true,
           customBodyRender: (value, tableMeta, updateValue) => {
-            return (
-              <div className="text-center">
-                <Button
-                  color="warning"
-                  title="Chi tiết"
-                  className="mr-1"
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "detail",
-                      this.state.data[tableMeta["rowIndex"]]
-                        .customer_account_receive_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-info" />
-                </Button>
-                <Button
-                  color="success"
-                  title="Chỉnh sửa"
-                  className="mr-1"
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "edit",
-                      this.state.data[tableMeta["rowIndex"]]
-                        .customer_account_receive_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-edit" />
-                </Button>
-                <Button
-                  color="danger"
-                  title="Xóa"
-                  className=""
-                  onClick={(evt) =>
-                    this.handleActionItemClick(
-                      "delete",
-                      this.state.data[tableMeta["rowIndex"]]
-                        .customer_account_receive_id,
-                      tableMeta["rowIndex"]
-                    )
-                  }
-                >
-                  <i className="fa fa-trash" />
-                </Button>
-              </div>
-            );
+            if (this.state.data[tableMeta["rowIndex"]].show_button) {
+              return (
+                <div className="text-center">
+                  <Button
+                    color="primary"
+                    title="Thanh toán"
+                    className="mr-1"
+                    onClick={(evt) =>
+                      this.handleActionItemClick(
+                        "payment",
+                        this.state.data[tableMeta["rowIndex"]]
+                          .customer_debit_id,
+                        tableMeta["rowIndex"]
+                      )
+                    }
+                  >
+                    <i className="fa fa-money" />
+                  </Button>
+                  <Button
+                    color="danger"
+                    title="Xóa"
+                    className=""
+                    onClick={(evt) =>
+                      this.handleActionItemClick(
+                        "delete",
+                        this.state.data[tableMeta["rowIndex"]]
+                          .customer_debit_id,
+                        tableMeta["rowIndex"]
+                      )
+                    }
+                  >
+                    <i className="fa fa-trash" />
+                  </Button>
+                </div>
+              );
+            } else {
+              return <></>;
+            }
           },
         },
       },
     ];
 
-    const { count, page, query } = this.state;
+    const {
+      count,
+      page,
+      query,
+      debitCancel,
+      openPaid,
+      debitPayment,
+      openPayment,
+      type,
+      id,
+      rowIndex,
+      content,
+      otp,
+    } = this.state;
     const options = configTableOptions(count, page, query);
 
     return (
@@ -355,6 +388,15 @@ class Debit extends PureComponent {
             </CardBody>
           )}
         </Card>
+        <Button
+          className="col-12 max-w-110 mb-3 mobile-reset-width"
+          onClick={() => this.handleClickAdd()}
+          color="success"
+          size="sm"
+        >
+          <i className="fa fa-plus" />
+          <span className="ml-1">Thêm mới</span>
+        </Button>
         <Card className="animated fadeIn">
           <CardBody className="px-0 py-0">
             <div className="MuiPaper-root__custom">
@@ -381,6 +423,130 @@ class Debit extends PureComponent {
             </div>
           </CardBody>
         </Card>
+
+        <Dialog
+          open={!!openPaid}
+          keepMounted
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            <b>Xác nhận xóa nợ</b>
+          </DialogTitle>
+          <DialogContent>
+            {!!debitCancel && (
+              <>
+                <Row>
+                  <Col xs={12}>
+                    <FormGroup row>
+                      <Label for="content" sm={3}>
+                        Lý do hủy
+                      </Label>
+                      <Col sm={9}>
+                        <Input
+                          className="MuiPaper-filter__custom--input"
+                          autoComplete="nope"
+                          type="textarea"
+                          name="content"
+                          placeholder=" Lý do"
+                          value={content || ""}
+                          inputprops={{
+                            name: "content",
+                          }}
+                          onChange={this.handleChange}
+                        />
+                      </Col>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm={12} className="text-right">
+                    <Button
+                      key="buttonSave"
+                      type="submit"
+                      color="primary"
+                      onClick={() =>
+                        this.handleSubmitCancelDebit(type, id, rowIndex)
+                      }
+                      className="mr-2 btn-block-sm"
+                    >
+                      <i className="fa fa-save mr-2" />
+                      Lưu
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        this.setState({
+                          openPaid: !openPaid,
+                          paidAccountCustomer: {
+                            customer_debit_id: "",
+                            content: "",
+                          },
+                        });
+                      }}
+                      className="btn-block-sm mt-md-0 mt-sm-2"
+                    >
+                      <i className="fa fa-times-circle mr-1" />
+                      Đóng
+                    </Button>
+                  </Col>
+                </Row>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={!!openPayment}
+          keepMounted
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          maxWidth="xs"
+          fullWidth
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            <b>XÁC NHẬN OTP</b>
+          </DialogTitle>
+          <DialogContent>
+            {!!debitPayment && (
+              <>
+                <Row>
+                  <Col xs={12}>
+                    <FormGroup row>
+                      <Col sm={12}>
+                        <Input
+                          className="MuiPaper-filter__custom--input"
+                          autoComplete="nope"
+                          type="text"
+                          name="otp"
+                          value={otp || ""}
+                          inputprops={{
+                            name: "otp",
+                          }}
+                          onChange={this.handleChangeOTP}
+                        />
+                      </Col>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm={12} className="text-center">
+                    <Button
+                      key="buttonSave"
+                      type="submit"
+                      color="primary"
+                      onClick={() => this.handleOTPPayment()}
+                      className="mr-2 btn-block-sm"
+                    >
+                      <i className="fa fa-save mr-2" />
+                      Xác nhận
+                    </Button>
+                  </Col>
+                </Row>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }

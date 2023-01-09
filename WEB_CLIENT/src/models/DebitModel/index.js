@@ -10,27 +10,33 @@ import DebitEntity from "../DebitEntity";
  */
 export default class DebitModel extends Model {
   /** @var {String} redux store::state key */
-  _stateKeyName = "account_receive";
+  _stateKeyName = "debit";
 
   /** @var {Ref} */
   _entity = DebitEntity;
 
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_LIST = "account-receive";
+  static API_DEBIT_LIST = "debit";
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_OPTS = "account-receive/get-options";
+  static API_DEBIT_OPTS = "debit/get-options";
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_LISTBANK = "account-receive/get-list-bank";
+  static API_DEBIT_ACCOUNT = "debit/get-account/:customer_number";
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_CREATE = "account-receive";
+  static API_DEBIT_CREATE = "debit";
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_UPDATE = "account-receive/:id"; // PUT
+  static API_DEBIT_UPDATE = "debit/:id"; // PUT
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_READ = "account-receive/:id"; // GET
+  static API_DEBIT_READ = "debit/:id"; // GET
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_DELETE = "account-receive/:id"; // DELETE
+  static API_DEBIT_DELETE = "debit/:id"; // DELETE
   /** @var {String} */
-  static API_ACCOUNT_RECEIVE_CHANGE_STATUS = "/account-receive/:id/status";
+  static API_DEBIT_CHANGE_STATUS = "debit/:id/status";
+  /** @var {String} */
+  static API_DEBIT_CANCELDEBIT = "debit/cancel-debit"; // DELETEdonedebit
+  /** @var {String} */
+  static API_DEBIT_DONEDEBIT = "debit/done-debit";
+  /** @var {String} */
+  static API_DEBIT_SEND_OTP = "debit/send-otp/:customerDebitId"; // DELETE
   /**
    * @var {String} Primary Key
    */
@@ -40,11 +46,13 @@ export default class DebitModel extends Model {
    * @return {Object}
    */
   fillable = () => ({
-    customer_account_receive_id: 0,
+    customer_debit_id: 0,
+    account_id: 0,
     account_number: "",
     account_holder: "",
-    nickname: "",
-    bank_id: 0,
+    current_debit: 0,
+    content_debit: "",
+    debit_status: "",
     is_active: false,
   });
 
@@ -62,7 +70,7 @@ export default class DebitModel extends Model {
       },
       _opts
     );
-    return this._api.get(_static.API_ACCOUNT_RECEIVE_LIST, opts);
+    return this._api.get(_static.API_DEBIT_LIST, opts);
   }
 
   /**
@@ -70,15 +78,20 @@ export default class DebitModel extends Model {
    * @param {Object} _opts
    * @returns Promise
    */
-  getListBank(_opts) {
-    let opts = Object.assign(
-      {
-        is_active: 1,
-      },
-      _opts
+  getAccount(customer_number) {
+    return this._api.get(
+      _static.API_DEBIT_ACCOUNT.replace(":customer_number", customer_number)
     );
-    //
-    return this._api.get(_static.API_ACCOUNT_RECEIVE_LISTBANK, opts);
+  }
+  /**
+   * Get options (list opiton)
+   * @param {Object} _opts
+   * @returns Promise
+   */
+  sendOTP(customerDebitId) {
+    return this._api.get(
+      _static.API_DEBIT_SEND_OTP.replace(":customerDebitId", customerDebitId)
+    );
   }
 
   /**
@@ -88,7 +101,21 @@ export default class DebitModel extends Model {
     // Validate data?!
     let data = Object.assign({}, this.fillable(), _data);
     //
-    return this._api.post(_static.API_ACCOUNT_RECEIVE_CREATE, data);
+    return this._api.post(_static.API_DEBIT_CREATE, data);
+  }
+
+  /**
+   * @return {Promise}
+   */
+  canceldebit(data = {}) {
+    return this._api.post(_static.API_DEBIT_CANCELDEBIT, data);
+  }
+
+  /**
+   * @return {Promise}
+   */
+  donedebit(data = {}) {
+    return this._api.post(_static.API_DEBIT_DONEDEBIT, data);
   }
 
   /**
@@ -98,9 +125,11 @@ export default class DebitModel extends Model {
     // Validate data?!
     //
     return this._api
-      .get(_static.API_ACCOUNT_RECEIVE_READ.replace(":id", id))
-      .then((res) => { console.log(res)
-        return new DebitEntity(res)});
+      .get(_static.API_DEBIT_READ.replace(":id", id))
+      .then((res) => {
+        console.log(res);
+        return new DebitEntity(res);
+      });
   }
 
   /**
@@ -110,10 +139,7 @@ export default class DebitModel extends Model {
     // Validate data?!
     let data = Object.assign({}, _data);
     //
-    return this._api.put(
-      _static.API_ACCOUNT_RECEIVE_UPDATE.replace(":id", id),
-      data
-    );
+    return this._api.put(_static.API_DEBIT_UPDATE.replace(":id", id), data);
   }
   /**
    * @return {Promise}
@@ -123,7 +149,7 @@ export default class DebitModel extends Model {
     let data = Object.assign({}, _data);
     //
     return this._api.put(
-      _static.API_ACCOUNT_RECEIVE_CHANGE_STATUS.replace(":id", id),
+      _static.API_DEBIT_CHANGE_STATUS.replace(":id", id),
       data
     );
   }
@@ -135,10 +161,7 @@ export default class DebitModel extends Model {
     // Validate data?!
     let data = Object.assign({}, _data);
     //
-    return this._api.delete(
-      _static.API_ACCOUNT_RECEIVE_DELETE.replace(":id", id),
-      data
-    );
+    return this._api.delete(_static.API_DEBIT_DELETE.replace(":id", id), data);
   }
 }
 // Make alias

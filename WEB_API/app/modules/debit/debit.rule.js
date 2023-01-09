@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const ruleCreateOrUpdate = {
   account_holder: Joi.string().required(),
@@ -11,6 +11,18 @@ const ruleCreateOrUpdate = {
 const validateRules = {
   createDebit: {
     body: ruleCreateOrUpdate,
+  },
+  cancelDebit: {
+    body: {
+      content: Joi.string().required(),
+      customer_debit_id: Joi.number().required(),
+    },
+  },
+  doneDebit: {
+    body: {
+      otp: Joi.string().required(),
+      customer_debit_id: Joi.number().required(),
+    },
   },
   updateDebit: {
     body: ruleCreateOrUpdate,

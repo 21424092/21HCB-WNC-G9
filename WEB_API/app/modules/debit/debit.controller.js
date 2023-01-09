@@ -1,8 +1,8 @@
-const debitService = require("./debit.service");
-const SingleResponse = require("../../common/responses/single.response");
-const ListResponse = require("../../common/responses/list.response");
-const RESPONSE_MSG = require("../../common/const/responseMsg.const");
-const optionService = require("../../common/services/options.service");
+const debitService = require('./debit.service');
+const SingleResponse = require('../../common/responses/single.response');
+const ListResponse = require('../../common/responses/list.response');
+const RESPONSE_MSG = require('../../common/const/responseMsg.const');
+const optionService = require('../../common/services/options.service');
 
 /**
  * Get list SYS_USERGROUP
@@ -10,7 +10,7 @@ const optionService = require("../../common/services/options.service");
 const getListDebit = async (req, res, next) => {
   try {
     const serviceRes = await debitService.getListDebit(
-      req.query
+      req.query,
     );
     const { data, total, page, limit } = serviceRes.getData();
 
@@ -28,14 +28,14 @@ const createDebit = async (req, res, next) => {
     req.body.customer_debit_id = null;
 
     const serviceRes = await debitService.createDebit(
-      req.body
+      req.body,
     );
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CREATE_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CREATE_SUCCESS),
     );
   } catch (error) {
     return next(error);
@@ -52,7 +52,7 @@ const updateDebit = async (req, res, next) => {
 
     // Check debit exists
     const serviceResDetail = await debitService.detailDebit(
-      debitId
+      debitId,
     );
     if (serviceResDetail.isFailed()) {
       return next(serviceResDetail);
@@ -60,14 +60,14 @@ const updateDebit = async (req, res, next) => {
 
     // Update debit
     const serviceRes = await debitService.updateDebit(
-      req.body
+      req.body,
     );
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.UPDATE_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.UPDATE_SUCCESS),
     );
   } catch (error) {
     return next(error);
@@ -83,7 +83,7 @@ const deleteDebit = async (req, res, next) => {
 
     // Check debit exists
     const serviceResDetail = await debitService.detailDebit(
-      debitId
+      debitId,
     );
     if (serviceResDetail.isFailed()) {
       return next(serviceResDetail);
@@ -92,14 +92,14 @@ const deleteDebit = async (req, res, next) => {
     // Delete debit
     const serviceRes = await debitService.deleteDebit(
       debitId,
-      req
+      req,
     );
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.DELETE_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.DELETE_SUCCESS),
     );
   } catch (error) {
     return next(error);
@@ -113,7 +113,7 @@ const detailDebit = async (req, res, next) => {
   try {
     // Check debit exists
     const serviceRes = await debitService.detailDebit(
-      req.params.debitId
+      req.params.debitId,
     );
     if (serviceRes.isFailed()) {
       return next(serviceRes);
@@ -134,7 +134,7 @@ const changeStatusDebit = async (req, res, next) => {
 
     // Check debit exists
     const serviceResDetail = await debitService.detailDebit(
-      debitId
+      debitId,
     );
     if (serviceResDetail.isFailed()) {
       return next(serviceResDetail);
@@ -143,11 +143,11 @@ const changeStatusDebit = async (req, res, next) => {
     // Update status
     await debitService.changeStatusDebit(
       debitId,
-      req.body
+      req.body,
     );
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CHANGE_STATUS_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CHANGE_STATUS_SUCCESS),
     );
   } catch (error) {
     return next(error);

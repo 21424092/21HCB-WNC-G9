@@ -1,8 +1,8 @@
-const accountReceiveService = require("./account-receive.service");
-const SingleResponse = require("../../common/responses/single.response");
-const ListResponse = require("../../common/responses/list.response");
-const RESPONSE_MSG = require("../../common/const/responseMsg.const");
-const optionService = require("../../common/services/options.service");
+const accountReceiveService = require('./account-receive.service');
+const SingleResponse = require('../../common/responses/single.response');
+const ListResponse = require('../../common/responses/list.response');
+const RESPONSE_MSG = require('../../common/const/responseMsg.const');
+const optionService = require('../../common/services/options.service');
 
 /**
  * Get list SYS_USERGROUP
@@ -10,7 +10,7 @@ const optionService = require("../../common/services/options.service");
 const getListAccountReceive = async (req, res, next) => {
   try {
     const serviceRes = await accountReceiveService.getListAccountReceive(
-      req.query
+      req.query,
     );
     const { data, total, page, limit } = serviceRes.getData();
 
@@ -28,14 +28,14 @@ const createAccountReceive = async (req, res, next) => {
     req.body.customer_account_receive_id = null;
 
     const serviceRes = await accountReceiveService.createAccountReceive(
-      req.body
+      req.body,
     );
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CREATE_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CREATE_SUCCESS),
     );
   } catch (error) {
     return next(error);
@@ -52,7 +52,7 @@ const updateAccountReceive = async (req, res, next) => {
 
     // Check accountReceive exists
     const serviceResDetail = await accountReceiveService.detailAccountReceive(
-      accountReceiveId
+      accountReceiveId,
     );
     if (serviceResDetail.isFailed()) {
       return next(serviceResDetail);
@@ -60,14 +60,14 @@ const updateAccountReceive = async (req, res, next) => {
 
     // Update accountReceive
     const serviceRes = await accountReceiveService.updateAccountReceive(
-      req.body
+      req.body,
     );
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.UPDATE_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.UPDATE_SUCCESS),
     );
   } catch (error) {
     return next(error);
@@ -83,7 +83,7 @@ const deleteAccountReceive = async (req, res, next) => {
 
     // Check accountReceive exists
     const serviceResDetail = await accountReceiveService.detailAccountReceive(
-      accountReceiveId
+      accountReceiveId,
     );
     if (serviceResDetail.isFailed()) {
       return next(serviceResDetail);
@@ -92,14 +92,14 @@ const deleteAccountReceive = async (req, res, next) => {
     // Delete accountReceive
     const serviceRes = await accountReceiveService.deleteAccountReceive(
       accountReceiveId,
-      req
+      req,
     );
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.DELETE_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.DELETE_SUCCESS),
     );
   } catch (error) {
     return next(error);
@@ -111,12 +111,12 @@ const deleteAccountReceive = async (req, res, next) => {
  */
 const detailAccountReceive = async (req, res, next) => {
   try {
-    console.log( req.params)
+    console.log(req.params);
     // Check accountReceive exists
     const serviceRes = await accountReceiveService.detailAccountReceive(
-      req.params.accountReceiveId
+      req.params.accountReceiveId,
     );
-    console.log("serviceRes", serviceRes);
+    console.log('serviceRes', serviceRes);
     if (serviceRes.isFailed()) {
       return next(serviceRes);
     }
@@ -136,7 +136,7 @@ const changeStatusAccountReceive = async (req, res, next) => {
 
     // Check accountReceive exists
     const serviceResDetail = await accountReceiveService.detailAccountReceive(
-      accountReceiveId
+      accountReceiveId,
     );
     if (serviceResDetail.isFailed()) {
       return next(serviceResDetail);
@@ -145,11 +145,11 @@ const changeStatusAccountReceive = async (req, res, next) => {
     // Update status
     await accountReceiveService.changeStatusAccountReceive(
       accountReceiveId,
-      req.body
+      req.body,
     );
 
     return res.json(
-      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CHANGE_STATUS_SUCCESS)
+      new SingleResponse(null, RESPONSE_MSG.USER_GROUP.CHANGE_STATUS_SUCCESS),
     );
   } catch (error) {
     return next(error);
@@ -159,8 +159,8 @@ const changeStatusAccountReceive = async (req, res, next) => {
 const getOptions = async (req, res, next) => {
   try {
     const serviceRes = await optionService(
-      "CUS_CUSTOMER_ACCOUNT_RECEIVE",
-      req.query
+      'CUS_CUSTOMER_ACCOUNT_RECEIVE',
+      req.query,
     );
 
     return res.json(new SingleResponse(serviceRes.getData()));
@@ -171,7 +171,7 @@ const getOptions = async (req, res, next) => {
 
 const getListBank = async (req, res, next) => {
   try {
-    const serviceRes = await optionService("BANK_PARTNER", req.query);
+    const serviceRes = await optionService('BANK_PARTNER', req.query);
     return res.json(new SingleResponse(serviceRes.getData()));
   } catch (error) {
     return next(error);

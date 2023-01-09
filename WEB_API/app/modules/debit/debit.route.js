@@ -7,27 +7,27 @@ const prefix = '/debit';
 
 // List debit
 routes.route('')
-  .get(debitController.getListAdebit);
+  .get(debitController.getListDebit);
 
 // Create new a debit
 routes.route('')
-  .post(validate(rules.createAdebit), debitController.createAdebit);
+  .post(validate(rules.createDebit), debitController.createDebit);
 
 // Update a debit
 routes.route('/:debitId(\\d+)')
-  .put(validate(rules.updateAdebit), debitController.updateAdebit);
+  .put(validate(rules.updateDebit), debitController.updateDebit);
 
 // Delete a debit
 routes.route('/:debitId(\\d+)')
-  .delete(debitController.deleteAdebit);
+  .delete(debitController.deleteDebit);
 
 // Detail a debit
 routes.route('/:debitId(\\d+)')
-  .get(debitController.detailAdebit);
+  .get(debitController.detailDebit);
 
 // Change status a debit
 routes.route('/:debitId/change-status')
-  .put(validate(rules.changeStatusAdebit), debitController.changeStatusAdebit);
+  .put(validate(rules.changeStatusDebit), debitController.changeStatusDebit);
 
 module.exports = {
   prefix,

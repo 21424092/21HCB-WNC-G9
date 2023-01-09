@@ -54,8 +54,6 @@ export default class ChangePassword extends PureComponent {
     this.formikValidationSchema = Yup.object().shape({
       old_password: Yup.string().trim()
         .required("Mật khẩu cũ là bắt buộc.")
-        .min(8, 'Mật khẩu quá ngắn, ít nhất 8 ký tự!')
-        .max(25, 'Mật khẩu quá dài, tối đa 25 ký tự!')
       ,
       new_password: Yup.string().trim()
         .required("Mật khẩu mới là bắt buộc.")

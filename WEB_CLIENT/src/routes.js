@@ -393,28 +393,28 @@ const routes = [
   },
   //FunctionGroups
   {
-    path: "/debit",
+    path: "/debit-remind",
     exact: true,
     name: "Danh sách nợ",
     function: "SYS_FUNCTIONGROUP_VIEW",
     component: Debit,
   },
   {
-    path: "/debit/add",
+    path: "/debit-remind/add",
     exact: true,
     name: "Thêm mới",
     function: "SYS_FUNCTIONGROUP_ADD",
     component: DebitAdd,
   },
   {
-    path: "/debit/edit/:id",
+    path: "/debit-remind/edit/:id",
     exact: true,
     name: "Chỉnh sửa",
     function: "SYS_FUNCTIONGROUP_EDIT",
     component: DebitEdit,
   },
   {
-    path: "/debit/details/:id",
+    path: "/debit-remind/details/:id",
     exact: true,
     name: "Chi tiết",
     function: "SYS_FUNCTIONGROUP_VIEW",

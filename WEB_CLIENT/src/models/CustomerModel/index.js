@@ -11,6 +11,7 @@ export default class CustomerModel extends Model {
   static API_CUS_LIST_ACCOUNT = "customer/list-account";
   static API_CUS_OPTS = "customer/get-options";
   static API_CUS_INIT = "customer/create";
+  static API_CUS_CREATE = "customer";
   static API_CUS_CREATEACCOUNT = "customer/create-account";
   static API_CUS_ACCOUNT_OPTS = "customer/opts-customer-account/:id";
   static API_CUS_ACCOUNT_UPDATEPAID = "customer/update-paid-account";
